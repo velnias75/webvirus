@@ -3,13 +3,15 @@
   require 'classes/movies.php';
 ?>
 
-<table border="0" width="100%">
+<table id="layout" border="0" width="100%">
   <tr><td id="layout_top" align="center" colspan="3">PLATZHALTER OBEN</td></tr>
   <tr><td id="layout_left" valign="top">PLATZHALTER<br>LINKS</td>
-    <td id="layout_content" align="center">
+    <td id="layout_content" align="center" valign="top">
       <?php 
 	try {
-	  (new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle"))->render(); 
+	  (new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 
+	    isset($_GET['from']) ? $_GET['from'] : 0,
+	    isset($_GET['to']) ? $_GET['to'] : -1))->render(); 
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}

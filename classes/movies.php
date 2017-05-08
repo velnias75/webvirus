@@ -5,6 +5,8 @@ class Movies {
   private $mysqli;
   private $order;
   private $par = 1;
+  private $limit_to;
+  private $limit_from;
   private $id_order = "";
   private $du_order = "";
   private $di_order = "";
@@ -19,7 +21,7 @@ class Movies {
     GROUP BY `m`.`ID`
 EOD;
 
-  function __construct($order_by = "ltitle") {
+  function __construct($order_by = "ltitle", $from = 0, $to = -1) {
     
     require 'db_cred.php';
     
@@ -44,6 +46,9 @@ EOD;
       $this->order = "MAKE_MOVIE_SORTKEY(`ltitle`, `m`.`skey`)";
       $this->ti_order = "&nbsp;&#10037;";
     }
+    
+    $this->limit_from = $from;
+    $this->limit_to = $to;
 
   }
   
@@ -76,8 +81,13 @@ EOD;
 	  <th><a class=\"list\" href=\"?order_by=disc\">DVD".$this->di_order."</a></th>
 	</tr>\n";
       
+      $i = 0;
+      
       while ($row = $result->fetch_assoc()) {
-	$this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['lingos'], $row['disc'], $row['category']);
+        if($i >= $this->limit_from && ($this->limit_to === -1 || $i <= $this->limit_to)) {
+	  $this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['lingos'], $row['disc'], $row['category']);
+	}
+	$i++;
       }
 
       $this->renderRow();

@@ -1,5 +1,6 @@
 body { margin: 0; background-color: #eeeeee; font-family: 'Arial', sans-serif; font-size: 10pt; }
 
+#layout { height: 100%; }
 #layout_top { background-color: #cccccc; height: 100px; min-height: 100px; max-height: 100px; }
 #layout_bottom { background-color: #cccccc; height: 20px; min-height: 20px; max-height: 20px; }
 #layout_content { padding: 10px; }
