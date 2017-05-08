@@ -12,7 +12,7 @@
 	try {
 	  (new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 
 	    isset($_GET['from']) ? $_GET['from'] : 0,
-	    isset($_GET['to']) ? $_GET['to'] : -1))->render(); 
+	    isset($_GET['to']) ? $_GET['to'] : 24))->render(); 
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}

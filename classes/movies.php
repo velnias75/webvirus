@@ -2,11 +2,12 @@
 
 class Movies {
 
-  private $mysqli;
+  private $par;
   private $order;
-  private $par = 1;
+  private $mysqli;
   private $limit_to;
   private $limit_from;
+  
   private $id_order = "";
   private $du_order = "";
   private $di_order = "";
@@ -49,6 +50,7 @@ EOD;
     
     $this->limit_from = $from;
     $this->limit_to = $to;
+    $this->par = 1;
 
   }
   
@@ -68,9 +70,24 @@ EOD;
   private function appendLimits() {
     return "&from=".$this->limit_from."&to=".$this->limit_to;
   }
+  
+  private function createOrderHref() {
+  
+    if($this->id_order <> "") {
+      return "?order_by=ID";
+    } else if($this->du_order <> "") {
+      return "?order_by=duration";
+    } else if($this->di_order <> "") {
+      return "?order_by=disc";
+    } 
+  
+    return "?order_by=ltitle";
+  }
 
   public function render() {
 
+    $i = 0;
+  
     echo "<table class=\"list\" border=\"0\">\n";
   
     $result = $this->mysqli->query(self::$dvd_choice." ORDER BY ".$this->order, MYSQLI_USE_RESULT);
@@ -82,15 +99,13 @@ EOD;
         $act_du = ($this->du_order === "");
         $act_di = ($this->di_order === "");
       
-	echo "<tr id=\"list_header\">
+	echo "<tr id=\"list_topbot\">
 	  <th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->appendLimits()."\">" : "")."Nr".$this->id_order.($act_id ? "</a>" : "")."</th>
 	  <th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".$this->appendLimits()."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "")."</th>
 	  <th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->appendLimits()."\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th>
 	  <th class=\"hack lingos\">Sprache(n)</th>
 	  <th>".($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->appendLimits()."\">" : "")."DVD".$this->di_order.($act_di ? "</a>" : "")."</th>
 	</tr>\n";
-      
-      $i = 0;
       
       while ($row = $result->fetch_assoc()) {
         if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
@@ -121,9 +136,44 @@ EOD;
       $this->renderRow(0, "MySQL-Fehler: ".$this->mysqli->error, "00:00:00", "", "", 4);
     }
     
+    echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
+    
     echo "</table>\n";
 
   }
+  
+  private function createAllPage() {
+    return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
+      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".$this->createOrderHref()."&from=0&to=-1\">Alle</a>")."</td>";
+  }
+  
+  private function createPagination($rows) {
+    
+    $psize = ($this->limit_to == -1 ? 24 : $this->limit_to) - $this->limit_from;
+    $pages = ceil($rows/$psize);
+    
+    $prev  = ($this->limit_from - $psize) >= 0 ? $this->limit_from - $psize : (($pages - 1) * $psize);
+    $next  = ($this->limit_from + $psize) < $rows ? $this->limit_from + $psize : 0;
+    
+    
+    $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage().
+      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderHref().
+	"&from=".$prev."&to=".($prev + $psize)."\">&#10525;</a></td>";
+    
+    
+    for($i = 0; $i < $pages; $i++) {
+      $from  = ($psize * $i);
+      $activ = $this->limit_to == -1 || !($this->limit_from >= $from && $this->limit_to <= ($from + $psize));
+      $pagin = $pagin."<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
+	($activ ? "<a class=\"page_nr\" href=\"".$this->createOrderHref().
+	"&from=".$from."&to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
+    }
+    
+    return $pagin."<td width=\"".floor(100/($pages + 4)).
+      "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderHref()."&from=".$next."&to=".($next + $psize)."\">&#10526;</a></td>".
+	$this->createAllPage()."</tr></table>";
+  }
+  
 }
 
 ?>
