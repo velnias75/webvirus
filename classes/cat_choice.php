@@ -28,7 +28,7 @@ class CatChoice extends MySQLBase {
   public function render() {
     
     echo "<table class=\"cat_nav\" border=\"0\" width=\"100%\"><tr><th class=\"cat_nav\">Kategorie</th></tr>".
-    "<tr><td nowrap><ul class=\"cat_nav\"><li class=\"cat_0".($this->movies->category() == -1 ? " cat_nav_active" : "")."\">".
+    "<tr><td><ul class=\"cat_nav\"><li class=\"cat_0".($this->movies->category() == -1 ? " cat_nav_active" : "")."\">".
       ($this->movies->category() != -1 ? "<a class=\"cat_nav\" href=\"".$this->movies->queryString(-1)."\">" : "").
       "Alle Videos".
       ($this->movies->category() != -1 ? "</a>" : "")."</li>\n";
