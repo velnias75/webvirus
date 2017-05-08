@@ -41,9 +41,9 @@ th.hack { min-width: 45px; max-width: 45px; }
 .lingos { font-style: italic; }
 
 a.page_nr { text-decoration: none; color: inherit; }
-
 td.page_nr { font-size: 9pt; padding: 3px; border-width: 1px; border-style:solid; border-color: #ddddff; background-color: white; color: #3333ff; }
-
 td.page_nr.page_active { color: white; background-color: #3333ff; }
 
 td input.list_filter { min-width: 10px; max-width: 100%; width: 100%; }
+td.list_filter { padding: 2px; }
+tr.list_filter { background-color: #9d9dcf; }

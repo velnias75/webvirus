@@ -121,12 +121,12 @@ EOD;
 	($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->appendLimits()."\">" : "")."DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
 	
       echo "<tr class=\"list_filter\">".
-	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\"></td>".
-	"<td><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" value=\"".
+	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\"></td>".
+	"<td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" value=\"".
 	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
-	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td>".
-	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_lingo\" type=\"text\"></td>".
-	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_disc\" type=\"text\"></td></tr>\n";
+	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td>".
+	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_lingo\" type=\"text\"></td>".
+	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_disc\" type=\"text\"></td></tr>\n";
       
       while ($row = $result->fetch_assoc()) {
 
