@@ -1,5 +1,7 @@
 body { margin: 0; background-color: #eeeeee; font-family: 'Arial', sans-serif; font-size: 10pt; }
 
+#filter_submit { display:none; }
+
 #layout { height: 100%; }
 #layout_top { background-color: #cccccc; height: 60px; min-height: 60px; max-height: 60px; }
 #layout_bottom { background-color: #cccccc; height: 20px; min-height: 20px; max-height: 20px; }
@@ -43,3 +45,5 @@ a.page_nr { text-decoration: none; color: inherit; }
 td.page_nr { font-size: 9pt; padding: 3px; border-width: 1px; border-style:solid; border-color: #ddddff; background-color: white; color: #3333ff; }
 
 td.page_nr.page_active { color: white; background-color: #3333ff; }
+
+td input.list_filter { min-width: 10px; max-width: 100%; width: 100%; }

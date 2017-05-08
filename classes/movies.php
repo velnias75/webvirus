@@ -1,8 +1,9 @@
 <?php
 
 require_once 'mysql_base.php';
+require_once 'irenderable.php';
 
-class Movies extends MySQLBase {
+class Movies extends MySQLBase implements IRenderable {
 
   private $par;
   private $order;
@@ -69,49 +70,70 @@ EOD;
     return "&cat=".$this->category."&from=".$this->limit_from."&to=".$this->limit_to;
   }
   
-  private function createOrderCatHref($nocat = false) {
-  
-    $res = $nocat ? "?" : "?cat=".$this->category."&";
+  private function order() {
   
     if($this->id_order <> "") {
-      return $res."order_by=ID";
+      return "ID";
     } else if($this->du_order <> "") {
-      return $res."order_by=duration";
+      return "duration";
     } else if($this->di_order <> "") {
-      return $res."order_by=disc";
+      return "disc";
     } 
   
-    return $res."order_by=ltitle";
+    return "ltitle";
+  }
+  
+  private function createOrderCatHref($nocat = false) {
+    $res = ($nocat ? "?" : "?cat=".$this->category).
+      (isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle']."&" : "");
+
+    return $res."order_by=".$this->order();
   }
 
   public function render() {
 
     $i = 0;
   
-    echo "<table class=\"list\" border=\"0\">\n";
-  
-    $result = $this->con()->query(self::$dvd_choice.($this->category == -1 ? "" : "AND `category` = ".$this->category).
+    echo "<form method=\"GET\"><table class=\"list\" border=\"0\">\n";
+    echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\">".
+      "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
+      "<input type=\"hidden\" name=\"from\" value=\"".$this->limit_from."\">".
+      "<input type=\"hidden\" name=\"to\" value=\"".$this->limit_to."\">\n";
+    
+    $like = "LIKE CONCAT('%', '".$this->con()->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')";
+    $tfil = (isset($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".$like." OR `es`.`episode` ".$like.") " : "");
+    
+    $result = $this->con()->query(self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).$tfil.
       " GROUP BY `m`.`ID` ORDER BY ".$this->order, MYSQLI_USE_RESULT);
 
     if($result) {
       
-        $act_id = ($this->id_order === "");
-        $act_ti = ($this->ti_order === "");
-        $act_du = ($this->du_order === "");
-        $act_di = ($this->di_order === "");
-      
-	echo "<tr id=\"list_topbot\">
-	  <th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->appendLimits()."\">" : "")."Nr".$this->id_order.($act_id ? "</a>" : "")."</th>
-	  <th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".$this->appendLimits()."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "")."</th>
-	  <th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->appendLimits()."\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th>
-	  <th class=\"hack lingos\">Sprache(n)</th>
-	  <th>".($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->appendLimits()."\">" : "")."DVD".$this->di_order.($act_di ? "</a>" : "")."</th>
-	</tr>\n";
+      $act_id = ($this->id_order === "");
+      $act_ti = ($this->ti_order === "");
+      $act_du = ($this->du_order === "");
+      $act_di = ($this->di_order === "");
+
+      echo "<tr id=\"list_topbot\">".
+	"<th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->appendLimits()."\">" : "")."Nr".$this->id_order.($act_id ? "</a>" : "").
+	"</th><th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".$this->appendLimits()."\">" : "")."Titel".$this->ti_order.
+	($act_ti ? "</a>" : "")."</th><th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".
+	$this->appendLimits()."\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th><th class=\"hack lingos\">Sprache(n)</th><th>".
+	($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->appendLimits()."\">" : "")."DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
+	
+      echo "<tr class=\"list_filter\">".
+	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\"></td>".
+	"<td><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" value=\"".
+	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
+	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td>".
+	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_lingo\" type=\"text\"></td>".
+	"<td><input readonly disabled class=\"list_filter\" id=\"list_filter_disc\" type=\"text\"></td></tr>\n";
       
       while ($row = $result->fetch_assoc()) {
+
         if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
 	  $this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['lingos'], $row['disc'], $row['category']);
 	}
+
 	$i++;
       }
 
@@ -121,12 +143,12 @@ EOD;
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
 	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
-	  ($this->category == -1 ? "" : "AND `category` = ".$this->category)." GROUP BY `m`.`ID`) AS `choice`");
+	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).$tfil." GROUP BY `m`.`ID`) AS `choice`");
 
       if($total_res) $total = $total_res->fetch_assoc();
       
       if($total_res && $total) {
-	$this->renderRow($result->num_rows, "Videos insgesamt", $total['tot_dur'], "", "", 1, true);
+	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), $total['tot_dur'], "", "", 1, true);
 	$total_res->free_result();
       } else {
 	$this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4, true);
@@ -135,12 +157,11 @@ EOD;
       $result->free_result();
       
     } else {
-      $this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4);
+      $this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4, true);
     }
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
-    
-    echo "</table>\n";
+    echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
 
   }
   

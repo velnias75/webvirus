@@ -1,13 +1,14 @@
 <?php
 
 require_once 'mysql_base.php';
+require_once 'irenderable.php';
 
-class CatChoice extends MySQLBase {
+class CatChoice extends MySQLBase implements IRenderable {
 
   private $result;
   private $movies;
 
-  function __construct($m) {  
+  function __construct(Movies $m) {  
     
     parent::__construct();
     
