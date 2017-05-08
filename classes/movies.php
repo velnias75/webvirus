@@ -62,12 +62,13 @@ EOD;
 
   public function render() {
 
+    echo "<table class=\"list\" border=\"0\">\n";
+  
     $result = $this->mysqli->query(self::$dvd_choice." ORDER BY ".$this->order, MYSQLI_USE_RESULT);
 
     if($result) {
-  
-      echo "<table class=\"list\" border=\"0\">
-	<tr id=\"list_header\">
+      
+	echo "<tr id=\"list_header\">
 	  <th class=\"hack\"><a class=\"list\" href=\"?order_by=ID\">Nr".$this->id_order."</a></th>
 	  <th class=\"ltitle\"><a class=\"list\" href=\"?order_by=title\">Titel".$this->ti_order."</a></th>
 	  <th class=\"duration\"><a class=\"list\" href=\"?order_by=duration\">L&auml;nge".$this->du_order."</a></th>
@@ -90,18 +91,18 @@ EOD;
       
       if($total_res && $total) {
 	$this->renderRow($result->num_rows, "Videos insgesamt", $total['tot_dur'], "", "", 1, true);
-	$this->mysqli->free_result($total_res);
+	$total_res->free_result();
       } else {
 	$this->renderRow(0, "MySQL-Fehler: ".$this->mysqli->error, "00:00:00", "", "", 4, true);
       }
 
-      echo "</table>\n";
-
-      $this->mysqli->free_result($result);
+      $result->free_result();
       
     } else {
       $this->renderRow(0, "MySQL-Fehler: ".$this->mysqli->error, "00:00:00", "", "", 4);
     }
+    
+    echo "</table>\n";
 
   }
 }

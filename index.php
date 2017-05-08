@@ -9,11 +9,12 @@
     <td id="layout_content" align="center">
       <?php 
 	try {
-	  (new Movies($_GET['order_by']))->render(); 
+	  (new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle"))->render(); 
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}
-      ?></td>
+      ?>
+      </td>
     <td id="layout_right" valign="top">PLATZHALTER<br>RECHTS</td></tr>
   <tr><td id="layout_bottom" align="center" colspan="3">PLATZHALTER UNTEN</td></tr>
 </table>
