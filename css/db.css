@@ -3,11 +3,19 @@ body { margin: 0; background-color: #eeeeee; font-family: 'Arial', sans-serif; f
 #layout { height: 100%; }
 #layout_top { background-color: #cccccc; height: 60px; min-height: 60px; max-height: 60px; }
 #layout_bottom { background-color: #cccccc; height: 20px; min-height: 20px; max-height: 20px; }
+#layout_left { padding: 10px; min-width: 80px; max-width: 80px; }
+#layout_right { padding: 10px; min-width: 80px; max-width: 80px; }
 #layout_content { padding: 10px; }
 
 table.list { background-color: #dddddd; width: 80%; }
 td.list { padding-left: 4px; padding-right: 4px; }
 a.list { text-decoration: none; color: inherit; }
+
+table.cat_nav { background-color: #dddddd; margin: 0px; padding: 0px; border: 0px; }
+th.cat_nav { background-color: #bbbbbb; }
+ul.cat_nav { list-style-type: circle; }
+li.cat_nav_active { list-style-type: square; }
+a.cat_nav { text-decoration: none; color: inherit; }
 
 #list_topbot { font-weight: normal; background-color: #eeeeff; outline-style: solid; outline-width: 1px; outline-color: #ccccff; }
 
@@ -15,6 +23,7 @@ th.hack { min-width: 45px; max-width: 45px; }
 
 .duration { font-family: 'Courier New', 'Lucida Console', monospace; }
 
+.cat_0 { color: #3333ff; }
 .cat_1 { color: black; }
 .cat_2 { color: #66339f; }
 .cat_3 { color: #253100; }

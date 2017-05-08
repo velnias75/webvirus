@@ -1,10 +1,12 @@
 <?php
 
-class Movies {
+require_once 'mysql_base.php';
+
+class Movies extends MySQLBase {
 
   private $par;
   private $order;
-  private $mysqli;
+  private $category;
   private $limit_to;
   private $limit_from;
   
@@ -19,20 +21,11 @@ class Movies {
     `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category` FROM `disc` AS `disc`, `movies` AS `m` 
     LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id` LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` 
     ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` WHERE `disc`.`ID` = `m`.`disc` 
-    GROUP BY `m`.`ID`
 EOD;
 
-  function __construct($order_by = "ltitle", $from = 0, $to = -1) {
+  function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
     
-    require 'db_cred.php';
-    
-    $this->mysqli = new mysqli($server, $user, $pass, $db);
-    
-    if($this->mysqli->connect_errno) {      
-      throw new ErrorException("Konnte keine Verbindung zu MySQL aufbauen: ".$this->mysqli->connect_error());
-    }
-    
-    $this->mysqli->set_charset('utf8');
+    parent::__construct();
     
     if($order_by === "ID") {
       $this->order = "`m`.`ID`";
@@ -50,12 +43,9 @@ EOD;
     
     $this->limit_from = $from;
     $this->limit_to = $to;
+    $this->category = $cat;
     $this->par = 1;
 
-  }
-  
-  function __destruct() {
-    $this->mysqli->close();
   }
   
   private function renderRow($id = "", $ltitle = "", $duration = "", $lingos = "", $disc = "", $cat = 1, $isSummary = false) {
@@ -67,21 +57,31 @@ EOD;
       ($disc === "" ? "&nbsp;" : htmlentities($disc, ENT_SUBSTITUTE, "utf-8"))."</td></tr>\n";
   }
   
-  private function appendLimits() {
-    return "&from=".$this->limit_from."&to=".$this->limit_to;
+  public function category() {
+    return $this->category;
   }
   
-  private function createOrderHref() {
+  public function queryString($cat) {
+    return $this->createOrderCatHref(true)."&from=0&to=24&cat=".$cat;
+  }
+  
+  private function appendLimits() {
+    return "&cat=".$this->category."&from=".$this->limit_from."&to=".$this->limit_to;
+  }
+  
+  private function createOrderCatHref($nocat = false) {
+  
+    $res = $nocat ? "?" : "?cat=".$this->category."&";
   
     if($this->id_order <> "") {
-      return "?order_by=ID";
+      return $res."order_by=ID";
     } else if($this->du_order <> "") {
-      return "?order_by=duration";
+      return $res."order_by=duration";
     } else if($this->di_order <> "") {
-      return "?order_by=disc";
+      return $res."order_by=disc";
     } 
   
-    return "?order_by=ltitle";
+    return $res."order_by=ltitle";
   }
 
   public function render() {
@@ -90,7 +90,8 @@ EOD;
   
     echo "<table class=\"list\" border=\"0\">\n";
   
-    $result = $this->mysqli->query(self::$dvd_choice." ORDER BY ".$this->order, MYSQLI_USE_RESULT);
+    $result = $this->con()->query(self::$dvd_choice.($this->category == -1 ? "" : "AND `category` = ".$this->category).
+      " GROUP BY `m`.`ID` ORDER BY ".$this->order, MYSQLI_USE_RESULT);
 
     if($result) {
       
@@ -116,10 +117,11 @@ EOD;
 
       $this->renderRow();
 
-      $total_res = $this->mysqli->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
+      $total_res = $this->con()->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
-	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.") AS `choice`");
+	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
+	  ($this->category == -1 ? "" : "AND `category` = ".$this->category)." GROUP BY `m`.`ID`) AS `choice`");
 
       if($total_res) $total = $total_res->fetch_assoc();
       
@@ -127,13 +129,13 @@ EOD;
 	$this->renderRow($result->num_rows, "Videos insgesamt", $total['tot_dur'], "", "", 1, true);
 	$total_res->free_result();
       } else {
-	$this->renderRow(0, "MySQL-Fehler: ".$this->mysqli->error, "00:00:00", "", "", 4, true);
+	$this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4, true);
       }
 
       $result->free_result();
       
     } else {
-      $this->renderRow(0, "MySQL-Fehler: ".$this->mysqli->error, "00:00:00", "", "", 4);
+      $this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4);
     }
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
@@ -144,7 +146,7 @@ EOD;
   
   private function createAllPage() {
     return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
-      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".$this->createOrderHref()."&from=0&to=-1\">Alle</a>")."</td>";
+      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".$this->createOrderCatHref()."&from=0&to=-1\">Alle</a>")."</td>";
   }
   
   private function createPagination($rows) {
@@ -157,7 +159,7 @@ EOD;
     
     
     $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage().
-      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderHref().
+      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderCatHref().
 	"&from=".$prev."&to=".($prev + $psize)."\">&#10525;</a></td>";
     
     
@@ -165,12 +167,12 @@ EOD;
       $from  = ($psize * $i);
       $activ = $this->limit_to == -1 || !($this->limit_from >= $from && $this->limit_to <= ($from + $psize));
       $pagin = $pagin."<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
-	($activ ? "<a class=\"page_nr\" href=\"".$this->createOrderHref().
+	($activ ? "<a class=\"page_nr\" href=\"".$this->createOrderCatHref().
 	"&from=".$from."&to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
     }
     
     return $pagin."<td width=\"".floor(100/($pages + 4)).
-      "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderHref()."&from=".$next."&to=".($next + $psize)."\">&#10526;</a></td>".
+      "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderCatHref()."&from=".$next."&to=".($next + $psize)."\">&#10526;</a></td>".
 	$this->createAllPage()."</tr></table>";
   }
   
