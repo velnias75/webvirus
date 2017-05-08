@@ -25,6 +25,6 @@ th.hack { min-width: 45px; }
 
 .ltitle { font-weight: bold; }
 
-.hack { font-family: 'Hack', 'Lucida Console', monospace; }
+.hack { font-family: Hack, 'Lucida Console', monospace; }
 
 .lingos { font-style: italic; }

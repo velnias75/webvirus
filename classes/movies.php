@@ -64,6 +64,10 @@ EOD;
       ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat."\">".
       ($disc === "" ? "&nbsp;" : htmlentities($disc, ENT_SUBSTITUTE, "utf-8"))."</td></tr>\n";
   }
+  
+  private function appendLimits() {
+    return "&from=".$this->limit_from."&to=".$this->limit_to;
+  }
 
   public function render() {
 
@@ -73,18 +77,23 @@ EOD;
 
     if($result) {
       
+        $act_id = ($this->id_order === "");
+        $act_ti = ($this->ti_order === "");
+        $act_du = ($this->du_order === "");
+        $act_di = ($this->di_order === "");
+      
 	echo "<tr id=\"list_header\">
-	  <th class=\"hack\"><a class=\"list\" href=\"?order_by=ID\">Nr".$this->id_order."</a></th>
-	  <th class=\"ltitle\"><a class=\"list\" href=\"?order_by=title\">Titel".$this->ti_order."</a></th>
-	  <th class=\"duration\"><a class=\"list\" href=\"?order_by=duration\">L&auml;nge".$this->du_order."</a></th>
+	  <th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->appendLimits()."\">" : "")."Nr".$this->id_order.($act_id ? "</a>" : "")."</th>
+	  <th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".$this->appendLimits()."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "")."</th>
+	  <th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->appendLimits()."\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th>
 	  <th class=\"hack lingos\">Sprache(n)</th>
-	  <th><a class=\"list\" href=\"?order_by=disc\">DVD".$this->di_order."</a></th>
+	  <th>".($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->appendLimits()."\">" : "")."DVD".$this->di_order.($act_di ? "</a>" : "")."</th>
 	</tr>\n";
       
       $i = 0;
       
       while ($row = $result->fetch_assoc()) {
-        if($i >= $this->limit_from && ($this->limit_to === -1 || $i <= $this->limit_to)) {
+        if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
 	  $this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['lingos'], $row['disc'], $row['category']);
 	}
 	$i++;
