@@ -1,6 +1,8 @@
 body { margin: 0; background-color: #eeeeee; font-family: 'Arial', sans-serif; font-size: 10pt; }
 a { text-decoration: none; color: inherit; }
 
+abbr { cursor: url('../img/application-x-mplayer2.png'), auto; }
+
 #filter_submit { display:none; }
 
 #layout { height: 100%; }

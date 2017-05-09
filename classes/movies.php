@@ -22,11 +22,11 @@ class Movies implements IRenderable {
   
   private static $dvd_choice = <<<'EOD'
     SELECT `m`.`ID`, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `ltitle`, 
-    SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ORDER BY 
-    `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category`, `languages`.`id` AS `lid` 
-    FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id` LEFT JOIN`series`AS `s` 
-    ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` 
-    ON `movie_languages`.`lang_id` = `languages`.`id`  WHERE `disc`.`ID` = `m`.`disc` 
+    SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` 
+    ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category`, `languages`.`id` AS `lid`, 
+    `m`.`filename` AS `filename` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id` 
+    LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` 
+    LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id`  WHERE `disc`.`ID` = `m`.`disc` 
 EOD;
 
   function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
@@ -54,13 +54,14 @@ EOD;
 
   }
   
-  private function renderRow($id = "", $ltitle = "", $duration = "", $lingos = "", $disc = "", $cat = 1, $isSummary = false) {
+  private function renderRow($id = "", $ltitle = "", $duration = "", $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
     echo "<tr class=\"parity_".($this->par++ % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
       ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat.($isSummary ? "" : " ltitle")."\">".
-      ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap align=\"right\" class=\"list duration cat_".$cat."\">".
+      ($ltitle === "" ? "&nbsp;" : "".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap align=\"right\" class=\"list duration cat_".$cat."\">".
       ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat." hack lingos\">".
       ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat."\">".
-      ($disc === "" ? "&nbsp;" : htmlentities($disc, ENT_SUBSTITUTE, "utf-8"))."</td></tr>\n";
+      ($disc === "" ? "&nbsp;" : (empty($fname) ? "" : "<abbr title=\"".htmlentities($fname, ENT_SUBSTITUTE, "utf-8")."\">").
+      htmlentities($disc, ENT_SUBSTITUTE, "utf-8")).(empty($fname) ? "" : "</abbr>")."</td></tr>\n";
   }
   
   public function category() {
@@ -168,7 +169,7 @@ EOD;
       while ($row = $result->fetch_assoc()) {
 
         if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
-	  $this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['lingos'], $row['disc'], $row['category']);
+	  $this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
 	}
 
 	$i++;
@@ -185,7 +186,7 @@ EOD;
       if($total_res) $total = $total_res->fetch_assoc();
       
       if($total_res && $total) {
-	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), $total['tot_dur'], "", "", 1, true);
+	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), $total['tot_dur'], "", "", "", 1, true);
 	$total_res->free_result();
       } else {
 	$this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "", "", 4, true);
@@ -194,7 +195,7 @@ EOD;
       $result->free_result();
       
     } else {
-      $this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "", "", 4, true);
+      $this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "", "", "", 4, true);
     }
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
