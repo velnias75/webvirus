@@ -1,7 +1,9 @@
-<?php 
+<?php
+
   require 'head.php';
   require 'classes/movies.php';
   require 'classes/cat_choice.php';
+  require 'classes/latest_disc.php';
   
   try {
     $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 
@@ -21,10 +23,15 @@
       <?php
 	try {
 	  (new CatChoice($movies))->render();
+	  (new LatestDisc($movies))->render();
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}
       ?>
+      <table class="cat_nav" border="0" width="100%">
+	<tr><th class="cat_nav">Downloads</th></tr>
+	<tr><td><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr>
+      </table>
     </td>
     <td id="layout_content" align="center" valign="top">
       <?php 
@@ -35,9 +42,19 @@
 	}
       ?>
       </td>
-    <td id="layout_right" valign="top">&nbsp;</td></tr>
+    <td id="layout_right" valign="top">
+      <table class="cat_nav" border="0" width="100%">
+	<tr><th class="cat_nav">Hinweise</th></tr>
+	<tr><td class="notes"><?php include 'notes.php'; ?></td></tr>
+      </table>
+      <table class="cat_nav" border="0" width="100%">
+	<tr><th class="cat_nav">Sonstiges</th></tr>
+	<tr><td align="center"><a target="_blank" href="https://www.openhub.net/accounts/Velnias?ref=sample"><img alt='Open Hub profile for Heiko Schäfer' border='0' height='15' src='https://www.openhub.net/accounts/Velnias/widgets/account_tiny?format=gif&amp;ref=sample' width='80'></a></td></tr>
+	<tr><td align="center"><img border="0" src="http://www.rangun.de/metal-button.png"></td></tr>
+      </table>
+    </td></tr>
   <tr><td id="layout_bottom" valign="center" align="center" colspan="3">
-    <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by Heiko Sch&auml;fer (WORK IN PROGRESS)</small></td></tr>
+    <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by <a class="note_link" href="mailto:heiko@rangun.de?subject=Schrottfilme">Heiko Sch&auml;fer</a> <em>(WORK IN PROGRESS)</em></small></td></tr>
 </table>
 
 <?php require 'foot.php'; ?>

@@ -1,4 +1,5 @@
 <!docytpe html>
+<!-- Schrottfilme - Webinterface. (c) 2017 by Heiko Schaefer <heiko@rangun.de> -->
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">

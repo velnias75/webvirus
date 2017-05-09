@@ -105,8 +105,12 @@ EOD;
     
   }
   
-  public function queryString($cat) {
+  public function catQueryString($cat) {
     return $this->createQueryString(false, true, true, false)."&from=0&to=24&cat=".$cat;
+  }
+  
+  public function discQueryString($disc) {
+    return $this->createQueryString(false, true, false, false)."&from=0&to=-1&filter_disc=".$disc;
   }
     
   private function createQueryString($cat, $order, $filter, $limits, $qm = true) {
