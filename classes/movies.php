@@ -3,9 +3,10 @@
 require_once 'mysql_base.php';
 require_once 'irenderable.php';
 
-class Movies extends MySQLBase implements IRenderable {
+class Movies implements IRenderable {
 
   private $par;
+  private $con;
   private $order;
   private $category;
   private $limit_to;
@@ -26,7 +27,7 @@ EOD;
 
   function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
     
-    parent::__construct();
+    $this->con = MySQLBase::instance()->con();
     
     if($order_by === "ID") {
       $this->order = "`m`.`ID`";
@@ -98,10 +99,10 @@ EOD;
     "<input type=\"hidden\" name=\"from\" value=\"0\">".
     "<input type=\"hidden\" name=\"to\" value=\"-1\">\n";
     
-    $like = "LIKE CONCAT('%', '".$this->con()->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')";
+    $like = " LIKE ".(isset($_GET['filter_ltitle']) ? " CONCAT('%', '".$this->con->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')" : "'%'");
     $tfil = (isset($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".$like." OR `es`.`episode` ".$like.") " : "");
     
-    $result = $this->con()->query(self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).$tfil.
+    $result = $this->con->query(self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).$tfil.
       " GROUP BY `m`.`ID` ORDER BY ".$this->order, MYSQLI_USE_RESULT);
 
     if($result) {
@@ -139,7 +140,7 @@ EOD;
 
       $this->renderRow();
 
-      $total_res = $this->con()->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
+      $total_res = $this->con->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
 	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
@@ -151,13 +152,13 @@ EOD;
 	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), $total['tot_dur'], "", "", 1, true);
 	$total_res->free_result();
       } else {
-	$this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4, true);
+	$this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "", "", 4, true);
       }
 
       $result->free_result();
       
     } else {
-      $this->renderRow(0, "MySQL-Fehler: ".$this->con()->error, "00:00:00", "", "", 4, true);
+      $this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "", "", 4, true);
     }
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";

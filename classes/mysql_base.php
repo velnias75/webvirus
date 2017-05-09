@@ -3,8 +3,9 @@
 class MySQLBase {
 
   private $mysqli;
+  private static $instance = null;
   
-  function __construct() {
+  private function __construct() {
   
     require 'db_cred.php';
     
@@ -22,7 +23,14 @@ class MySQLBase {
     $this->mysqli->close();
   }
   
-  protected function con() {
+  public static function instance() {
+    
+    if(self::$instance === null) self::$instance = new MySQLBase();
+    
+    return self::$instance;
+  }
+  
+  public function con() {
     return $this->mysqli;
   }
   

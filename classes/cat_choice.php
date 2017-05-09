@@ -3,19 +3,19 @@
 require_once 'mysql_base.php';
 require_once 'irenderable.php';
 
-class CatChoice extends MySQLBase implements IRenderable {
+class CatChoice implements IRenderable {
 
   private $result;
   private $movies;
+  private $con;
 
   function __construct(Movies $m) {  
     
-    parent::__construct();
+    $this->con = MySQLBase::instance()->con();
+    $this->result = $this->con->query("SELECT `id`, `name` FROM `categories` ORDER BY `id`");
     
-    $this->result = $this->con()->query("SELECT `id`, `name` FROM `categories` ORDER BY `id`");
-    
-    if($this->con()->errno) {
-      throw new ErrorException("MySQL-Fehler: ".$this->con()->error);
+    if($this->con->errno) {
+      throw new ErrorException("MySQL-Fehler: ".$this->con->error);
     }
     
     $this->movies = $m;
