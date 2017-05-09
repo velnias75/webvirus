@@ -9,7 +9,7 @@ class CatChoice implements IRenderable {
   private $movies;
   private $con;
 
-  function __construct(Movies $m) {  
+  function __construct(Movies $m) {
     
     $this->con = MySQLBase::instance()->con();
     $this->result = $this->con->query("SELECT `id`, `name` FROM `categories` ORDER BY `id`");

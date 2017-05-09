@@ -47,5 +47,9 @@ td.page_nr { font-size: 9pt; padding: 3px; border-width: 1px; border-style:solid
 td.page_nr.page_active { color: white; background-color: #3333ff; }
 
 td input.list_filter { min-width: 10px; max-width: 100%; width: 100%; }
+td select.list_filter { min-width: 10px; max-width: 100%; width: 100%; }
+
 td.list_filter { padding: 2px; }
 tr.list_filter { background-color: #9d9dcf; }
+
+#list_filter_id { text-align: right; }

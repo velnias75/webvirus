@@ -1,5 +1,8 @@
 <?php
 
+require 'filterdrop_disc.php';
+require 'filterdrop_lang.php';
+
 require_once 'mysql_base.php';
 require_once 'irenderable.php';
 
@@ -20,9 +23,10 @@ class Movies implements IRenderable {
   private static $dvd_choice = <<<'EOD'
     SELECT `m`.`ID`, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `ltitle`, 
     SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ORDER BY 
-    `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category` FROM `disc` AS `disc`, `movies` AS `m` 
-    LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id` LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` 
-    ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` WHERE `disc`.`ID` = `m`.`disc` 
+    `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category`, `languages`.`id` AS `lid` 
+    FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id` LEFT JOIN`series`AS `s` 
+    ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` 
+    ON `movie_languages`.`lang_id` = `languages`.`id`  WHERE `disc`.`ID` = `m`.`disc` 
 EOD;
 
   function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
@@ -76,15 +80,39 @@ EOD;
     return "ltitle";
   }
   
+  private function filters() {
+  
+    $ret = "";
+    
+    if(isset($_GET['filter_ID']) && !empty($_GET['filter_ID'])) {
+      $ret .= "&filter_ID=".$_GET['filter_ID'];
+    }
+    
+    if(isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle'])) {
+      $ret .= "&filter_ltitle=".$_GET['filter_ltitle'];
+    }
+    
+    if(isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo'])) {
+      $ret .= "&filter_lingo=".$_GET['filter_lingo'];
+    }
+    
+    if(isset($_GET['filter_disc']) && !empty($_GET['filter_disc'])) {
+      $ret .= "&filter_disc=".$_GET['filter_disc'];
+    }
+    
+    return $ret;
+    
+  }
+  
   public function queryString($cat) {
     return $this->createQueryString(false, true, true, false)."&from=0&to=24&cat=".$cat;
   }
     
   private function createQueryString($cat, $order, $filter, $limits, $qm = true) {
     return ($qm ? "?" : "").($cat ? "&cat=".$this->category : "").
-      ($order ? "&order_by=".$this->order() : "").
-      ($filter && isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle'] : "").
-      ($limits ? "&from=".$this->limit_from."&to=".$this->limit_to : "");
+      ($order   ? "&order_by=".$this->order() : "").
+      ($filter  ? $this->filters() : "").
+      ($limits  ? "&from=".$this->limit_from."&to=".$this->limit_to : "");
   }
   
   public function render() {
@@ -92,18 +120,24 @@ EOD;
     $i = 0;
   
     echo "<form method=\"GET\"><table class=\"list\" border=\"0\">\n";
-    echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\">".
-      "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
-//       "<input type=\"hidden\" name=\"from\" value=\"".$this->limit_from."\">".
-//       "<input type=\"hidden\" name=\"to\" value=\"".$this->limit_to."\">\n";
-    "<input type=\"hidden\" name=\"from\" value=\"0\">".
-    "<input type=\"hidden\" name=\"to\" value=\"-1\">\n";
+    echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\" />".
+      "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\" />".
+      "<input type=\"hidden\" name=\"from\" value=\"0\" />".
+      "<input type=\"hidden\" name=\"to\" value=\"-1\" />\n";
     
     $like = " LIKE ".(isset($_GET['filter_ltitle']) ? " CONCAT('%', '".$this->con->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')" : "'%'");
-    $tfil = (isset($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".$like." OR `es`.`episode` ".$like.") " : "");
+    $tfil = (isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".
+      $like." OR `es`.`episode` ".$like.") " : "");
+    $ifil = (isset($_GET['filter_ID']) && is_numeric($_GET['filter_ID']) ? " AND `m`.`ID` = ".$_GET['filter_ID'] : "");
+    $dfil = (isset($_GET['filter_disc']) && is_numeric($_GET['filter_disc']) && $_GET['filter_disc'] != -1 ? " AND `m`.`disc` = ".$_GET['filter_disc'] : "");
+    $lfil = (isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']) ? " HAVING `lid` = '".
+      $this->con->real_escape_string(urldecode($_GET['filter_lingo']))."'" : "");
     
-    $result = $this->con->query(self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).$tfil.
-      " GROUP BY `m`.`ID` ORDER BY ".$this->order, MYSQLI_USE_RESULT);
+    $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      $tfil.$ifil.$dfil.
+      " GROUP BY `m`.`ID` ".$lfil." ORDER BY ".$this->order;
+    
+    $result = $this->con->query($bq);
 
     if($result) {
       
@@ -122,12 +156,14 @@ EOD;
 	"DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
 	
       echo "<tr class=\"list_filter\">".
-	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\"></td>".
+	"<td class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
+	"value=\"".(isset($_GET['filter_ID']) && is_numeric($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : "")."\"></td>".
 	"<td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" value=\"".
 	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
-	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td>".
-	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_lingo\" type=\"text\"></td>".
-	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_disc\" type=\"text\"></td></tr>\n";
+	"<!-- <td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td> -->".
+	"<td class=\"list_filter\">&nbsp;</td>".
+	"<td class=\"list_filter\">".(new FilterdropLang())->render(isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "")."</td>".
+	"<td class=\"list_filter\">".(new FilterdropDisc())->render(isset($_GET['filter_disc']) ? $_GET['filter_disc'] : -1)."</td></tr>\n";
       
       while ($row = $result->fetch_assoc()) {
 
@@ -144,7 +180,7 @@ EOD;
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
 	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
-	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).$tfil." GROUP BY `m`.`ID`) AS `choice`");
+	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).$tfil.$ifil.$dfil." GROUP BY `m`.`ID` ".$lfil.") AS `choice`");
 
       if($total_res) $total = $total_res->fetch_assoc();
       
@@ -163,6 +199,8 @@ EOD;
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
+    
+    //echo "<pre>".$bq."</pre>\n";
   }
   
   private function createAllPage() {
