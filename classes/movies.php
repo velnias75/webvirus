@@ -61,16 +61,7 @@ EOD;
   public function category() {
     return $this->category;
   }
-  
-  public function queryString($cat) {
-    return $this->createOrderCatHref(true)."&from=0&to=24&cat=".$cat;
-  }
-  
-  private function appendLimits() {
-    return "&cat=".$this->category."&from=".$this->limit_from."&to=".$this->limit_to.
-      (isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle'] : "");
-  }
-  
+      
   private function order() {
   
     if($this->id_order <> "") {
@@ -84,18 +75,15 @@ EOD;
     return "ltitle";
   }
   
-  private function createOrderCatHref($nocat = false) {
-    $res = ($nocat ? "?" : "?cat=".$this->category).
-      (isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle']."&" : "");
-
-    return $res."&order_by=".$this->order();
+  public function queryString($cat) {
+    return $this->createQueryString(false, true, true, false)."&from=0&to=24&cat=".$cat;
   }
-  
-  private function createQueryString($cat, $order, $filter, $limits) {
-    return "?".($cat ? "cat=".$this->category."&" : "").
-      ($order ? "order_by=".$this->order()."&" : "").
-      ($filter && isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle']."&" : "").
-      ($limits ? "from=".$this->limit_from."&to=".$this->limit_to : "");
+    
+  private function createQueryString($cat, $order, $filter, $limits, $qm = true) {
+    return ($qm ? "?" : "").($cat ? "&cat=".$this->category : "").
+      ($order ? "&order_by=".$this->order() : "").
+      ($filter && isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle'] : "").
+      ($limits ? "&from=".$this->limit_from."&to=".$this->limit_to : "");
   }
   
   public function render() {
@@ -105,8 +93,10 @@ EOD;
     echo "<form method=\"GET\"><table class=\"list\" border=\"0\">\n";
     echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\">".
       "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
-      "<input type=\"hidden\" name=\"from\" value=\"".$this->limit_from."\">".
-      "<input type=\"hidden\" name=\"to\" value=\"".$this->limit_to."\">\n";
+//       "<input type=\"hidden\" name=\"from\" value=\"".$this->limit_from."\">".
+//       "<input type=\"hidden\" name=\"to\" value=\"".$this->limit_to."\">\n";
+    "<input type=\"hidden\" name=\"from\" value=\"0\">".
+    "<input type=\"hidden\" name=\"to\" value=\"-1\">\n";
     
     $like = "LIKE CONCAT('%', '".$this->con()->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')";
     $tfil = (isset($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".$like." OR `es`.`episode` ".$like.") " : "");
@@ -122,11 +112,13 @@ EOD;
       $act_di = ($this->di_order === "");
 
       echo "<tr id=\"list_topbot\">".
-	"<th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->appendLimits()."\">" : "")."Nr".$this->id_order.($act_id ? "</a>" : "").
-	"</th><th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".$this->appendLimits()."\">" : "")."Titel".$this->ti_order.
-	($act_ti ? "</a>" : "")."</th><th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".
-	$this->appendLimits()."\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th><th class=\"hack lingos\">Sprache(n)</th><th>".
-	($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->appendLimits()."\">" : "")."DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
+	"<th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->createQueryString(true, false, true, true, false)."\">" : "").
+	"Nr".$this->id_order.($act_id ? "</a>" : "")."</th><th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".
+	$this->createQueryString(true, false, true, true, false)."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "").
+	"</th><th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->createQueryString(true, false, true, true, false).
+	"\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th><th class=\"hack lingos\">Sprache(n)</th><th>".
+	($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->createQueryString(true, false, true, true, false)."\">" : "").
+	"DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
 	
       echo "<tr class=\"list_filter\">".
 	"<td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\"></td>".
@@ -174,7 +166,8 @@ EOD;
   
   private function createAllPage() {
     return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
-      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".$this->createOrderCatHref()."&from=0&to=-1\">Alle</a>")."</td>";
+      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".
+      $this->createQueryString(true, true, true, false)."&from=0&to=-1\">Alle</a>")."</td>";
   }
   
   private function createPagination($rows) {
@@ -187,21 +180,21 @@ EOD;
     
     
     $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage().
-      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderCatHref().
-	"&from=".$prev."&to=".($prev + $psize)."\">&#10525;</a></td>";
+      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".
+      $this->createQueryString(true, true, true, false)."&from=".$prev."&to=".($prev + $psize)."\">&#10525;</a></td>";
     
     
     for($i = 0; $i < $pages; $i++) {
       $from  = ($psize * $i);
       $activ = $this->limit_to == -1 || !($this->limit_from >= $from && $this->limit_to <= ($from + $psize));
       $pagin = $pagin."<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
-	($activ ? "<a class=\"page_nr\" href=\"".$this->createOrderCatHref().
+	($activ ? "<a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
 	"&from=".$from."&to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
     }
     
     return $pagin."<td width=\"".floor(100/($pages + 4)).
-      "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createOrderCatHref()."&from=".$next."&to=".($next + $psize)."\">&#10526;</a></td>".
-	$this->createAllPage()."</tr></table>";
+      "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
+      "&from=".$next."&to=".($next + $psize)."\">&#10526;</a></td>".$this->createAllPage()."</tr></table>";
   }
   
 }

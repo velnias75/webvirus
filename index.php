@@ -16,7 +16,7 @@
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="center" align="center" colspan="3">
     <h1><a href="index.php">Heikos Schrott- &amp; Rentnerfilme</a></h1>
-    <h3>&#9995;&nbsp;Die&nbsp;Webvirenversion&nbsp;&#9995;</h3></td></tr>
+    <h3><span class="red_text">&#9995;</span>&nbsp;Die&nbsp;Webvirenversion&nbsp;<span class="red_text">&#9995;</span></h3></td></tr>
   <tr><td id="layout_left" align="center" valign="top">
       <?php
 	try {

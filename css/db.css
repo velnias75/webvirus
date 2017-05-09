@@ -38,6 +38,7 @@ th.hack { min-width: 45px; max-width: 45px; }
 .ltitle { font-weight: bold; }
 
 .hack { font-family: Hack, 'Lucida Console', monospace; }
+.red_text { color: red; }
 
 .lingos { font-style: italic; }
 
