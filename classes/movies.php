@@ -67,7 +67,8 @@ EOD;
   }
   
   private function appendLimits() {
-    return "&cat=".$this->category."&from=".$this->limit_from."&to=".$this->limit_to;
+    return "&cat=".$this->category."&from=".$this->limit_from."&to=".$this->limit_to.
+      (isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle'] : "");
   }
   
   private function order() {
@@ -87,9 +88,16 @@ EOD;
     $res = ($nocat ? "?" : "?cat=".$this->category).
       (isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle']."&" : "");
 
-    return $res."order_by=".$this->order();
+    return $res."&order_by=".$this->order();
   }
-
+  
+  private function createQueryString($cat, $order, $filter, $limits) {
+    return "?".($cat ? "cat=".$this->category."&" : "").
+      ($order ? "order_by=".$this->order()."&" : "").
+      ($filter && isset($_GET['filter_ltitle']) ? "&filter_ltitle=".$_GET['filter_ltitle']."&" : "").
+      ($limits ? "from=".$this->limit_from."&to=".$this->limit_to : "");
+  }
+  
   public function render() {
 
     $i = 0;
@@ -162,7 +170,6 @@ EOD;
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
-
   }
   
   private function createAllPage() {

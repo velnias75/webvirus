@@ -31,8 +31,7 @@ class CatChoice extends MySQLBase implements IRenderable {
     echo "<table class=\"cat_nav\" border=\"0\" width=\"100%\"><tr><th class=\"cat_nav\">Kategorie</th></tr>".
     "<tr><td><ul class=\"cat_nav\"><li class=\"cat_0".($this->movies->category() == -1 ? " cat_nav_active" : "")."\">".
       ($this->movies->category() != -1 ? "<a class=\"cat_nav\" href=\"".$this->movies->queryString(-1)."\">" : "").
-      "Alle Videos".
-      ($this->movies->category() != -1 ? "</a>" : "")."</li>\n";
+      "Alle Videos".($this->movies->category() != -1 ? "</a>" : "")."</li>\n";
     
     while($row = $this->result->fetch_assoc()) {
       echo "<li class=\"cat_".$row['id'].($this->movies->category() == $row['id'] ? " cat_nav_active" : "")."\">".

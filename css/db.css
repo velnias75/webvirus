@@ -1,4 +1,5 @@
 body { margin: 0; background-color: #eeeeee; font-family: 'Arial', sans-serif; font-size: 10pt; }
+a { text-decoration: none; color: inherit; }
 
 #filter_submit { display:none; }
 
