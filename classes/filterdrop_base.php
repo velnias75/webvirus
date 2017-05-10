@@ -20,12 +20,16 @@ abstract class FilterdropBase {
     $this->result->free_result();
   }
   
+  protected function showNot() {
+    return false;
+  }
+  
   abstract protected function idField();
+  abstract protected function noneValue();
   abstract protected function nameField();
   abstract protected function filterName();
-  abstract protected function noneValue();
   
-  public function render($id) {
+  public function render($id, $checked = false) {
     
     $res = "<select class=\"input_filter\" name=\"".$this->filterName()."\" onchange=\"this.form.submit()\">".
       "<option ".($id == $this->noneValue() ? "selected" : "").
@@ -36,7 +40,8 @@ abstract class FilterdropBase {
 	$row[$this->idField()]."\">".htmlentities($row[$this->nameField()], ENT_SUBSTITUTE, "utf-8")."</option>\n";
     }
     
-    return $res."</select>\n";
+    return $res."</select>".($this->showNot() ? "&nbsp;<label><input value=\"on\" onchange=\"this.form.submit()\" name=\"".
+      $this->filterName()."_not\" ".($checked ? "checked" : "")." type=\"checkbox\"><em>nicht</em></label>" : "")."\n";
   }
 
 }

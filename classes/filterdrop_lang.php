@@ -8,6 +8,10 @@ class FilterdropLang extends FilterdropBase {
     parent::__construct("SELECT `name`, `id` FROM `languages` ORDER BY `name`");
   }
 
+  protected function showNot() {
+    return true;
+  }
+  
   protected function idField() {
     return "id";
   }

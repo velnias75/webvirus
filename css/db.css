@@ -34,7 +34,7 @@ td.page_nr.page_active { color: white; background-color: #3333ff; }
 td input.list_filter { min-width: 10px; max-width: 100%; width: 100%; }
 td select.list_filter { min-width: 10px; max-width: 100%; width: 100%; }
 
-td.list_filter { padding: 2px; }
+td.list_filter { font-family: 'Verdana', sans-serif; font-size: 9pt; padding: 2px; }
 tr.list_filter { background-color: #9d9dcf; }
 
 a.pdflink { font-family: 'Verdana', sans-serif; 

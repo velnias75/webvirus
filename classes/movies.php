@@ -97,6 +97,10 @@ EOD;
       $ret .= "&filter_lingo=".$_GET['filter_lingo'];
     }
     
+    if(isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on") {
+      $ret .= "&filter_lingo_not=".$_GET['filter_lingo_not'];
+    }
+    
     if(isset($_GET['filter_disc']) && !empty($_GET['filter_disc'])) {
       $ret .= "&filter_disc=".$_GET['filter_disc'];
     }
@@ -135,12 +139,13 @@ EOD;
       $like." OR `es`.`episode` ".$like.") " : "");
     $ifil = (isset($_GET['filter_ID']) && is_numeric($_GET['filter_ID']) ? " AND `m`.`ID` = ".$_GET['filter_ID'] : "");
     $dfil = (isset($_GET['filter_disc']) && is_numeric($_GET['filter_disc']) && $_GET['filter_disc'] != -1 ? " AND `m`.`disc` = ".$_GET['filter_disc'] : "");
-    $lfil = (isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']) ? " HAVING `lid` = '".
-      $this->con->real_escape_string(urldecode($_GET['filter_lingo']))."'" : "");
+    $lfil = (isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']) ? " AND '".$this->con->real_escape_string(urldecode($_GET['filter_lingo']))."' ".
+      (isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on" ? "NOT " : "").
+      "IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : "");
     
     $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
-      $tfil.$ifil.$dfil.
-      " GROUP BY `m`.`ID` ".$lfil." ORDER BY ".$this->order;
+      $tfil.$ifil.$dfil.$lfil.
+      " GROUP BY `m`.`ID` ORDER BY ".$this->order;
     
     $result = $this->con->query($bq);
 
@@ -167,7 +172,8 @@ EOD;
 	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
 	"<!-- <td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td> -->".
 	"<td class=\"list_filter\">&nbsp;</td>".
-	"<td class=\"list_filter\">".(new FilterdropLang())->render(isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "")."</td>".
+	"<td nowrap class=\"list_filter\">".(new FilterdropLang())->render(isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "",
+	  isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on")."</td>".
 	"<td class=\"list_filter\">".(new FilterdropDisc())->render(isset($_GET['filter_disc']) ? $_GET['filter_disc'] : -1)."</td></tr>\n";
       
       while ($row = $result->fetch_assoc()) {
@@ -185,7 +191,7 @@ EOD;
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
 	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
-	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).$tfil.$ifil.$dfil." GROUP BY `m`.`ID` ".$lfil.") AS `choice`");
+	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).$tfil.$ifil.$dfil.$lfil." GROUP BY `m`.`ID`) AS `choice`");
 
       if($total_res) $total = $total_res->fetch_assoc();
       
