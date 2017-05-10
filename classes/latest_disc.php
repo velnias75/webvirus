@@ -3,7 +3,7 @@
 require_once 'mysql_base.php';
 require_once 'irenderable.php';
 
-class LatestDisc implements IRenderable {
+final class LatestDisc implements IRenderable {
 
   private $result;
   private $movies;

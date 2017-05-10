@@ -3,7 +3,7 @@
 require_once 'mysql_base.php';
 require_once 'irenderable.php';
 
-class CatChoice implements IRenderable {
+final class CatChoice implements IRenderable {
 
   private $result;
   private $movies;

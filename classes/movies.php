@@ -6,7 +6,7 @@ require 'filterdrop_lang.php';
 require_once 'mysql_base.php';
 require_once 'irenderable.php';
 
-class Movies implements IRenderable {
+final class Movies implements IRenderable {
 
   private $par;
   private $con;
