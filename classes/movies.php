@@ -47,8 +47,8 @@ EOD;
       $this->ti_order = "&nbsp;&#10037;";
     }
     
-    $this->limit_from = $from;
-    $this->limit_to   = $to;
+    $this->limit_from = $to == -1 ? $from : min($from, $to);
+    $this->limit_to   = $to == -1 ? $to : max($from, $to);
     $this->category   = $cat;
     $this->par = 1;
 
@@ -226,7 +226,7 @@ EOD;
   
   private function createPagination($rows) {
     
-    $psize = ($this->limit_to == -1 ? $this->pageSize() : $this->limit_to) - $this->limit_from;
+    $psize = abs(($this->limit_to == -1 ? $this->pageSize() : abs($this->limit_to)) - abs($this->limit_from));
     $pages = ceil($rows/($psize + 1));
     
     $prev  = ($this->limit_from - $psize - 1) >= 0 ? $this->limit_from - $psize - 1 : ($pages - 1) * ($psize + 1);
@@ -239,7 +239,7 @@ EOD;
     for($i = 0; $i < $pages; $i++) {
       
       $from  = $i * ($psize + 1);
-      $activ = $this->limit_to == -1 || !($this->limit_from >= $from && $this->limit_to <= ($from + $psize));
+      $activ = $this->limit_to == -1 || !(abs($this->limit_from) >= $from && abs($this->limit_to) <= ($from + $psize));
       $pagin = $pagin."<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
 	($activ ? "<a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
 	"&from=".$from."&to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
