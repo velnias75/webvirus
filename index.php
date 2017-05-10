@@ -17,7 +17,7 @@
 
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="center" align="center" colspan="3">
-    <h1><a href="<?php echo $_SERVER['PHP_SELF']; ?>">Heikos Schrott- &amp; Rentnerfilme</a></h1>
+    <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>">Heikos Schrott- &amp; Rentnerfilme</a></h1>
     <h3><span class="red_text">&#9995;</span>&nbsp;Die&nbsp;Webvirenversion&nbsp;<span class="red_text">&#9995;</span></h3></td></tr>
   <tr><td id="layout_left" align="center" valign="top">
       <?php
@@ -27,8 +27,7 @@
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}
-      ?>
-      <table class="cat_nav" border="0" width="100%">
+      ?><table class="cat_nav" border="0" width="100%">
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<tr><td nowrap><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>

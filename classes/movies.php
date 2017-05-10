@@ -157,12 +157,12 @@ EOD;
       $act_di = ($this->di_order === "");
 
       echo "<tr id=\"list_topbot\">".
-	"<th class=\"hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->createQueryString(true, false, true, true, false)."\">" : "").
-	"Nr".$this->id_order.($act_id ? "</a>" : "")."</th><th class=\"ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".
+	"<th class=\"min_th hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->createQueryString(true, false, true, true, false)."\">" : "").
+	"Nr".$this->id_order.($act_id ? "</a>" : "")."</th><th class=\"max_th ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".
 	$this->createQueryString(true, false, true, true, false)."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "").
-	"</th><th class=\"duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->createQueryString(true, false, true, true, false).
-	"\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th><th class=\"hack lingos\">Sprache(n)</th><th>".
-	($act_di ? "<a class=\"list\" href=\"?order_by=disc".$this->createQueryString(true, false, true, true, false)."\">" : "").
+	"</th><th class=\"min_th duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->createQueryString(true, false, true, true, false).
+	"\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th><th class=\"min_th hack lingos\">Sprache(n)</th><th>".
+	($act_di ? "<a class=\"min_th list\" href=\"?order_by=disc".$this->createQueryString(true, false, true, true, false)."\">" : "").
 	"DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
 	
       echo "<tr class=\"list_filter\">".
