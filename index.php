@@ -8,7 +8,7 @@
   try {
     $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 
 	    isset($_GET['from']) ? $_GET['from'] : 0,
-	    isset($_GET['to']) ? $_GET['to'] : 24, isset($_GET['cat']) ? $_GET['cat'] : -1);
+	    isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
   } catch(Exception $e) {
     echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
   }

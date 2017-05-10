@@ -110,7 +110,7 @@ EOD;
   }
   
   public function catQueryString($cat) {
-    return $this->createQueryString(false, true, true, false)."&from=0&to=24&cat=".$cat;
+    return $this->createQueryString(false, true, true, false)."&from=0&to=".$this->pageSize()."&cat=".$cat;
   }
   
   public function discQueryString($disc) {
@@ -214,6 +214,10 @@ EOD;
     //echo "<pre>".$bq."</pre>\n";
   }
   
+  static public function pageSize() {
+    return 24;
+  }
+  
   private function createAllPage() {
     return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
       ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".
@@ -222,7 +226,7 @@ EOD;
   
   private function createPagination($rows) {
     
-    $psize = ($this->limit_to == -1 ? 24 : $this->limit_to) - $this->limit_from;
+    $psize = ($this->limit_to == -1 ? $this->pageSize() : $this->limit_to) - $this->limit_from;
     $pages = ceil($rows/$psize);
     
     $prev  = ($this->limit_from - $psize) >= 0 ? $this->limit_from - $psize : (($pages - 1) * $psize);
