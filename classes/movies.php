@@ -232,11 +232,9 @@ EOD;
     $prev  = ($this->limit_from - $psize) >= 0 ? $this->limit_from - $psize : (($pages - 1) * $psize);
     $next  = ($this->limit_from + $psize) < $rows ? $this->limit_from + $psize : 0;
     
-    
     $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage().
       "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".
       $this->createQueryString(true, true, true, false)."&from=".$prev."&to=".($prev + $psize)."\">&#10525;</a></td>";
-    
     
     for($i = 0; $i < $pages; $i++) {
       $from  = ($psize * $i);
