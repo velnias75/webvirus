@@ -54,16 +54,6 @@ EOD;
 
   }
   
-  private function renderRow($id = "", $ltitle = "", $duration = "", $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
-    echo "<tr class=\"parity_".($this->par++ % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
-      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat.($isSummary ? "" : " ltitle")."\">".
-      ($ltitle === "" ? "&nbsp;" : "".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap align=\"right\" class=\"list duration cat_".$cat."\">".
-      ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat." hack lingos\">".
-      ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat."\">".
-      ($disc === "" ? "&nbsp;" : (empty($fname) ? "" : "<abbr title=\"".htmlentities($fname, ENT_SUBSTITUTE, "utf-8")."\">").
-      htmlentities($disc, ENT_SUBSTITUTE, "utf-8")).(empty($fname) ? "" : "</abbr>")."</td></tr>\n";
-  }
-  
   public function category() {
     return $this->category;
   }
@@ -122,6 +112,20 @@ EOD;
       ($order   ? "&order_by=".$this->order() : "").
       ($filter  ? $this->filters() : "").
       ($limits  ? "&from=".$this->limit_from."&to=".$this->limit_to : "");
+  }
+  
+  private function renderRow($id = "", $ltitle = "", $duration = "", $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
+    echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
+      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list hasTooltip cat_".$cat.($isSummary ? "" : " ltitle")."\">".
+      ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
+      "<span class=\"parity_".($this->par % 2)."\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")).
+      "</span></td><td nowrap align=\"right\" class=\"list duration cat_".$cat."\">".
+      ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat." hack lingos\">".
+      ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat."\">".
+      ($disc === "" ? "&nbsp;" : (empty($fname) ? "" : "<abbr title=\"".htmlentities($fname, ENT_SUBSTITUTE, "utf-8")."\">").
+      htmlentities($disc, ENT_SUBSTITUTE, "utf-8")).(empty($fname) ? "" : "</abbr>")."</td></tr>\n";
+      
+    $this->par++;
   }
   
   public function render() {

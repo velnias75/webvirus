@@ -112,6 +112,24 @@ a.pdflink {
 
 .ltitle {
   font-weight: bold;
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hasTooltip span {
+    display: none;
+    text-decoration: none;
+    padding: 3px;
+}
+
+.hasTooltip:hover span {
+    display: block;
+    position: absolute;
+    background-color: #eeeeff;
+    border: 1px solid #CCCCCC;
+    margin: 2px 10px;
 }
 
 .lingos {
