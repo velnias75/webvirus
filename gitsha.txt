@@ -1,1 +1,1 @@
-$Id$ $Format:%ci$ ($Format:%h)$
+$Format:%ci$ ($Format:%h$)
