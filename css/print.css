@@ -1,0 +1,93 @@
+/* Schrottfilme - Webinterface. (c) 2017 by Heiko Schaefer <heiko@rangun.de> */
+
+html, body {
+  font-family: 'Verdana', sans-serif;
+  font-size: 9pt;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+table.list {
+  width: 100%;
+}
+
+table.list td {
+  border-bottom: 1px;
+  border-style: solid;
+  border-color: rgb(204, 204, 204);
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+td.hack {
+  font-family: Hack, 'Lucida Console', monospace;
+}
+
+th.min_th {
+  text-align: right;
+}
+
+th.min_th.hack.lingos {
+  text-align: center;
+}
+
+td.ltitle {
+  font-weight: bold;
+}
+
+td.duration {
+  font-family: 'Courier New', 'Lucida Console', monospace;
+}
+
+td.lingos {
+  font-style: italic;
+}
+
+.list {
+  font-family: 'Arial', sans-serif;
+  font-size: 10.5pt;
+}
+
+#layout_left, #layout_right, #filter_submit, .page_nr, .list_filter {
+  display: none;
+}
+
+#layout_top {
+  font-family: 'Arial', sans-serif;
+}
+
+#title_link {
+  font-size: 20pt;
+  text-shadow: 1px 1px #bbbbbb, 2px 2px #bbbbbb, 3px 3px #bbbbbb;
+  top: 0;
+  left: 0;
+  transition: all 0.3s ease-out;
+}
+
+.hasTooltip span {
+    display: none;
+}
+
+.cat_0 { 
+  color: #3333ff;
+}
+
+.cat_1 {
+  color: black;
+}
+
+.cat_2 {
+  color: #66339f;
+}
+
+.cat_3 {
+  color: #253100;
+}
+
+.cat_4 {
+  color: #510000;
+}

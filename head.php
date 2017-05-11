@@ -17,7 +17,9 @@ function setFocusToLTitleFilter(){
     document.getElementById("list_filter_ltitle").focus();
 }
 </script>
-<link rel="stylesheet" href="css/db.css" type="text/css">
+<link rel="stylesheet" href="css/screen.css" rel="stylesheet" title="Hirnloser Stil" type="text/css" media="screen">
+<link rel="stylesheet" href="css/print.css" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
+<link rel="stylesheet" href="css/print.css" type="text/css" media="print">
 <title>Heikos Schrott- &amp; Rentnerfilme</title>
 </head>
 <body onload="setFocusToLTitleFilter();">
