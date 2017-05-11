@@ -167,8 +167,10 @@ EOD;
 	
       echo "<tr class=\"list_filter\">".
 	"<td class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
+	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\"".
 	"value=\"".(isset($_GET['filter_ID']) && is_numeric($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : "")."\"></td>".
-	"<td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" value=\"".
+	"<td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" ".
+	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" value=\"".
 	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
 	"<!-- <td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td> -->".
 	"<td class=\"list_filter\">&nbsp;</td>".
