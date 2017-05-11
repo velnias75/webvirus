@@ -12,7 +12,12 @@
 <meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte">
 <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
 <link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
+<script>
+function setFocusToLTitleFilter(){
+    document.getElementById("list_filter_ltitle").focus();
+}
+</script>
 <link rel="stylesheet" href="css/db.css" type="text/css">
 <title>Heikos Schrott- &amp; Rentnerfilme</title>
 </head>
-<body>
+<body onload="setFocusToLTitleFilter();">

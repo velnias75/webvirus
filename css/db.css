@@ -27,6 +27,26 @@ li {
   font-size: 9pt;
 }
 
+input[type=text] {
+  padding-top: 5px; 
+  border: 2px solid #7e7eff; 
+  border-radius: 5px;
+}
+
+input[type=text]:focus {
+  border-color: blue;
+}
+
+select {
+  padding-top: 5px; 
+  border: 2px solid #7e7eff; 
+  border-radius: 5px;
+}
+
+select:focus {
+  border-color: blue;
+}
+
 table, th, td {
   margin: 0px;
   border: 0px;
