@@ -9,10 +9,6 @@ body {
   font-size: 9pt;
 }
 
-abbr { 
-  cursor: url('../img/application-x-mplayer2.png'), auto; 
-}
-
 a {
   text-decoration: none;
   color: inherit;

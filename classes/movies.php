@@ -122,10 +122,9 @@ EOD;
       ($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
       ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
       ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
-      "</td><td nowrap class=\"list cat_".$cat." hack lingos\">".
-      ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat."\">".
-      ($disc === "" ? "&nbsp;" : (empty($fname) ? "" : "<abbr title=\"".htmlentities($fname, ENT_SUBSTITUTE, "utf-8")."\">").
-      htmlentities($disc, ENT_SUBSTITUTE, "utf-8")).(empty($fname) ? "" : "</abbr>")."</td></tr>\n";
+      "</td><td nowrap class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8")).
+      "</td><td nowrap class=\"list ".(empty($fname) ? "" : "hasTooltip")." cat_".$cat."\">".($disc === "" ? "&nbsp;" : 
+      (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".htmlentities($fname, ENT_SUBSTITUTE, "utf-8"))).(empty($fname) ? "" : "</span>")."</td></tr>\n";
       
     $this->par++;
   }
