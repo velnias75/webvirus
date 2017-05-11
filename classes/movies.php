@@ -116,12 +116,12 @@ EOD;
   
   private function renderRow($id = "", $ltitle = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
     echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
-      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list hasTooltip cat_".$cat.($isSummary ? "" : " ltitle")."\">".
-      ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
+      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list hasTooltip cat_".
+      $cat.($isSummary ? "" : " ltitle")."\">".($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
       "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span></td><td nowrap align=\"right\" class=\"list ".
       ($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
       ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
-      ($dursec != 0 ? "<span>".htmlentities($dursec, ENT_SUBSTITUTE, "utf-8")." Sekunden</span>" : "").
+      ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
       "</td><td nowrap class=\"list cat_".$cat." hack lingos\">".
       ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list cat_".$cat."\">".
       ($disc === "" ? "&nbsp;" : (empty($fname) ? "" : "<abbr title=\"".htmlentities($fname, ENT_SUBSTITUTE, "utf-8")."\">").
