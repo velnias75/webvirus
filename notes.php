@@ -6,5 +6,8 @@ k&ouml;nnen nur zu den bekannten Bedingungen bezogen werden.</p>
 <p align="justify">Bei dieser Seite handelt es sich um 
 <em>work in progress</em>.<br>Die Daten sollten aber i.d.R. stets aktuell
 sein.</p>
+<p align="left"><b>Tipp:</b> Suchen Sie mit Kommata getrennte <em>Nr</em>, oder mit 
+regul&auml;ren Ausdr&uuml;cken im <em>Titel</em>, indem Sie den Suchbegriff mit 
+<em>/REGEXP/</em> einschlie&szlig;en.</p>
 <p align="justify">Besuchen Sie auch meine 
 <a class="note_link" href="https://github.com/velnias75" target="_blank">GitHub-Projektseite</a>!</p>

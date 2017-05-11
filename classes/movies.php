@@ -139,15 +139,19 @@ EOD;
       "<input type=\"hidden\" name=\"from\" value=\"0\" />".
       "<input type=\"hidden\" name=\"to\" value=\"-1\" />\n";
     
-    $like = " LIKE ".(isset($_GET['filter_ltitle']) ? " CONCAT('%', '".$this->con->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')" : "'%'");
+    $fids = str_replace(",", " OR `m`.`ID` = ", urldecode($_GET['filter_ID']));
+    $like = (isset($_GET['filter_ltitle']) && 
+      ((urldecode($_GET['filter_ltitle'])[0] == '/' && substr(urldecode($_GET['filter_ltitle']), -1)) == '/') ? " REGEXP '".
+      substr($this->con->real_escape_string(substr(urldecode($_GET['filter_ltitle']), 1)), 0, -1)."' " :
+      " LIKE ".(isset($_GET['filter_ltitle']) ? " CONCAT('%', '".$this->con->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')" : "'%'"));
     $tfil = (isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".
       $like." OR `es`.`episode` ".$like.") " : "");
-    $ifil = (isset($_GET['filter_ID']) && is_numeric($_GET['filter_ID']) ? " AND `m`.`ID` = ".$_GET['filter_ID'] : "");
+    $ifil = (isset($_GET['filter_ID']) && !empty($_GET['filter_ID']) ? " AND (`m`.`ID` = ".$fids.")" : "");
     $dfil = (isset($_GET['filter_disc']) && is_numeric($_GET['filter_disc']) && $_GET['filter_disc'] != -1 ? " AND `m`.`disc` = ".$_GET['filter_disc'] : "");
     $lfil = (isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']) ? " AND '".$this->con->real_escape_string(urldecode($_GET['filter_lingo']))."' ".
       (isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on" ? "NOT " : "").
       "IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : "");
-    
+
     $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
       $tfil.$ifil.$dfil.$lfil.
       " GROUP BY `m`.`ID` ORDER BY ".$this->order;
@@ -173,7 +177,7 @@ EOD;
       echo "<tr class=\"list_filter\">".
 	"<td class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
 	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\"".
-	"value=\"".(isset($_GET['filter_ID']) && is_numeric($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : "")."\"></td>".
+	"value=\"".(isset($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : "")."\"></td>".
 	"<td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" ".
 	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" value=\"".
 	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
@@ -218,7 +222,7 @@ EOD;
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
     
-    //echo "<pre>".$bq."</pre>\n";
+//     echo "<pre>".$bq."</pre>\n";
   }
   
   static public function pageSize() {

@@ -10,13 +10,13 @@
 <meta http-equiv="pragma" content="no-cache" />
 <meta name="description" content="Liste der auf DVD gespeicherten Filme, Dokumentationen und Konzerten">
 <meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte">
-<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
-<link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
 <script>
 function setFocusToLTitleFilter(){
     document.getElementById("list_filter_ltitle").focus();
 }
 </script>
+<link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
 <link rel="stylesheet" href="css/screen.css" rel="stylesheet" title="Hirnloser Stil" type="text/css" media="screen">
 <link rel="stylesheet" href="css/print.css" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
 <link rel="stylesheet" href="css/print.css" type="text/css" media="print">
