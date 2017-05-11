@@ -116,13 +116,13 @@ EOD;
   
   private function renderRow($id = "", $ltitle = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
     echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
-      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".
+      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".
       $cat.($isSummary ? "" : " ltitle")."\">".($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
       ($isSummary ? "" : "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td><td nowrap align=\"right\" class=\"list ".
       ($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
       ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
-      "</td><td nowrap class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8")).
-      "</td><td nowrap class=\"list hasTooltip cat_".$cat."\">".($disc === "" ? "&nbsp;" : 
+      "</td><td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8")).
+      "</td><td nowrap align=\"left\" class=\"list hasTooltip cat_".$cat."\">".($disc === "" ? "&nbsp;" : 
       (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8"))).
       "</span></td></tr>\n";
       

@@ -1,9 +1,10 @@
 /* Schrottfilme - Webinterface. (c) 2017 by Heiko Schaefer <heiko@rangun.de> */
 
-body {
+html, body {
   margin: 0px;
   border: 0px;
   padding: 0px;
+  height: 100%;
   background-color: #eeeeee;
   font-family: 'Verdana', sans-serif;
   font-size: 9pt;
@@ -61,6 +62,7 @@ th.cat_nav {
 }
 
 ul.cat_nav {
+  margin-top: 0px;
   padding-left: 20px;
   list-style-type: circle; 
 }
