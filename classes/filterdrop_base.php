@@ -29,7 +29,7 @@ abstract class FilterdropBase {
   abstract protected function nameField();
   abstract protected function filterName();
   
-  public function render($id, $checked = false) {
+  public final function render($id, $checked = false) {
     
     $res = "<select class=\"input_filter\" name=\"".$this->filterName()."\" onchange=\"this.form.submit()\">".
       "<option ".($id == $this->noneValue() ? "selected" : "").

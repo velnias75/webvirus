@@ -131,9 +131,22 @@ EOD;
       ($limits  ? "&from=".$this->limit_from."&to=".$this->limit_to : "");
   }
   
+  private function filterSQL($ifil, $tfil, $dfil, $lfil) {
+  
+    $rem = $tfil.$dfil.$lfil;
+    $res = $ifil.$rem;
+    
+    if($this->filters['filter_ID'][0]) {
+      return preg_replace("/AND (\\([^\\)]*\\) )AND/", "AND ($1 OR", $res).(!empty($rem) ? ") " : "");
+    }
+    
+    return $res;
+  }
+  
   private function renderRow($id = "", $ltitle = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
     echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
-      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".
+      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td ".($isSummary ? "" : "nowrap").
+      " align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".
       $cat.($isSummary ? "" : " ltitle")."\">".($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
       ($isSummary ? "" : "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td><td nowrap align=\"right\" class=\"list ".
       ($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
@@ -170,8 +183,7 @@ EOD;
 	"IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : "");
 
     $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
-      $tfil.$ifil.$dfil.$lfil.
-      " GROUP BY `m`.`ID` ORDER BY ".$this->order;
+      $this->filterSQL($ifil, $tfil, $dfil, $lfil)." GROUP BY `m`.`ID` ORDER BY ".$this->order;
     
     $result = $this->con->query($bq);
 
@@ -216,7 +228,8 @@ EOD;
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
 	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
-	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).$tfil.$ifil.$dfil.$lfil." GROUP BY `m`.`ID`) AS `choice`");
+	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).
+	  $this->filterSQL($ifil, $tfil, $dfil, $lfil)." GROUP BY `m`.`ID`) AS `choice`");
 
       if($total_res) $total = $total_res->fetch_assoc();
       
