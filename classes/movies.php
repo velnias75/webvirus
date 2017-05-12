@@ -29,6 +29,8 @@ final class Movies implements IRenderable {
     LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id`  WHERE `disc`.`ID` = `m`.`disc` 
 EOD;
 
+  private $filters = array();
+
   function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
     
     $this->con = MySQLBase::instance()->con();
@@ -51,7 +53,22 @@ EOD;
     $this->limit_to   = $to == -1 ? $to : max($from, $to);
     $this->category   = $cat;
     $this->par = 1;
-
+    
+    $this->filters['filter_ID'] = array(isset($_GET['filter_ID']) && !empty($_GET['filter_ID']), 
+      isset($_GET['filter_ID']) ? $_GET['filter_ID'] : 0,
+      isset($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : 0);
+    $this->filters['filter_ltitle'] = array(isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle']),
+      isset($_GET['filter_ltitle']) ? $_GET['filter_ltitle'] : "",
+      isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "");
+    $this->filters['filter_lingo'] = array(isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']),
+      isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "",
+      isset($_GET['filter_lingo']) ? urldecode($_GET['filter_lingo']) : "");
+    $this->filters['filter_lingo_not'] = array(isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on",
+      isset($_GET['filter_lingo_not']) ? $_GET['filter_lingo_not'] : "",
+      isset($_GET['filter_lingo_not']) ? urldecode($_GET['filter_lingo_not']) : "");
+    $this->filters['filter_disc'] = array(isset($_GET['filter_disc']) && is_numeric($_GET['filter_disc']) && $_GET['filter_disc'] != -1,
+      isset($_GET['filter_disc']) ? $_GET['filter_disc'] : -1,
+      isset($_GET['filter_disc']) ? urldecode($_GET['filter_disc']) : -1);
   }
   
   public function category() {
@@ -75,24 +92,24 @@ EOD;
   
     $ret = "";
     
-    if(isset($_GET['filter_ID']) && !empty($_GET['filter_ID'])) {
-      $ret .= "&filter_ID=".$_GET['filter_ID'];
+    if($this->filters['filter_ID'][0]) {
+      $ret .= "&filter_ID=".$this->filters['filter_ID'][1];
     }
     
-    if(isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle'])) {
-      $ret .= "&filter_ltitle=".$_GET['filter_ltitle'];
+    if($this->filters['filter_ltitle'][0]) {
+      $ret .= "&filter_ltitle=".$this->filters['filter_ltitle'][1];
     }
     
-    if(isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo'])) {
-      $ret .= "&filter_lingo=".$_GET['filter_lingo'];
+    if($this->filters['filter_lingo'][0]) {
+      $ret .= "&filter_lingo=".$this->filters['filter_lingo'][1];
     }
     
-    if(isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on") {
-      $ret .= "&filter_lingo_not=".$_GET['filter_lingo_not'];
+    if($this->filters['filter_lingo_not'][0]) {
+      $ret .= "&filter_lingo_not=".$this->filters['filter_lingo_not'][1];
     }
     
-    if(isset($_GET['filter_disc']) && !empty($_GET['filter_disc'])) {
-      $ret .= "&filter_disc=".$_GET['filter_disc'];
+    if($this->filters['filter_disc'][0]) {
+      $ret .= "&filter_disc=".$this->filters['filter_disc'][1];
     }
     
     return $ret;
@@ -139,18 +156,18 @@ EOD;
       "<input type=\"hidden\" name=\"from\" value=\"0\" />".
       "<input type=\"hidden\" name=\"to\" value=\"-1\" />\n";
     
-    $fids = str_replace(",", " OR `m`.`ID` = ", urldecode($_GET['filter_ID']));
-    $like = (isset($_GET['filter_ltitle']) && 
-      ((urldecode($_GET['filter_ltitle'])[0] == '/' && substr(urldecode($_GET['filter_ltitle']), -1)) == '/') ? " REGEXP '".
-      substr($this->con->real_escape_string(substr(urldecode($_GET['filter_ltitle']), 1)), 0, -1)."' " :
-      " LIKE ".(isset($_GET['filter_ltitle']) ? " CONCAT('%', '".$this->con->real_escape_string(urldecode($_GET['filter_ltitle']))."', '%')" : "'%'"));
-    $tfil = (isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle']) ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".
-      $like." OR `es`.`episode` ".$like.") " : "");
-    $ifil = (isset($_GET['filter_ID']) && !empty($_GET['filter_ID']) ? " AND (`m`.`ID` = ".$fids.")" : "");
-    $dfil = (isset($_GET['filter_disc']) && is_numeric($_GET['filter_disc']) && $_GET['filter_disc'] != -1 ? " AND `m`.`disc` = ".$_GET['filter_disc'] : "");
-    $lfil = (isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']) ? " AND '".$this->con->real_escape_string(urldecode($_GET['filter_lingo']))."' ".
-      (isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on" ? "NOT " : "").
-      "IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : "");
+    $fids = $this->filters['filter_ID'][0] ? str_replace(",", " OR `m`.`ID` = ", $this->filters['filter_ID'][2]) : "";
+    $like = ($this->filters['filter_ltitle'][0] && (($this->filters['filter_ltitle'][2][0] == '/' &&
+      substr($this->filters['filter_ltitle'][2], -1)) == '/') ? " REGEXP '".
+      substr($this->con->real_escape_string(substr($this->filters['filter_ltitle'][2], 1)), 0, -1)."' " : 
+      " LIKE ".($this->filters['filter_ltitle'][0] ? " CONCAT('%', '".$this->con->real_escape_string($this->filters['filter_ltitle'][2])."', '%')" : "'%'"));
+    $tfil = ($this->filters['filter_ltitle'][0] ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".$like." OR `es`.`episode` ".
+      $like.") " : "");
+    $ifil = ($this->filters['filter_ID'][0] ? " AND (`m`.`ID` = ".$fids.")" : "");
+    $dfil = ($this->filters['filter_disc'][0] ? " AND `m`.`disc` = ".$this->filters['filter_disc'][1] : "");
+    $lfil = ($this->filters['filter_lingo'][0] ? " AND '".$this->con->real_escape_string($this->filters['filter_lingo'][2])."' ".
+      ($this->filters['filter_lingo_not'][0] ? "NOT " : "").
+	"IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : "");
 
     $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
       $tfil.$ifil.$dfil.$lfil.
@@ -176,16 +193,13 @@ EOD;
 	
       echo "<tr class=\"list_filter\">".
 	"<td class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
-	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\"".
-	"value=\"".(isset($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : "")."\"></td>".
-	"<td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" ".
-	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" value=\"".
-	(isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "")."\"></td>".
+	"onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\""."value=\"".($this->filters['filter_ID'][0] ? 
+	  $this->filters['filter_ID'][2] : "")."\"></td><td class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" id=\"list_filter_ltitle\" type=\"text\" "."onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" value=\"".
+	($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][2] : "")."\"></td>".
 	"<!-- <td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td> -->".
-	"<td class=\"list_filter\">&nbsp;</td>".
-	"<td nowrap class=\"list_filter\">".(new FilterdropLang())->render(isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "",
-	  isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on")."</td>".
-	"<td class=\"list_filter\">".(new FilterdropDisc())->render(isset($_GET['filter_disc']) ? $_GET['filter_disc'] : -1)."</td></tr>\n";
+	"<td class=\"list_filter\">&nbsp;</td><td nowrap class=\"list_filter\">".(new FilterdropLang())->render($this->filters['filter_lingo'][0] ? 
+	  $this->filters['filter_lingo'][1] : "",$this->filters['filter_lingo_not'][0])."</td>".
+	"<td class=\"list_filter\">".(new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)."</td></tr>\n";
       
       while ($row = $result->fetch_assoc()) {
 
