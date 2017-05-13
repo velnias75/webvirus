@@ -29,7 +29,8 @@
 	}
       ?><table class="cat_nav" border="0" width="100%">
 	<tr><th class="cat_nav">Downloads</th></tr>
-	<tr><td nowrap><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr>
+	<!-- <tr><td nowrap><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr> -->
+	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
     </td>
     <td id="layout_content" align="center" valign="top">
