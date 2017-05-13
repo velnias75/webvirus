@@ -17,6 +17,23 @@ final class PDF extends MoviesBase {
     $this->pdf->pdf()->AddPage();
   }
   
+  private function makeDescLine($wx, $pt, $fs) {
+
+    $this->pdf->pdf()->SetTextColor(0, 0, 0);
+    $this->pdf->pdf()->SetFont('Hack', '', $fs);
+    $this->pdf->pdf()->Cell($wx['id_w'], $pt, "Nr", 0, 0, "R");
+    $this->pdf->pdf()->SetFont('Arial', 'B', $fs);
+    $this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, "Titel", 0, 0, "C");
+    $this->pdf->pdf()->SetFont('Courier', '', $fs);
+    $this->pdf->pdf()->Cell($wx['duration_w'], $pt, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', "Länge"), 0, 0, "C");
+    $this->pdf->pdf()->SetFont('Hack', 'I', $fs);
+    $this->pdf->pdf()->Cell($wx['lingos_w'], $pt, "Sprache(n)", 0, 0, "C");
+    $this->pdf->pdf()->SetFont('Arial', '', $fs);
+    $this->pdf->pdf()->Cell($wx['disc_w'], $pt, "DVD", 0, 1, "L");
+    
+    $this->pdf->pdf()->Ln();
+  }
+  
   public function render() {
   
     $result = $this->mySQLRowsQuery();
@@ -110,35 +127,71 @@ final class PDF extends MoviesBase {
       );
       
       $pt = ceil($fs * 0.3528) + 1;
+      $rw = floor(($this->pdf->pdf()->GetPageHeight() - 27)/$pt) - 4;
+      $cr = 0;
+      
+      $this->makeDescLine($wx, $pt, $fs);
     
       for($j = 0; $j < $i; $j++) {
       
         $this->pdf->pdf()->SetTextColor(0, 0, 0);
         $this->pdf->pdf()->SetFont('Hack', '', $fs);
-	$this->pdf->pdf()->Cell($wx['id_w'], $pt, $id[$j], 'B', 0, "R");
+	$this->pdf->pdf()->Cell($wx['id_w'], $pt, $id[$j], 'TB', 0, "R");
 	
-	if($cat[$j] == 2) {
-	  $this->pdf->pdf()->SetTextColor(102, 51, 159);
-	} else if($cat[$j] == 3) {
-	  $this->pdf->pdf()->SetTextColor(37, 49, 0);
-	} else if($cat[$j] == 4) {
-	  $this->pdf->pdf()->SetTextColor(81, 0, 0);
+	if($this->category() == -1) {
+	  if($cat[$j] == 2) {
+	    $this->pdf->pdf()->SetTextColor(102, 51, 159);
+	  } else if($cat[$j] == 3) {
+	    $this->pdf->pdf()->SetTextColor(37, 49, 0);
+	  } else if($cat[$j] == 4) {
+	    $this->pdf->pdf()->SetTextColor(81, 0, 0);
+	  }
 	}
 	
 	$this->pdf->pdf()->SetFont('Arial', 'B', $fs);
-	$this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, $ltitle[$j], 'B', 0, "L");
-	$this->pdf->pdf()->SetFont('Courier', 'B', $fs);
-	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $duration[$j], 'B', 0, "R");
+	$this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, $ltitle[$j], 'TB', 0, "L");
+	$this->pdf->pdf()->SetFont('Courier', '', $fs);
+	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $duration[$j], 'TB', 0, "R");
 	$this->pdf->pdf()->SetFont('Hack', 'I', $fs);
-	$this->pdf->pdf()->Cell($wx['lingos_w'], $pt, $lingos[$j], 'B', 0, "L");
+	$this->pdf->pdf()->Cell($wx['lingos_w'], $pt, $lingos[$j], 'TB', 0, "L");
 	$this->pdf->pdf()->SetFont('Arial', '', $fs);
-	$this->pdf->pdf()->Cell($wx['disc_w'], $pt, $disc[$j], 'B', 1, "L");
+	$this->pdf->pdf()->Cell($wx['disc_w'], $pt, $disc[$j], 'TB', 1, "L");
+	
+	$cr++;
+	
+	if($cr >= $rw) {
+	  $this->makeDescLine($wx, $pt, $fs);
+	  $cr = 0;
+	}
       }
       
       $this->pdf->pdf()->SetTextColor(0, 0, 0);
+      
+      $total_res = $this->mySQLTotalQuery();
+
+      if($total_res) $total = $total_res->fetch_assoc();
+      
+      if($total_res && $total) {
+      
+	$this->pdf->pdf()->Ln();
+        $this->pdf->pdf()->SetFont('Hack', '', $fs);
+	$this->pdf->pdf()->Cell($wx['id_w'], $pt, $result->num_rows, 0, 0, "R");
+	$this->pdf->pdf()->SetFont('Arial', '', $fs);
+	$this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), 0, 0, "L");
+	$this->pdf->pdf()->SetFont('Courier', '', $fs);
+	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $total['tot_dur'], 0, 0, "R");
+	$this->pdf->pdf()->SetFont('Hack', 'I', $fs);
+	$this->pdf->pdf()->Cell($wx['lingos_w'], $pt, "", 0, 0, "L");
+	$this->pdf->pdf()->SetFont('Arial', '', $fs);
+	$this->pdf->pdf()->Cell($wx['disc_w'], $pt, "", 0, 1, "L");
+	
+	$total_res->free_result();
+      }
+      
+      $result->free_result();
     }
   
-    $this->pdf->pdf()->Output();
+    $this->pdf->pdf()->Output('I', "filmliste-".$this->pdf->latest().".pdf", true);
   }
   
 }

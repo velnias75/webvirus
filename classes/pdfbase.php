@@ -23,8 +23,6 @@ final class PDFBase extends FPDF {
     
     $this->AddFont('Hack', '',   'Hack-Regular.php');
     $this->AddFont('Hack', 'I',  'Hack-RegularOblique.php');
-//     $this->AddFont('Hack', 'B',  'Hack-Bold.php');
-//     $this->AddFont('Hack', 'BI', 'Hack-BoldOblique.php');
     
     $this->margin = $this->GetX();
   }
@@ -42,8 +40,16 @@ final class PDFBase extends FPDF {
   
   function Footer() {
     $this->SetY(-15);
+    $this->SetFont('Arial', 'I', 6);
+    $this->Cell($this->getPageWidth()/3, 10, "Dokument erstellt ".strftime("am %d.%m.%Y um %H:%M:%S")." via http://".$_SERVER['SERVER_NAME'].
+      dirname($_SERVER['REQUEST_URI'])."/", "T", 0, "L", false, 
+      "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
     $this->SetFont('Courier', '', 10);
-    $this->Cell(0, 10, 'Seite '.$this->PageNo(), "T", 0, "C");
+    $this->Cell($this->getPageWidth()/3, 10, 'Seite '.$this->PageNo(), "T", 0, "C");
+  }
+  
+  public function latest() {
+    return str_replace(".", "-", $this->latest);
   }
   
   public function margin() {
