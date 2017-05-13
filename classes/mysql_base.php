@@ -3,6 +3,7 @@
 final class MySQLBase {
   
   private $mysqli = null;
+  private $secret = null;
   
   private function __construct() {
   
@@ -15,6 +16,8 @@ final class MySQLBase {
     }
     
     $this->mysqli->set_charset('utf8');
+    
+    $this->secret = $secret;
   }
   
   function __destruct() {
@@ -34,6 +37,33 @@ final class MySQLBase {
     return $this->mysqli;
   }
   
+  public function login($login, $pass) {
+    
+    $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
+      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin FROM users WHERE login = '".
+      $login."' LIMIT 1");
+
+    if($result->num_rows == 1) {
+      
+      $row = $result->fetch_assoc();
+      
+      $res = array(
+	  'id' => $row['id'],
+	  'login' => $row['login'],
+	  'epass' => $row['pass'],
+	  'cpass' => $row['cpass'],
+	  'display_name' => $row['display_name'], 
+	  'admin' => boolval($row['admin'])
+	);
+      
+      $result->free_result();
+      
+      return ($res['cpass'] == $pass || $res['epass'] == $pass) ? $res : "Falsches Passwort";
+      
+    } else {
+      return "Benutzer nicht gefunden";
+    } 
+  }
 }
 
 ?>
