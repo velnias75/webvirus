@@ -50,6 +50,18 @@ table.userbox td input[type=submit] {
   border-radius: 5px;
 }
 
+table.userbox td input[type=file] {
+  width: 100%;
+}
+
+table.userbox td input[type=file]:after {
+  padding: 5px 15px;
+  background:#cccccc;
+  border: 0 none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 select {
   padding-top: 5px; 
   border: 2px solid #7e7eff; 

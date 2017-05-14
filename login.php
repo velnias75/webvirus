@@ -17,9 +17,10 @@ if(isset($_POST['login']) && isset($_POST['pass'])) {
   }
 }
 
-if(isset($_POST['action'])) {
+if(isset($_POST['action']) && isset($_SESSION['ui'])) {
   
-  if($_POST['action'] == "Anlegen" && isset($_POST['display']) && isset($_POST['login_new']) && isset($_POST['pass_new'])) {
+  if($_POST['action'] == "Anlegen" && $_SESSION['ui']['admin'] && isset($_POST['display']) && 
+    isset($_POST['login_new']) && isset($_POST['pass_new'])) {
     MySQLBase::instance()->new_user($_POST['display'], $_POST['login_new'], $_POST['pass_new']);
   } else if(urldecode($_POST['action']) == "Ändern" && !empty($_POST['action'])) {
     MySQLBase::instance()->chg_pass($_SESSION['ui']['id'], $_POST['pass_chg']);
