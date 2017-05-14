@@ -53,7 +53,7 @@ final class UserBox implements IRenderable {
     
     echo "</form>\n";
     
-    if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin']) {
+    if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
       echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
       echo "<tr><td><form action=\"update.php\" method=\"POST\" enctype=\"multipart/form-data\">";
       echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";

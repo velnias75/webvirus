@@ -4,6 +4,7 @@ final class MySQLBase {
   
   private $mysqli = null;
   private $secret = null;
+  private $update = false;
   
   private function __construct() {
   
@@ -18,6 +19,7 @@ final class MySQLBase {
     $this->mysqli->set_charset('utf8');
     
     $this->secret = $secret;
+    $this->upload = !isset($update) || $update == true;
   }
   
   function __destruct() {
@@ -35,6 +37,10 @@ final class MySQLBase {
   
   public function con() {
     return $this->mysqli;
+  }
+  
+  public function update_allowed() {
+    return $this->upload;
   }
   
   public function chg_pass($id, $pass) {
