@@ -34,6 +34,22 @@ input[type=text]:focus {
   border-color: blue;
 }
 
+table.userbox td label {
+  width: 100%;
+}
+
+table.userbox td label input[type=text], table.userbox td label input[type=password] {
+  display: ruby-base-container;
+}
+
+table.userbox td input[type=submit] {
+  padding: 5px 15px;
+  background:#cccccc;
+  border: 0 none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 select {
   padding-top: 5px; 
   border: 2px solid #7e7eff; 

@@ -2,6 +2,7 @@
 
   require 'head.php';
   require 'classes/movies.php';
+  require 'classes/userbox.php';
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
   
@@ -17,7 +18,7 @@
   
   if(!isset($_SESSION['ui']) && isset($_COOKIE['login'])) {
     
-    $ui = MySQLBase::instance()->login($_COOKIE['login'], $_COOKIE['magic']);
+    $ui = MySQLBase::instance()->login($_COOKIE['login'], $_COOKIE['magic'], true);
     
     if(is_string($ui)) {
       $_SESSION['error'] = $ui;
@@ -45,30 +46,8 @@
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<!-- <tr><td nowrap><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr> -->
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
-      </table>
-      <form method="POST" action="login.php">
-	<input type="hidden" name="q" value="<?= urlencode($_SERVER['QUERY_STRING']) ?>">
-	<table class="cat_nav" border="0" width="100%">
-	  <tr><th class="cat_nav">Benutzerbereich</th></tr>
-	  <?php
-	    if(!isset($_SESSION['ui']) || isset($_SESSION['error'])) {
-	      if(isset($_SESSION['error'])) {
-		echo "<tr><td nowrap><span class=\"red_text\">".
-		htmlentities($_SESSION['error'], ENT_SUBSTITUTE, "utf-8")."</span></td></tr>\n";
-		unset($_SESSION['error']);
-	      }
-	      echo "<tr><td nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login\"></label></td></tr>\n";
-	      echo "<tr><td nowrap><label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label></td></tr>\n";
-	      echo "<tr><td nowrap><input type=\"submit\" value=\"Einloggen\"></td></tr>\n";
-	    } else {
-	      echo "<tr><td nowrap>".($_SESSION['ui']['cookie_login'] ? "Hallo " : "Willkommen ").
-		htmlentities($_SESSION['ui']['display_name'], ENT_SUBSTITUTE, "utf-8")."!</td></tr>\n";
-	      echo "<input type=\"hidden\" name=\"logout\" value=\"yes\">\n";
-	      echo "<tr><td nowrap><input type=\"submit\" value=\"Ausloggen\"></td></tr>\n";
-	    }
-	  ?>
-	</table>
-      </form>
+      </table>      
+      <?php (new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null))->render(); ?>
     </td>
     <td id="layout_content" align="center" valign="top">
       <?php 
