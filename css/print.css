@@ -52,7 +52,7 @@ td.lingos {
   font-size: 10.5pt;
 }
 
-#layout_left, #layout_right, #filter_submit, .page_nr, .list_filter {
+#layout_left, #layout_right, #filter_submit, .page_nr, .list_filter, td.list.hack div {
   display: none;
 }
 
