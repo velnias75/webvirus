@@ -123,7 +123,7 @@ td.list.hack a {
 
 .modalDialog {
   position: fixed;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Verdana, sans-serif;
   top: 0;
   right: 0;
   bottom: 0;
@@ -152,6 +152,7 @@ td.list.hack a {
   background: -moz-linear-gradient(#fff, #999);
   background: -webkit-linear-gradient(#fff, #999);
   background: -o-linear-gradient(#fff, #999);
+  text-align: left;
 }
 
 .close {
@@ -175,6 +176,14 @@ td.list.hack a {
 
 .close:hover {
   background: #00d9ff;
+}
+
+div.ua {
+  font-weight: bold;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-decoration: underline;
+  overflow: hidden;
 }
 
 a.list {
