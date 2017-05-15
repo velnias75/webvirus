@@ -6,26 +6,14 @@
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
   
+  session_start();
+  
   try {
     $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 
 	    isset($_GET['from']) ? $_GET['from'] : 0,
 	    isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
   } catch(Exception $e) {
     echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
-  }
-  
-  session_start();
-  
-  if(!isset($_SESSION['ui']) && isset($_COOKIE['login'])) {
-    
-    $ui = MySQLBase::instance()->login($_COOKIE['login'], $_COOKIE['magic'], true);
-    
-    if(is_string($ui)) {
-      $_SESSION['error'] = $ui;
-    } else {
-      $ui['cookie_login'] = true;
-      $_SESSION['ui'] = $ui;
-    }
   }
   
 ?>

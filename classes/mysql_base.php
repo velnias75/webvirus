@@ -75,7 +75,8 @@ final class MySQLBase {
 	  'cpass' => $row['cpass'],
 	  'display_name' => $row['display_name'], 
 	  'admin' => boolval($row['admin']),
-	  'last_login' => $row['last_login']
+	  'last_login' => $row['last_login'],
+	  'auto_login' => $auto
 	);
       
       $result->free_result();
