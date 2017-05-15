@@ -116,6 +116,36 @@ td.list {
   padding-right: 5px;
 }
 
+td.list input[type=checkbox], div.answer {
+  display: none;
+}
+
+td.list label {
+  display: block;
+  background-color: transparent;
+}
+
+td.list input[type=checkbox]:checked ~ .answer {
+  
+  display: inline;
+  /* some styles to position the modal at the center of the page */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  line-height: 200px;
+  height: 200px;
+  margin-left: -150px;
+  margin-top: -100px;
+  background-color: #f1c40f;
+  text-align: center;
+  border-radius: 5px;
+  
+  /* needed styles for the overlay */
+  z-index: 1000; /* keep on top of other elements on the page */
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+}
+
 a.list {
   background-color: #eeeeff;
 }
@@ -271,6 +301,11 @@ td.page_nr.page_active {
   height: 60px;
   min-height: 60px;
   max-height: 60px;
+  background: #eeeeee;
+  background: -moz-linear-gradient(-45deg, #eeeeee 0%, #cccccc 100%);
+  background: -webkit-linear-gradient(-45deg, #eeeeee 0%,#cccccc 100%);
+  background: linear-gradient(135deg, #eeeeee 0%,#cccccc 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=1 );
 }
 
 #layout_bottom {

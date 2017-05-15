@@ -7,16 +7,22 @@ require 'movies_base.php';
 final class Movies extends MoviesBase {
 
   private $par;
+  private $loggedIn = false;
 
   function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
+    
     parent::__construct($order_by, $from, $to, $cat);
+    
     $this->par = 1;
+    $this->loggedIn = isset($_SESSION['ui']);
   }
   
   private function renderRow($id = "", $ltitle = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
     echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
-      ($id === "" ? "&nbsp;" : htmlentities($id, ENT_SUBSTITUTE, "utf-8"))."</td><td ".($isSummary ? "" : "nowrap").
-      " align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".
+      ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<label for=\"cb_".$id."\">").htmlentities($id, ENT_SUBSTITUTE, "utf-8").
+      ($isSummary || !$this->loggedIn ? "" : "</label><input id=\"cb_".$id."\" type=\"checkbox\">".
+      "<div class=\"answer\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
+      "</div>"))."</td><td ".($isSummary ? "" : "nowrap")." align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".
       $cat.($isSummary ? "" : " ltitle")."\">".($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
       ($isSummary ? "" : "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td><td nowrap align=\"right\" class=\"list ".
       ($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
