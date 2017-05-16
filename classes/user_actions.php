@@ -11,7 +11,7 @@ final class UserActions {
   }
   
   public function render() {
-    return "Render some useless user actions for ".htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")." here...";
+    return "Render some useless user actions<br>for ".htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")." here...";
   }
 
 }

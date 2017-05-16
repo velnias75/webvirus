@@ -25,8 +25,8 @@ final class UserBox implements IRenderable {
 	unset($_SESSION['error']);
       }
 
-      echo "<tr><td nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login\"></label></td></tr>\n";
-      echo "<tr><td nowrap><label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label></td></tr>\n";
+      echo "<tr><td align=\"center\" nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login\"></label></td></tr>\n";
+      echo "<tr><td align=\"center\" nowrap><label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label></td></tr>\n";
       echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[login]\" value=\"Einloggen\"></td></tr>\n";
 
     } else {
@@ -37,15 +37,15 @@ final class UserBox implements IRenderable {
       echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
       
       echo "<tr><td nowrap>Passwort &auml;ndern:</td></tr>\n";
-      echo "<tr><td nowrap><label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label></td></tr>\n";
+      echo "<tr><td align=\"center\" nowrap><label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label></td></tr>\n";
       echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\"></td></tr>\n";
       
       if($this->ui['admin']) {
 	echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
 	echo "<tr><td nowrap>Benutzer anlegen:</td></tr>\n";
-	echo "<tr><td nowrap><label>Name:&nbsp;<input type=\"text\" size=\"5\" name=\"display\"></label></td></tr>\n";
-	echo "<tr><td nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login_new\"></label></td></tr>\n";
-	echo "<tr><td nowrap><label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_new\"></label></td></tr>\n";
+	echo "<tr><td align=\"center\" nowrap><label>Name:&nbsp;<input type=\"text\" size=\"5\" name=\"display\"></label></td></tr>\n";
+	echo "<tr><td align=\"center\" nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login_new\"></label></td></tr>\n";
+	echo "<tr><td align=\"center\" nowrap><label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_new\"></label></td></tr>\n";
 	echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[create]\" value=\"Anlegen\"></td></tr>\n";
       }
     }
