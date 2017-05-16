@@ -133,15 +133,12 @@ td.list.hack a {
   left: 0;
   background: rgba(0, 0, 0, 0.8);
   z-index: 99999;
-  opacity: 0;
-  -webkit-transition: opacity 400ms ease-in;
-  -moz-transition: opacity 400ms ease-in;
-  transition: opacity 400ms ease-in;
+  display: none;
   pointer-events: none;
 }
 
 .modalDialog:target {
-  opacity: 1;
+  display: block;
   pointer-events: auto;
 }
 
@@ -154,7 +151,7 @@ td.list.hack a {
   background: #fff;
   background: -moz-linear-gradient(#fff, #999);
   background: -webkit-linear-gradient(#fff, #999);
-  background: -o-linear-gradient(#fff, #999);
+  background: linear-gradient(#fff, #999);
   text-align: left;
 }
 
