@@ -1,0 +1,9 @@
+﻿<?xml version="1.0"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Heikos Schrott- &amp; Rentnerfilme</ShortName>
+  <Description>Suche in Heikos Schrott- &amp; Rentnerfilmen</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image height="32" width="32" type="image/x-icon">http://rangun.de/img/favicon.ico</Image>
+  <Url type="text/html" method="get" template="http://rangun.de/db/index.php?filter_ltitle={searchTerms}" />
+  <moz:SearchForm>http://rangun.de/db/index.php</moz:SearchForm>
+</OpenSearchDescription>
