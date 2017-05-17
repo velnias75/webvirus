@@ -24,9 +24,11 @@ final class Movies extends MoviesBase {
       ($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\"><div><a href=\"#close\" title=\"Schlie&szlig;en\"".
       " class=\"close\">X</a><div class=\"ua cat_".$cat."\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".
       (new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td><td ".($isSummary ? "" : "nowrap")." align=\"left\" class=\"list ".
-      ($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
-      ($isSummary ? "" : "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td><td nowrap align=\"right\" class=\"list ".
-      ($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
+      ($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".($this->loggedIn ? "<a target=\"_blank\" href=\"omdb.php?".
+      "search=".urlencode($ltitle)."&q".urlencode($_SERVER['QUERY_STRING'])."\">" : "").($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
+      ($this->loggedIn ? "</a>" : "").($isSummary ? "" : "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>").
+      "</td><td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
+      ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
       ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
       "</td><td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8")).
       "</td><td nowrap align=\"left\" class=\"list hasTooltip cat_".$cat."\">".($disc === "" ? "&nbsp;" : 

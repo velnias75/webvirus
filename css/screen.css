@@ -119,7 +119,7 @@ td.list {
   padding-right: 5px;
 }
 
-td.list.hack a {
+td.list a, td.list.hack a {
   font: inherit;
   display: block;
 }
