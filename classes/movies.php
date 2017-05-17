@@ -18,14 +18,14 @@ final class Movies extends MoviesBase {
     $this->loggedIn = isset($_SESSION['ui']);
   }
   
-  private function renderRow($id = "", $ltitle = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
+  private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
     echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
       ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").htmlentities($id, ENT_SUBSTITUTE, "utf-8").
       ($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\"><div><a href=\"#close\" title=\"Schlie&szlig;en\"".
       " class=\"close\">X</a><div class=\"ua cat_".$cat."\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".
       (new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td><td ".($isSummary ? "" : "nowrap")." align=\"left\" class=\"list ".
       ($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".($this->loggedIn ? "<a target=\"_blank\" href=\"omdb.php?".
-      "search=".urlencode($ltitle)."&q".urlencode($_SERVER['QUERY_STRING'])."\">" : "").($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
+      "search=".urlencode($st)."&q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").
       ($this->loggedIn ? "</a>" : "").($isSummary ? "" : "<span>".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>").
       "</td><td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
       ($duration === "" ? "&nbsp;" : htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).
@@ -84,7 +84,7 @@ final class Movies extends MoviesBase {
       while($row = $result->fetch_assoc()) {
 
         if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
-	  $this->renderRow($row['ID'], $row['ltitle'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
+	  $this->renderRow($row['ID'], $row['ltitle'], $row['st'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
 	}
 
 	$i++;
@@ -97,16 +97,16 @@ final class Movies extends MoviesBase {
       if($total_res) $total = $total_res->fetch_assoc();
       
       if($total_res && $total) {
-	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), $total['tot_dur'], "0", "", "", "", 1, true);
+	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), "", $total['tot_dur'], "0", "", "", "", 1, true);
 	$total_res->free_result();
       } else {
-	$this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "0", "", "", 4, true);
+	$this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "", "00:00:00", "0", "", "", 4, true);
       }
 
       $result->free_result();
       
     } else {
-      $this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "00:00:00", "0", "", "", "", 4, true);
+      $this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "", "00:00:00", "0", "", "", "", 4, true);
     }
     
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
