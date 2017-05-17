@@ -7,7 +7,7 @@ if(isset($_GET['search']) && isset($_SESSION['ui'])) {
 } else if(isset($_GET['q'])) {
   header("Location: ?".urldecode($_GET['q']));
 } else {
-  header("Location: /");
+  header("Location: ");
 }
 
 ?>
