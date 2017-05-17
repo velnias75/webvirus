@@ -61,7 +61,7 @@ final class MySQLBase {
   public function login($login, $pass, $auto = false) {
     
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login ".
+      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login, style ".
       "FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
@@ -76,7 +76,8 @@ final class MySQLBase {
 	  'display_name' => $row['display_name'], 
 	  'admin' => boolval($row['admin']),
 	  'last_login' => $row['last_login'],
-	  'auto_login' => $auto
+	  'auto_login' => $auto,
+	  'style' => $row['style']
 	);
       
       $result->free_result();

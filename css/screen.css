@@ -1,28 +1,5 @@
 /* Schrottfilme - Webinterface. (c) 2017 by Heiko Schaefer <heiko@rangun.de> */
 
-:root {
-  --cat_0: #3333ff;
-  --cat_1: black;
-  --cat_2: #66339f;
-  --cat_3: #253100;
-  --cat_4: #510000;
-  --col1:  #eeeeee;
-  --col2:  #ffffff;
-  --col3:  #606061;
-  --col4:  #3333ff;
-  --col5:  #7e7eff;
-  --col6:  #cccccc;
-  --col7:  #dddddd;
-  --col8:  #bbbbbb;
-  --col9:  #00d9ff;
-  --col10: #eeeeff;
-  --col11: #9d9dcf;
-  --col12: #ddddff;
-  --col13: #ccccff;
-  --col14: blue;
-  --col15: red;
-}
-
 html, body {
   margin: 0px;
   border: 0px;
@@ -365,10 +342,10 @@ td.page_nr.page_active {
   min-height: 60px;
   max-height: 60px;
   background: var(--col1);
-  background: -moz-linear-gradient(-45deg, #eeeeee 0%, #cccccc 100%);
-  background: -webkit-linear-gradient(-45deg, #eeeeee 0%, #cccccc 100%);
-  background: linear-gradient(135deg, #eeeeee 0%, #cccccc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=1 );
+  background: var(--tgrad_moz);
+  background: var(--tgrad_wbk);
+  background: var(--tgrad_std);
+  filter: var(--tgrad_fie);
 }
 
 #layout_bottom {
