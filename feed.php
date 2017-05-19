@@ -67,10 +67,13 @@ $head = $xml->createElement('lastBuildDate', gmdate("D, j M Y H:i:s ", time()).'
 $channel->appendChild($head);
 
 $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`name` AS `name`, UNIX_TIMESTAMP(`d`.`created`) AS `created`, `m`.`ID` AS `ID`, ".
-  "MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `title`, `c`.`name` as `cat` FROM `movies` AS `m` ".
+  "MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `title`, `c`.`name` as `cat`, ".
+  "SEC_TO_TIME(m.duration) AS `duration`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ".
+  "ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos` FROM `movies` AS `m` ".
   "LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
-  "LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` WHERE `d`.`created` IS NOT NULL ".
-  "ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC");
+  "LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` ".
+  "LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
+  "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC");
 
 while($rssdata = $result->fetch_assoc()) {	
 
@@ -80,7 +83,13 @@ while($rssdata = $result->fetch_assoc()) {
     $data = $xml->createElement('title', $rssdata['title']);
     $item->appendChild($data);
 
-    $data = $xml->createElement('description', $rssdata['name']);
+    $data = $xml->createElement('description', "&lt;dl&gt;".
+      "&lt;dt&gt;&lt;b&gt;Nr&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['ID']."&lt;/dd&gt;".
+      "&lt;dt&gt;&lt;b&gt;Titel&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['title']."&lt;/dd&gt;".
+      "&lt;dt&gt;&lt;b&gt;Länge&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['duration']."&lt;/dd&gt;".
+      "&lt;dt&gt;&lt;b&gt;Sprachen(n)&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['lingos']."&lt;/dd&gt;".
+      "&lt;dt&gt;&lt;b&gt;DVD&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['name']."&lt;/dd&gt;".
+      "&lt;/dl&gt;");
     $item->appendChild($data);
     
     $data = $xml->createElement('category', $rssdata['cat']);
