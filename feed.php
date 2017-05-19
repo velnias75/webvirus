@@ -34,6 +34,25 @@ $channel->appendChild($head);
 $head = $xml->createElement('generator', "Die Webvirenversion");
 $channel->appendChild($head);
 
+$imago = $xml->createElement('image');
+
+$imago_t = $xml->createElement('title', 'Heikos Schrott- und Rentnerfilme');
+$imago->appendChild($imago_t);
+
+$imago_l = $xml->createElement('link', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/");
+$imago->appendChild($imago_l);
+
+$imago_u = $xml->createElement('url', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/img/feed.png");
+$imago->appendChild($imago_u);
+
+$imago_w = $xml->createElement('width', '48');
+$imago->appendChild($imago_w);
+
+$imago_h = $xml->createElement('height', '48');
+$imago->appendChild($imago_h);
+
+$channel->appendChild($imago);
+
 $head = $xml->createElement('link', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/");
 
 $atomlink = $xml->createElementNS('http://www.w3.org/2005/Atom', 'atom:link');
