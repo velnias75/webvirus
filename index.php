@@ -1,21 +1,39 @@
 <?php
+/*
+ * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ *
+ * This file is part of webvirus.
+ *
+ * webvirus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * webvirus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
   require 'head.php';
   require 'classes/movies.php';
   require 'classes/userbox.php';
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
-  
+
   session_start();
-  
+
   try {
-    $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 
+    $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
 	    isset($_GET['from']) ? $_GET['from'] : 0,
 	    isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
   } catch(Exception $e) {
     echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
   }
-  
+
 ?>
 
 <table id="layout" border="0" width="100%">
@@ -34,13 +52,13 @@
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<!-- <tr><td nowrap><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr> -->
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
-      </table>      
+      </table>
       <?php (new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null))->render(); ?>
     </td>
     <td id="layout_content" align="center" valign="top">
-      <?php 
+      <?php
 	try {
-	  $movies->render(); 
+	  $movies->render();
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}

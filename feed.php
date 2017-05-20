@@ -1,4 +1,22 @@
 <?php
+/*
+ * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ *
+ * This file is part of webvirus.
+ *
+ * webvirus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * webvirus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 require 'classes/mysql_base.php';
 
@@ -14,7 +32,7 @@ $rss->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:atom', 'http://www.
 $xml->appendChild($rss);
 
 $channel = $xml->createElement('channel');
-$rss->appendChild($channel); 
+$rss->appendChild($channel);
 
 $head = $xml->createElement('title', 'Heikos Schrott- und Rentnerfilme');
 $channel->appendChild($head);
@@ -75,7 +93,7 @@ $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`na
   "LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
   "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC");
 
-while($rssdata = $result->fetch_assoc()) {	
+while($rssdata = $result->fetch_assoc()) {
 
     $item = $xml->createElement('item');
     $channel->appendChild($item);
@@ -91,7 +109,7 @@ while($rssdata = $result->fetch_assoc()) {
       "&lt;dt&gt;&lt;b&gt;DVD&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['name']."&lt;/dd&gt;".
       "&lt;/dl&gt;");
     $item->appendChild($data);
-    
+
     $data = $xml->createElement('category', $rssdata['cat']);
     $item->appendChild($data);
 
