@@ -76,7 +76,8 @@
       </table>
     </td></tr>
   <tr><td id="layout_bottom" valign="center" align="center" colspan="3">
-    <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by <a class="note_link" href="mailto:heiko@rangun.de?subject=Schrottfilme">Heiko Sch&auml;fer</a> <em>(WORK IN PROGRESS)</em></small></td></tr>
+    <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by <a class="note_link" href="mailto:heiko@rangun.de?subject=Schrottfilme">Heiko Sch&auml;fer</a>
+    <em>(<a class="note_link" target="_blank" href="https://github.com/velnias75/webvirus">work in progess</a>)</em></small></td></tr>
 </table>
 
 <?php require 'foot.php'; ?>
