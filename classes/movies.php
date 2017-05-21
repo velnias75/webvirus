@@ -37,16 +37,16 @@ final class Movies extends MoviesBase {
   }
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
-    echo "<tr class=\"parity_".($this->par % 2)."\"><td nowrap class=\"list hack\" align=\"right\">".
-      ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").htmlentities($id, ENT_SUBSTITUTE, "utf-8").
-      ($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\"><div><a href=\"#close\" title=\"Schlie&szlig;en\"".
-      " class=\"close\">X</a><div class=\"ua cat_".$cat."\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".
-      (new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td><td itemscope itemtype=\"http://schema.org/MediaObject\" ".($isSummary ? "" : "nowrap").
+    echo "<tr ".($isSummary ? "" : "itemscope itemtype=\"http://schema.org/MediaObject\"")." class=\"parity_".($this->par % 2).
+      "\"><td nowrap class=\"list hack\" align=\"right\">".($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
+      htmlentities($id, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id.
+      "\" class=\"modalDialog\"><div><a href=\"#close\" title=\"Schlie&szlig;en\""." class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
+      htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td><td ".($isSummary ? "" : "nowrap").
       " align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".
       ($this->loggedIn ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").
       ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn ? "</a>" : "").
       ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>").
-      "</td><td itemscope itemtype=\"http://schema.org/MediaObject\" nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
+      "</td><td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
       ($duration === "" ? "&nbsp;" : "<span ".($isSummary ? "" : "itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\">").
       htmlentities($duration, ENT_SUBSTITUTE, "utf-8")."</span>").($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8").
       " Minuten</span>" : "")."</td><td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".
