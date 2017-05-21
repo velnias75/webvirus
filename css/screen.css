@@ -42,8 +42,8 @@ li {
 }
 
 input[type=text] {
-  padding-top: 5px; 
-  border: 2px solid var(--col5); 
+  padding-top: 5px;
+  border: 2px solid var(--col5);
   border-radius: 5px;
 }
 
@@ -83,8 +83,8 @@ table.userbox td input[type=file]:after {
 }
 
 select {
-  padding-top: 5px; 
-  border: 2px solid var(--col5); 
+  padding-top: 5px;
+  border: 2px solid var(--col5);
   border-radius: 5px;
 }
 
@@ -112,7 +112,7 @@ th.cat_nav {
 ul.cat_nav {
   margin-top: 0px;
   padding-left: 20px;
-  list-style-type: circle; 
+  list-style-type: circle;
 }
 
 li.cat_nav_active {
@@ -212,13 +212,13 @@ a.note_link {
 }
 
 a.pdflink {
-  color: var(--col4); 
-  padding-top: 12px; 
-  padding-left: 5px; 
+  color: var(--col4);
+  padding-top: 12px;
+  padding-left: 5px;
   padding-right: 60px;
   background: transparent url('../img/application-pdf.png') no-repeat right;
 }
-	    
+
 .hack {
   font-family: Hack, 'Lucida Console', monospace;
 }
@@ -262,7 +262,7 @@ a.pdflink {
   width: 100%;
 }
 
-.cat_0 { 
+.cat_0 {
   color: var(--cat_0);
 }
 
@@ -291,13 +291,17 @@ table.list tr.parity_1 {
 }
 
 td.list_filter {
-  font-family: 'Verdana', sans-serif; 
+  font-family: 'Verdana', sans-serif;
   font-size: 9pt;
   padding: 2px;
   padding-top: 4px;
 }
 
-tr.list_filter { 
+td.list_filter span, .tt-input, .tt-hint {
+  width: 99%;
+}
+
+tr.list_filter {
   background-color: var(--col11);
 }
 
@@ -400,10 +404,21 @@ td.page_nr.page_active {
   width: 50px;
 }
 
-#list_filter_ltitle {
-  width: 99%;
+#filter_submit {
+  display:none;
 }
 
-#filter_submit { 
-  display:none;
+.tt-menu {
+  width: 99%;
+  background-color: var(--col2);
+}
+
+.tt-dataset {
+  border-width: 2px;
+  border-color: var(--col5);
+  border-style: solid;
+}
+
+.tt-cursor {
+  background-color: var(--col5);
 }
