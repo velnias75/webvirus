@@ -92,7 +92,10 @@ EOD;
     $this->latest = $latest_res->fetch_assoc()['df'];
     $latest_res->free_result();
 
-    if($this->filters['filter_ltitle'][0]) $this->filtered = true;
+    if($this->filters['filter_ID'][0] ||
+      $this->filters['filter_ltitle'][0] ||
+      $this->filters['filter_lingo'][0] ||
+      $this->filters['filter_disc'][0]) $this->filtered = true;
   }
 
   protected final function isFiltered() {

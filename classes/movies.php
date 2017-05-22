@@ -139,7 +139,7 @@ final class Movies extends MoviesBase {
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
 
     if(isset($_SESSION['ui'])) {
-      MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : "");
+      MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);
     }
   }
 
