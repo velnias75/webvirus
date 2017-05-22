@@ -171,8 +171,7 @@ EOD;
     $fids = $this->filters['filter_ID'][0] ? str_replace(",", " OR `m`.`ID` = ", $this->filters['filter_ID'][2]) : "";
 
     return array(
-      'tfil' => ($this->filters['filter_ltitle'][0] ? " AND (`m`.`title` ".$like." OR `m`.`comment` ".$like." OR `s`.`name` ".$like." OR `es`.`episode` ".
-	$like.") " : ""),
+      'tfil' => ($this->filters['filter_ltitle'][0] ? $like : ""),
       'ifil' => ($this->filters['filter_ID'][0] ? " AND (`m`.`ID` = ".$fids.")" : ""),
       'dfil' => ($this->filters['filter_disc'][0] ? " AND `m`.`disc` = ".$this->filters['filter_disc'][1] : ""),
       'lfil' => ($this->filters['filter_lingo'][0] ? " AND '".$this->con->real_escape_string($this->filters['filter_lingo'][2])."' ".
@@ -191,8 +190,7 @@ EOD;
       $bq = "(".
 	self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	(empty($fi['tfil']) ? "" : "HAVING `ltitle` LIKE CONCAT('%', '".
-	$this->con->real_escape_string($this->filters['filter_ltitle'][2])."','%')").$fi['q']
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']
       .") UNION (".
 	self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
 	$fi['ifil']." GROUP BY `m`.`ID` "
@@ -202,8 +200,7 @@ EOD;
 
       $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	(empty($fi['tfil']) ? "" : "HAVING `ltitle` LIKE CONCAT('%', '".
-	$this->con->real_escape_string($this->filters['filter_ltitle'][2])."','%')").$fi['q']." ORDER BY ".$this->order;
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']." ORDER BY ".$this->order;
     }
 
     return $bq;
