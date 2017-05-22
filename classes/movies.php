@@ -113,7 +113,7 @@ final class Movies extends MoviesBase {
       }
 
       if(isset($_SESSION['ui'])) {
-	$_SESSION['ui']['fid'] = substr($fids, 0, -1);
+	$_SESSION['ui']['fid'] = $this->isFiltered() ? substr($fids, 0, -1) : null;
       }
 
       $this->renderRow();
@@ -137,6 +137,10 @@ final class Movies extends MoviesBase {
 
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
+
+    if(isset($_SESSION['ui'])) {
+      MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : "");
+    }
   }
 
   private function createAllPage() {

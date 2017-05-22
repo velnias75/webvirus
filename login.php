@@ -31,6 +31,11 @@ if(isset($_POST['btn']) && isset($_POST['btn']['login']) &&
     $_SESSION['error'] = $ui;
   } else {
     $_SESSION['ui'] = $ui;
+
+    if(!empty($ui['fid'])) {
+      header("Location: ".dirname($_SERVER['REQUEST_URI'])."/fid.php");
+      die;
+    }
   }
 }
 

@@ -26,7 +26,7 @@ if(isset($_SESSION['ui']) && !isset($_SESSION['error'])) {
   $q .= (isset($_GET['order_by']) ? "&order_by=".$_GET['order_by'] : "");
 
   session_write_close();
-  header("Location: ".dirname($_SERVER['REQUEST_URI'])."/?".$q);
+  header("Location: ".dirname($_SERVER['REQUEST_URI'])."/?".(empty($_SESSION['ui']['fid']) ? "" : $q));
 
 } else {
   header("Location: ".dirname($_SERVER['REQUEST_URI'])."/");

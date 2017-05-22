@@ -54,7 +54,11 @@ final class UserBox implements IRenderable {
       echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[logout]\" value=\"Ausloggen\"></td></tr>\n";
       echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
 
-      echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" href=\"fid.php?".
+      echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
+      "title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"index.php\">Alle Filter l&ouml;schen</a></td></tr>\n";
+
+      echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
+	"title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
 	(isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a><hr></td></tr>\n";
 
       echo "<tr><td nowrap>Passwort &auml;ndern:</td></tr>\n";

@@ -27,6 +27,7 @@ abstract class MoviesBase implements IRenderable {
   private $order;
   private $latest;
   private $category;
+  private $filtered = false;
 
   protected $limit_to;
   protected $limit_from;
@@ -90,6 +91,12 @@ EOD;
       "FROM `disc` ORDER BY `created` DESC LIMIT 1");
     $this->latest = $latest_res->fetch_assoc()['df'];
     $latest_res->free_result();
+
+    if($this->filters['filter_ltitle'][0]) $this->filtered = true;
+  }
+
+  protected final function isFiltered() {
+    return $this->filtered;
   }
 
   protected final function latest() {

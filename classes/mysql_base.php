@@ -57,6 +57,11 @@ final class MySQLBase {
     return $this->mysqli;
   }
 
+  public function update_fid($id, $fid) {
+    $this->mysqli->query("UPDATE users SET fid = ".
+      (empty($fid) ? "null" : "'".$this->mysqli->real_escape_string($fid)."'")." WHERE id=".$id);
+  }
+
   public function update_allowed() {
     return $this->upload;
   }
@@ -79,7 +84,7 @@ final class MySQLBase {
   public function login($login, $pass, $auto = false) {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login, style ".
+      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login, style, fid ".
       "FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
@@ -96,7 +101,7 @@ final class MySQLBase {
 	  'last_login' => $row['last_login'],
 	  'auto_login' => $auto,
 	  'style' => $row['style'],
-	  'fid' => ""
+	  'fid' => $row['fid']
 	);
 
       $result->free_result();
