@@ -39,7 +39,7 @@ abstract class MoviesBase implements IRenderable {
   private static $dvd_choice = <<<'EOD'
     SELECT `m`.`ID`, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `ltitle`, `m`.`title` AS `st`,
     SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name`
-    ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category`,
+    ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`, `disc`.`name` AS `ddisc`, `category`,
     `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`), `m`.`skey`) AS `msk`,
     `m`.`ID` as `mid` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
     LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
@@ -59,7 +59,7 @@ EOD;
       $this->order = "`dur_sec` DESC, `msk` ";
       $this->du_order = "&nbsp;&#10037;";
     } else if($order_by === "disc") {
-      $this->order = "LEFT( `disc`.`name`, 1 ) ASC, LENGTH( `disc`.`name` ) ASC, `disc`.`name` ASC, `msk`";
+      $this->order = "LEFT( `ddisc`, 1 ) ASC, LENGTH( `ddisc` ) ASC, `ddisc` ASC, `msk`";
       $this->di_order = "&nbsp;&#10037;";
     } else {
       $this->order = " `msk` ";
@@ -184,17 +184,18 @@ EOD;
   private function getBuiltQuery($q = "") {
 
     $fi = $this->filterSQLArray($q);
+    $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);
 
     if($this->filters['filter_ID'][0]) {
 
-      $bq = "(".
+      $bq = (!$ef ? "(".
 	self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
 	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']
-      .") UNION (".
+      .") UNION (" : "").
 	self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
 	$fi['ifil']." GROUP BY `m`.`ID` "
-      .") ORDER BY ".$this->order;
+      .(!$ef ? ")" : "")." ORDER BY ".$this->order;
 
     } else {
 
