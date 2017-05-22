@@ -51,15 +51,17 @@ abstract class FilterdropBase {
 
     $res = "<select class=\"input_filter\" name=\"".$this->filterName()."\" onchange=\"this.form.submit()\">".
       "<option ".($id == $this->noneValue() ? "selected" : "").
-      " value=\"".$this->noneValue()."\">&nbsp;</option>\n";
+      " value=\"".$this->noneValue()."\">alle</option>\n";
 
     while($row = $this->result->fetch_assoc()) {
       $res .= "\t<option ".($id == $row[$this->idField()] ? "selected" : "")." value=\"".
 	$row[$this->idField()]."\">".htmlentities($row[$this->nameField()], ENT_SUBSTITUTE, "utf-8")."</option>\n";
     }
 
-    return $res."</select>".($this->showNot() ? "&nbsp;<label><input value=\"on\" onchange=\"this.form.submit()\" name=\"".
-      $this->filterName()."_not\" ".($checked ? "checked" : "")." type=\"checkbox\"><em>nicht</em></label>" : "")."\n";
+    return $res."</select>".($this->showNot() ? "&nbsp;<label><input ".($id == $this->noneValue() ? "disabled" : "").
+      " value=\"on\" onchange=\"this.form.submit()\" name=\"".
+      $this->filterName()."_not\" ".($checked && $id != $this->noneValue() ? "checked" : "").
+      " type=\"checkbox\"><em>nicht</em></label>" : "")."\n";
   }
 
 }

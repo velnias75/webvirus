@@ -118,13 +118,13 @@ final class Movies extends MoviesBase {
 	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), "", $total['tot_dur'], "0", "", "", "", 1, true);
 	$total_res->free_result();
       } else {
-	$this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "", "00:00:00", "0", "", "", 4, true);
+	$this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", 4, true);
       }
 
       $result->free_result();
 
     } else {
-      $this->renderRow(0, "MySQL-Fehler: ".$this->con->error, "", "00:00:00", "0", "", "", "", 4, true);
+      $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", "", 4, true);
     }
 
     echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";

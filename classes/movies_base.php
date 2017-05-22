@@ -40,7 +40,8 @@ abstract class MoviesBase implements IRenderable {
     SELECT `m`.`ID`, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `ltitle`, `m`.`title` AS `st`,
     SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name`
     ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`,`category`,
-    `m`.`filename` AS `filename` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
+    `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`), `m`.`skey`) AS `msk`,
+    `m`.`ID` as `mid` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
     LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
     LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` WHERE `disc`.`ID` = `m`.`disc`
 EOD;
@@ -52,16 +53,16 @@ EOD;
     $this->con = MySQLBase::instance()->con();
 
     if($order_by === "ID") {
-      $this->order = "`m`.`ID`";
+      $this->order = "`mid`";
       $this->id_order = "&nbsp;&#10037;";
     } else if($order_by === "duration") {
-      $this->order = "`dur_sec` DESC, MAKE_MOVIE_SORTKEY(`ltitle`, `m`.`skey`)";
+      $this->order = "`dur_sec` DESC, `msk` ";
       $this->du_order = "&nbsp;&#10037;";
     } else if($order_by === "disc") {
-      $this->order = "LEFT( `disc`.`name`, 1 ) ASC, LENGTH( `disc`.`name` ) ASC, `disc`.`name` ASC, MAKE_MOVIE_SORTKEY(`ltitle`, `m`.`skey`)";
+      $this->order = "LEFT( `disc`.`name`, 1 ) ASC, LENGTH( `disc`.`name` ) ASC, `disc`.`name` ASC, `msk`";
       $this->di_order = "&nbsp;&#10037;";
     } else {
-      $this->order = "MAKE_MOVIE_SORTKEY(`ltitle`, `m`.`skey`)";
+      $this->order = " `msk` ";
       $this->ti_order = "&nbsp;&#10037;";
     }
 
@@ -159,19 +160,7 @@ EOD;
       ($limits  ? "&from=".urlencode($this->limit_from)."&to=".urlencode($this->limit_to) : "");
   }
 
-  private function filterSQL($ifil, $tfil, $dfil, $lfil) {
-
-    $rem = $tfil.$dfil.$lfil;
-    $res = $ifil.$rem;
-
-    if($this->filters['filter_ID'][0]) {
-      return preg_replace("/AND (\\([^\\)]*\\) )AND/", "AND ($1 OR", $res).(!empty($rem) ? ") " : "");
-    }
-
-    return $res;
-  }
-
-  private function filterSQLArray() {
+  private function filterSQLArray($q = "") {
 
     $like = ($this->filters['filter_ltitle'][0] && (($this->filters['filter_ltitle'][2][0] == '/' &&
       substr($this->filters['filter_ltitle'][2], -1)) == '/') ? " REGEXP '".
@@ -188,31 +177,51 @@ EOD;
       'dfil' => ($this->filters['filter_disc'][0] ? " AND `m`.`disc` = ".$this->filters['filter_disc'][1] : ""),
       'lfil' => ($this->filters['filter_lingo'][0] ? " AND '".$this->con->real_escape_string($this->filters['filter_lingo'][2])."' ".
 	($this->filters['filter_lingo_not'][0] ? "NOT " : "").
-	"IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : "")
+	"IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : ""),
+      'q' => $q
     );
   }
 
-  protected final function mySQLRowsQuery() {
+  private function getBuiltQuery($q = "") {
 
-    $fi = $this->filterSQLArray();
-    $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
-      $this->filterSQL($fi['ifil'], $fi['tfil'], $fi['dfil'], $fi['lfil'])." GROUP BY `m`.`ID` ORDER BY ".$this->order;
+    $fi = $this->filterSQLArray($q);
 
-//     echo "<pre>".$bq."</pre>\n";
+    if($this->filters['filter_ID'][0]) {
 
-    return $this->con->query($bq);
+      $bq = "(".
+	self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` LIKE CONCAT('%', '".
+	$this->con->real_escape_string($this->filters['filter_ltitle'][2])."','%')").$fi['q']
+      .") UNION (".
+	self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
+	$fi['ifil']." GROUP BY `m`.`ID` "
+      .") ORDER BY ".$this->order;
+
+    } else {
+
+      $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` LIKE CONCAT('%', '".
+	$this->con->real_escape_string($this->filters['filter_ltitle'][2])."','%')").$fi['q']." ORDER BY ".$this->order;
+    }
+
+    return $bq;
   }
 
-  protected final function mySQLTotalQuery() {
+  protected final function mySQLRowsQuery($q = "") {
+//     echo "<pre>".$this->getBuiltQuery($q)."</pre>\n";
+    return $this->con->query($this->getBuiltQuery($q));
+  }
+
+  protected final function mySQLTotalQuery($q = "") {
 
     $fi = $this->filterSQLArray();
 
     return $this->con->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
-	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".self::$dvd_choice.
-	  ($this->category == -1 ? "" : "AND `category` = ".$this->category).
-	  $this->filterSQL($fi['ifil'], $fi['tfil'], $fi['dfil'], $fi['lfil'])." GROUP BY `m`.`ID`) AS `choice`");
+	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".$this->getBuiltQuery($q).") AS `choice`");
   }
 
   static public final function pageSize() {

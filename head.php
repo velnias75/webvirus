@@ -10,21 +10,26 @@
 <meta http-equiv="pragma" content="no-cache" />
 <meta name="description" content="Liste der auf DVD gespeicherten Filme, Dokumentationen und Konzerten">
 <meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
+<link rel="stylesheet" href="css/master.php?t=<?php echo time(); ?>" rel="stylesheet" title="Hirnloser Stil" type="text/css" media="screen">
+<link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
+<link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" type="text/css" media="print">
 <script src="https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://twitter.github.com/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 <script>
 var titles = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
   queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: {
-      url: '<?= dirname($_SERVER['REQUEST_URI'])."/" ?>title-json.php?cat=<?= isset($_GET['cat']) ? $_GET['cat'] : -1 ?>',
-      cache: false
+  remote: {
+      url: '<?= dirname($_SERVER['REQUEST_URI'])."/" ?>title-json.php?cat=<?= isset($_GET['cat']) ? $_GET['cat'] : -1 ?>&q=%QUERY',
+      wildcard: '%QUERY',
+      rateLimitBy: 'throttle'
     }
 });
 
 $(document).ready(function() {
   $('#list_filter_ltitle').typeahead({
-    hint: false,
+    hint: true,
     highlight: true,
     minLength: 3
   }, {
@@ -40,10 +45,6 @@ $(document).ready(function() {
 <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
 <link rel="alternate" title="Heikos Schrott- &amp; Rentnerfilme" type="application/rss+xml" href="feed.php">
 <link href='hsrsearch.xml' rel='search' title='Suche in Heikos Schrott- &amp; Rentnerfilmen' type='application/opensearchdescription+xml'>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
-<link rel="stylesheet" href="css/master.php?t=<?php echo time(); ?>" rel="stylesheet" title="Hirnloser Stil" type="text/css" media="screen">
-<link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
-<link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" type="text/css" media="print">
 <title>Heikos Schrott- &amp; Rentnerfilme</title>
 </head>
 <body>
