@@ -24,8 +24,8 @@ final class TitleJSON extends MoviesBase {
 
   private $result;
 
-  function __construct() {
-    parent::__construct();
+  function __construct($cat = -1) {
+    parent::__construct("ltitle", 0, -1, $cat);
 
     $this->result = $this->mySQLRowsQuery();
   }
@@ -39,7 +39,7 @@ final class TitleJSON extends MoviesBase {
     $array = array();
 
     while ($row = $this->result->fetch_assoc()) {
-      $array[] = $row['st'];
+      $array[] = $row['ltitle'];
     }
 
     echo json_encode($array);

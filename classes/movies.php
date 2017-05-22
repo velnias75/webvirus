@@ -37,22 +37,22 @@ final class Movies extends MoviesBase {
   }
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
-    echo "<tr ".($isSummary ? "" : "itemscope itemtype=\"http://schema.org/MediaObject\"")." class=\"parity_".($this->par % 2).
-      "\"><td nowrap class=\"list hack\" align=\"right\">".($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
-      htmlentities($id, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id.
-      "\" class=\"modalDialog\"><div><a href=\"#close\" title=\"Schlie&szlig;en\""." class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
-      htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td><td ".($isSummary ? "" : "nowrap").
-      " align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".
-      ($this->loggedIn ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").
-      ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn ? "</a>" : "").
-      ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>").
-      "</td><td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
-      ($duration === "" ? "&nbsp;" : "<span ".($isSummary ? "" : "itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\">").
-      htmlentities($duration, ENT_SUBSTITUTE, "utf-8")."</span>").($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8").
-      " Minuten</span>" : "")."</td><td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".
-      ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td><td nowrap align=\"left\" class=\"list hasTooltip cat_".$cat."\">".
-      ($disc === "" ? "&nbsp;" : (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8"))).
-      "</span></td></tr>\n";
+    echo "<tr ".($isSummary ? "" : "itemscope itemtype=\"http://schema.org/MediaObject\"")." class=\"parity_".($this->par % 2)."\">".
+	"<td nowrap class=\"list hack\" align=\"right\">".($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
+	  htmlentities($id, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
+	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
+	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td>".
+	"<td ".($isSummary ? "" : "nowrap")." align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".
+	  ($this->loggedIn ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").
+	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn ? "</a>" : "").
+	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td>".
+	"<td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
+	  ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
+	  "<div ".($isSummary ? "" : "itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").">".
+	  htmlentities($duration, ENT_SUBSTITUTE, "utf-8"))."</div></td>".
+	"<td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td>".
+	"<td nowrap align=\"left\" class=\"list hasTooltip cat_".$cat."\">".($disc === "" ? "&nbsp;" : (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".
+	  htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8")))."</span></td></tr>\n";
 
     $this->par++;
   }
@@ -91,7 +91,7 @@ final class Movies extends MoviesBase {
 	"value=\"".($this->filters['filter_ID'][0] ?
 	$this->filters['filter_ID'][2] : "")."\"></td><td title=\"/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.\" ".
 	"class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" ".
-	"id=\"list_filter_ltitle\" type=\"text\" "."onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
+	"id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
 	"onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
 	($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][2] : "")."\"></td>".
 	"<!-- <td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td> -->".

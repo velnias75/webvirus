@@ -198,7 +198,7 @@ EOD;
     $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
       $this->filterSQL($fi['ifil'], $fi['tfil'], $fi['dfil'], $fi['lfil'])." GROUP BY `m`.`ID` ORDER BY ".$this->order;
 
-    //     echo "<pre>".$bq."</pre>\n";
+//     echo "<pre>".$bq."</pre>\n";
 
     return $this->con->query($bq);
   }

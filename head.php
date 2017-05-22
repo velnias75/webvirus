@@ -14,19 +14,22 @@
 <script src="https://twitter.github.com/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 <script>
 var titles = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.nonword,
-  queryTokenizer: Bloodhound.tokenizers.nonword,
-  prefetch: '<?= dirname($_SERVER['REQUEST_URI'])."/" ?>title-json.php'
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: {
+      url: '<?= dirname($_SERVER['REQUEST_URI'])."/" ?>title-json.php?cat=<?= isset($_GET['cat']) ? $_GET['cat'] : -1 ?>',
+      cache: false
+    }
 });
 
 $(document).ready(function() {
   $('#list_filter_ltitle').typeahead({
-    hint: true,
+    hint: false,
     highlight: true,
-    minLength: 1
+    minLength: 3
   }, {
-    name: 'titles',
-    source: titles
+    source: titles,
+    limit: 10
   });
 })
 
