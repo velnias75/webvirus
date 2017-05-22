@@ -95,7 +95,8 @@ final class MySQLBase {
 	  'admin' => boolval($row['admin']),
 	  'last_login' => $row['last_login'],
 	  'auto_login' => $auto,
-	  'style' => $row['style']
+	  'style' => $row['style'],
+	  'fid' => ""
 	);
 
       $result->free_result();

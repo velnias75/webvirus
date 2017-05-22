@@ -99,13 +99,21 @@ final class Movies extends MoviesBase {
 	$this->filters['filter_lingo'][1] : "",$this->filters['filter_lingo_not'][0])."</td>".
 	"<td class=\"list_filter\">".(new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)."</td></tr>\n";
 
+      $fids = "";
+
       while($row = $result->fetch_assoc()) {
+
+	$fids .= $row['ID'].",";
 
         if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
 	  $this->renderRow($row['ID'], $row['ltitle'], $row['st'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
 	}
 
 	$i++;
+      }
+
+      if(isset($_SESSION['ui'])) {
+	$_SESSION['ui']['fid'] = substr($fids, 0, -1);
       }
 
       $this->renderRow();

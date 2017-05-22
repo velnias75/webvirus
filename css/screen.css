@@ -62,7 +62,7 @@ table.userbox td label input[type=text], table.userbox td label input[type=passw
   width: 120px;
 }
 
-table.userbox td input[type=submit] {
+table.userbox td input[type=submit], #remember_button {
   padding: 5px 15px;
   background:var(--col6);
   border: 0 none;
@@ -406,6 +406,10 @@ td.page_nr.page_active {
 
 #filter_submit {
   display: none;
+}
+
+#remember_button {
+  display: inherit;
 }
 
 .tt-menu {
