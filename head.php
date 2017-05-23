@@ -14,8 +14,7 @@
 <link rel="stylesheet" href="css/master.php?t=<?php echo time(); ?>" rel="stylesheet" title="Hirnloser Stil" type="text/css" media="screen">
 <link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
 <link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" type="text/css" media="print">
-<script src="https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://twitter.github.com/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/g/jquery,typeahead.js"></script>
 <script>
 var titles = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
