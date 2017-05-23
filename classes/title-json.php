@@ -27,7 +27,13 @@ final class TitleJSON extends MoviesBase {
   function __construct($cat = -1, $q = "") {
     parent::__construct("ltitle", 0, -1, $cat);
 
-    $like = " LIKE CONCAT('%', '".MySQLBase::instance()->con()->real_escape_string($q)."', '%')";
+    $rex = $q[0] == '/';
+
+    if($rex && substr($q, -1) == "/") $q = substr($q, 0, -1);
+
+    $like = " ".($rex ? "RLIKE '" : "LIKE  CONCAT('%', '").
+      MySQLBase::instance()->con()->real_escape_string($rex ? substr($q, 1) : $q).($rex ? "'" : "', '%')");
+
     $this->result = $this->mySQLRowsQuery(empty($q) ? "" : " HAVING `ltitle` ".$like);
   }
 
