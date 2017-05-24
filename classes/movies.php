@@ -88,13 +88,12 @@ final class Movies extends MoviesBase {
       echo "<tr class=\"list_filter\">".
 	"<td title=\"Durch Kommata getrennte Liste von Nummern, die an das Ergebnis angef&uuml;gt werden sollen\" ".
 	"class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
-	"value=\"".($this->filters['filter_ID'][0] ?
-	$this->filters['filter_ID'][2] : "")."\"></td><td title=\"/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.\" ".
+	"value=\"".($this->filters['filter_ID'][0] ? $this->filters['filter_ID'][1] : "").
+	"\"></td><td title=\"/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.\" ".
 	"class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" ".
 	"id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
 	"onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
-	($this->filters['filter_ltitle'][0] ? urldecode($this->filters['filter_ltitle'][2]) : "")."\"></td>".
-	"<!-- <td class=\"list_filter\"><input readonly disabled class=\"list_filter\" id=\"list_filter_duration\" type=\"text\"></td> -->".
+	($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\"></td>".
 	"<td class=\"list_filter\">&nbsp;</td><td nowrap class=\"list_filter\">".(new FilterdropLang())->render($this->filters['filter_lingo'][0] ?
 	$this->filters['filter_lingo'][1] : "",$this->filters['filter_lingo_not'][0])."</td>".
 	"<td class=\"list_filter\">".(new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)."</td></tr>\n";
