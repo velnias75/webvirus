@@ -30,9 +30,14 @@ final class UserBox implements IRenderable {
 
   public function render() {
 
-    echo "<table class=\"cat_nav userbox\" border=\"0\" width=\"100%\">\n";
     echo "<form method=\"POST\" action=\"login.php\">\n";
     echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
+
+    if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
+      echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
+    }
+
+    echo "<table class=\"cat_nav userbox\" border=\"0\" width=\"100%\">\n";
     echo "<tr><th class=\"cat_nav\">Benutzerbereich</th></tr>\n";
 
     if(is_null($this->ui) || isset($_SESSION['error'])) {
@@ -55,7 +60,7 @@ final class UserBox implements IRenderable {
       echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
 
       echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
-      "title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"index.php\">Alle Filter l&ouml;schen</a></td></tr>\n";
+	"title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"index.php\">Alle Filter l&ouml;schen</a></td></tr>\n";
 
       echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
 	"title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
@@ -75,17 +80,15 @@ final class UserBox implements IRenderable {
       }
     }
 
-    echo "</form>\n";
-
     if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
       echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
       echo "<tr><td><form action=\"update.php\" method=\"POST\" enctype=\"multipart/form-data\">";
-      echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
       echo "<label class=\"fileContainer\">Datenupdate: <input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
-      "name=\"btn[upload]\" accept=\"application/sql\"></label></form></td></tr>\n";
+	"name=\"btn[upload]\" accept=\"application/sql\"></label></form></td></tr>\n";
     }
 
     echo "</table>\n";
+    echo "</form>\n";
 
   }
 }

@@ -128,23 +128,23 @@ EOD;
     $ret = "";
 
     if($this->filters['filter_ID'][0]) {
-      $ret .= "&filter_ID=".urlencode($this->filters['filter_ID'][1]);
+      $ret .= "&amp;filter_ID=".urlencode($this->filters['filter_ID'][1]);
     }
 
     if($this->filters['filter_ltitle'][0]) {
-      $ret .= "&filter_ltitle=".urlencode($this->filters['filter_ltitle'][1]);
+      $ret .= "&amp;filter_ltitle=".urlencode($this->filters['filter_ltitle'][1]);
     }
 
     if($this->filters['filter_lingo'][0]) {
-      $ret .= "&filter_lingo=".urlencode($this->filters['filter_lingo'][1]);
+      $ret .= "&amp;filter_lingo=".urlencode($this->filters['filter_lingo'][1]);
     }
 
     if($this->filters['filter_lingo_not'][0]) {
-      $ret .= "&filter_lingo_not=".urlencode($this->filters['filter_lingo_not'][1]);
+      $ret .= "&amp;filter_lingo_not=".urlencode($this->filters['filter_lingo_not'][1]);
     }
 
     if($this->filters['filter_disc'][0]) {
-      $ret .= "&filter_disc=".urlencode($this->filters['filter_disc'][1]);
+      $ret .= "&amp;filter_disc=".urlencode($this->filters['filter_disc'][1]);
     }
 
     return $ret;
@@ -156,18 +156,18 @@ EOD;
   }
 
   public final function catQueryString($cat) {
-    return $this->createQueryString(false, true, true, false)."&from=0&to=".urlencode($this->pageSize())."&cat=".urlencode($cat);
+    return $this->createQueryString(false, true, true, false)."&amp;from=0&amp;to=".urlencode($this->pageSize())."&amp;cat=".urlencode($cat);
   }
 
   public final function discQueryString($disc) {
-    return $this->createQueryString(false, true, false, false)."&from=0&to=-1&filter_disc=".urlencode($disc);
+    return $this->createQueryString(false, true, false, false)."&amp;from=0&amp;to=-1&amp;filter_disc=".urlencode($disc);
   }
 
   protected final function createQueryString($cat, $order, $filter, $limits, $qm = true) {
-    return ($qm ? "?" : "").(urlencode($cat) ? "&cat=".urlencode($this->category) : "").
-      ($order   ? "&order_by=".urlencode($this->order()) : "").
+    return ($qm ? "?" : "").(urlencode($cat) ? "&amp;cat=".urlencode($this->category) : "").
+      ($order   ? "&amp;order_by=".urlencode($this->order()) : "").
       ($filter  ? $this->filters() : "").
-      ($limits  ? "&from=".urlencode($this->limit_from)."&to=".urlencode($this->limit_to) : "");
+      ($limits  ? "&amp;from=".urlencode($this->limit_from)."&amp;to=".urlencode($this->limit_to) : "");
   }
 
   private function filterSQLArray($q = "") {

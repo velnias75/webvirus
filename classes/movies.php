@@ -37,22 +37,28 @@ final class Movies extends MoviesBase {
   }
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
+
+    if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
+      $isSummary = true;
+    }
+
     echo "<tr ".($isSummary ? "" : "itemscope itemtype=\"http://schema.org/MediaObject\"")." class=\"parity_".($this->par % 2)."\">".
 	"<td nowrap class=\"list hack\" align=\"right\">".($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
 	  htmlentities($id, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
 	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
-	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>"))."</td>".
+	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>")).
+	  ($isSummary || !$this->loggedIn ? "" : "</div>")."</td>".
 	"<td ".($isSummary ? "" : "nowrap")." align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".
-	  ($this->loggedIn ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").
-	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn ? "</a>" : "").
-	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td>".
+	  ($this->loggedIn && !$isSummary ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").
+	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
+	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))."</td>".
 	"<td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
 	  ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
-	  "<div ".($isSummary ? "" : "itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").">".
-	  htmlentities($duration, ENT_SUBSTITUTE, "utf-8"))."</div></td>".
+	  ($isSummary ? "" : "<div itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").($isSummary ? "" :">").
+	  htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).($isSummary ? "" : "</div>")."</td>".
 	"<td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td>".
 	"<td nowrap align=\"left\" class=\"list hasTooltip cat_".$cat."\">".($disc === "" ? "&nbsp;" : (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".
-	  htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8")))."</span></td></tr>\n";
+	  htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td></tr>";
 
     $this->par++;
   }
@@ -61,11 +67,12 @@ final class Movies extends MoviesBase {
 
     $i = 0;
 
-    echo "<form method=\"GET\"><table class=\"list\" border=\"0\">\n";
-    echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\" />".
-      "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\" />".
-      "<input type=\"hidden\" name=\"from\" value=\"0\" />".
-      "<input type=\"hidden\" name=\"to\" value=\"-1\" />\n";
+    echo "<form method=\"GET\">\n";
+    echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\">".
+      "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
+      "<input type=\"hidden\" name=\"from\" value=\"0\">".
+      "<input type=\"hidden\" name=\"to\" value=\"-1\">\n";
+    echo "<table class=\"list\" border=\"0\">\n";
 
     $result = $this->mySQLRowsQuery();
 
@@ -134,7 +141,7 @@ final class Movies extends MoviesBase {
       $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", "", 4, true);
     }
 
-    echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"center\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
+    echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"middle\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
 
     if(isset($_SESSION['ui'])) {
@@ -145,7 +152,7 @@ final class Movies extends MoviesBase {
   private function createAllPage() {
     return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
       ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".
-      $this->createQueryString(true, true, true, false)."&from=0&to=-1\">Alle</a>")."</td>";
+      $this->createQueryString(true, true, true, false)."&amp;from=0&amp;to=-1\">Alle</a>")."</td>";
   }
 
   private function createPagination($rows) {
@@ -158,7 +165,7 @@ final class Movies extends MoviesBase {
 
     $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage().
       "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".
-      $this->createQueryString(true, true, true, false)."&from=".$prev."&to=".($prev + $psize)."\">&#10525;</a></td>";
+      $this->createQueryString(true, true, true, false)."&amp;from=".$prev."&amp;to=".($prev + $psize)."\">&#10525;</a></td>";
 
     for($i = 0; $i < $pages; $i++) {
 
@@ -166,12 +173,12 @@ final class Movies extends MoviesBase {
       $activ = $this->limit_to == -1 || !(abs($this->limit_from) >= $from && abs($this->limit_to) <= ($from + $psize));
       $pagin = $pagin."<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
 	($activ ? "<a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
-	"&from=".$from."&to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
+	"&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
     }
 
     return $pagin."<td width=\"".floor(100/($pages + 4)).
       "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
-      "&from=".$next."&to=".($next + $psize)."\">&#10526;</a></td>".$this->createAllPage()."</tr></table>";
+      "&amp;from=".$next."&amp;to=".($next + $psize)."\">&#10526;</a></td>".$this->createAllPage()."</tr></table>";
   }
 
 }

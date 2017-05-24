@@ -50,12 +50,12 @@ abstract class FilterdropBase {
   public final function render($id, $checked = false) {
 
     $res = "<select class=\"input_filter\" name=\"".$this->filterName()."\" onchange=\"this.form.submit()\">".
-      "<option ".($id == $this->noneValue() ? "selected" : "").
+      "<option".($id == $this->noneValue() ? " selected" : "").
       " value=\"".$this->noneValue()."\">alle</option>\n";
 
     while($row = $this->result->fetch_assoc()) {
-      $res .= "\t<option ".($id == $row[$this->idField()] ? "selected" : "")." value=\"".
-	$row[$this->idField()]."\">".htmlentities($row[$this->nameField()], ENT_SUBSTITUTE, "utf-8")."</option>\n";
+      $res .= "<option".($id == $row[$this->idField()] ? " selected" : "")." value=\"".
+	$row[$this->idField()]."\">".htmlentities($row[$this->nameField()], ENT_SUBSTITUTE, "utf-8")."</option>";
     }
 
     return $res."</select>".($this->showNot() ? "&nbsp;<label><input ".($id == $this->noneValue() ? "disabled" : "").
