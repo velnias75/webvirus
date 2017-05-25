@@ -106,10 +106,12 @@ final class Movies extends MoviesBase {
 	"<td class=\"list_filter\">".(new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)."</td></tr>\n";
 
       $fids = "";
+      $tits = array();
 
       while($row = $result->fetch_assoc()) {
 
-	$fids .= $row['ID'].",";
+	$fids  .= $row['ID'].",";
+	$tits[] = htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8");
 
         if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
 	  $this->renderRow($row['ID'], $row['ltitle'], $row['st'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
@@ -141,7 +143,7 @@ final class Movies extends MoviesBase {
       $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", "", 4, true);
     }
 
-    echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"middle\" colspan=\"5\">".$this->createPagination($i)."</td></tr>\n";
+    echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"middle\" colspan=\"5\">".$this->createPagination($i, $tits)."</td></tr>\n";
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
 
     if(isset($_SESSION['ui'])) {
@@ -149,13 +151,13 @@ final class Movies extends MoviesBase {
     }
   }
 
-  private function createAllPage() {
+  private function createAllPage($rows, $tits) {
     return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
-      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" href=\"".
+      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" title=\"".$tits[0]." &#8594;&#13;&#10;".$tits[$rows - 1]."\" href=\"".
       $this->createQueryString(true, true, true, false)."&amp;from=0&amp;to=-1\">Alle</a>")."</td>";
   }
 
-  private function createPagination($rows) {
+  private function createPagination($rows, $tits) {
 
     $psize = abs(($this->limit_to == -1 ? $this->pageSize() : abs($this->limit_to)) - abs($this->limit_from));
     $pages = ceil($rows/($psize + 1));
@@ -163,22 +165,25 @@ final class Movies extends MoviesBase {
     $prev  = ($this->limit_from - $psize - 1) >= 0 ? $this->limit_from - $psize - 1 : ($pages - 1) * ($psize + 1);
     $next  = ($this->limit_from + $psize + 1) < $rows ? $this->limit_from + $psize + 1 : 0;
 
-    $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage().
-      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".
+    $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage($rows, $tits).
+      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a title=\"".$tits[$prev]." &#8594;&#13;&#10;".
+      $tits[min($prev + $psize, $rows - 1)]."\" class=\"page_nr\" href=\"".
       $this->createQueryString(true, true, true, false)."&amp;from=".$prev."&amp;to=".($prev + $psize)."\">&#10525;</a></td>";
 
     for($i = 0; $i < $pages; $i++) {
 
       $from  = $i * ($psize + 1);
       $activ = $this->limit_to == -1 || !(abs($this->limit_from) >= $from && abs($this->limit_to) <= ($from + $psize));
-      $pagin = $pagin."<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
+      $pagin = $pagin."<td title=\"".$tits[$from]." &#8594;&#13;&#10;".$tits[min($from + $psize, $rows - 1)]."\" width=\"".
+	floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
 	($activ ? "<a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
 	"&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
     }
 
     return $pagin."<td width=\"".floor(100/($pages + 4)).
-      "%\" class=\"page_nr\"><a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
-      "&amp;from=".$next."&amp;to=".($next + $psize)."\">&#10526;</a></td>".$this->createAllPage()."</tr></table>";
+      "%\" class=\"page_nr\"><a title=\"".$tits[$next]." &#8594;&#13;&#10;".$tits[min($next + $psize, $rows - 1)]."\" class=\"page_nr\" href=\"".
+      $this->createQueryString(true, true, true, false)."&amp;from=".$next."&amp;to=".($next + $psize)."\">&#10526;</a></td>".
+      $this->createAllPage($rows, $tits)."</tr></table>";
   }
 
 }
