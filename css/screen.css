@@ -415,13 +415,16 @@ td.page_nr.page_active {
 
 .tt-menu {
   width: 99%;
+  max-height: 180px;
+  overflow-y: auto;
+  border-width: 2px;
+  border-color: var(--col5);
+  border-style: solid;
   background-color: var(--col2);
 }
 
 .tt-dataset {
-  border-width: 2px;
-  border-color: var(--col5);
-  border-style: solid;
+  border: none;
 }
 
 .tt-cursor {

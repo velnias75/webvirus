@@ -64,7 +64,11 @@ $(document).ready(function() {
     minLength: 3
   }, {
     source: titles,
-    limit: 10
+    templates: {
+      empty: 'Dieser Suchbegriff wird Sie zu keinem Film f&uuml;hren!',
+      pending: 'Schnarch&#8230;'
+    },
+    limit: 1e06
   });
 })
 
