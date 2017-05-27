@@ -19,21 +19,9 @@
  */
 
   require 'head.php';
-  require 'classes/movies.php';
   require 'classes/userbox.php';
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
-
-  session_start();
-
-  try {
-    $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
-	    isset($_GET['from']) ? $_GET['from'] : 0,
-	    isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
-  } catch(Exception $e) {
-    echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
-  }
-
 ?>
 
 <table id="layout" border="0" width="100%">
@@ -50,7 +38,6 @@
 	}
       ?><table class="cat_nav" border="0" width="100%">
 	<tr><th class="cat_nav">Downloads</th></tr>
-	<!-- <tr><td nowrap><a class="pdflink" href="http://rangun.de/filmliste-alpha.pdf" target="_blank">Filmliste als PDF-Datei</a></td></tr> -->
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
       <?php (new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null))->render(); ?>

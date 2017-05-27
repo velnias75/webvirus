@@ -75,8 +75,7 @@ final class Movies extends MoviesBase {
     echo "<table class=\"list\" border=\"0\">\n";
 
     $result = $this->mySQLRowsQuery();
-
-    if($result) {
+    $hasRes = !is_null($result);
 
       $act_id = ($this->id_order === "");
       $act_ti = ($this->ti_order === "");
@@ -105,56 +104,64 @@ final class Movies extends MoviesBase {
 	$this->filters['filter_lingo'][1] : "",$this->filters['filter_lingo_not'][0])."</td>".
 	"<td class=\"list_filter\">".(new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)."</td></tr>\n";
 
-      $fids = "";
-      $tits = array();
+      if($result) {
 
-      while($row = $result->fetch_assoc()) {
+	$fids = "";
+	$tits = array();
 
-	$fids  .= $row['ID'].",";
-	$tits[] = htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8");
+	while($row = $result->fetch_assoc()) {
 
-        if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
-	  $this->renderRow($row['ID'], $row['ltitle'], $row['st'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
+	  $fids  .= $row['ID'].",";
+	  $tits[] = htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8");
+
+	  if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
+	    $this->renderRow($row['ID'], $row['ltitle'], $row['st'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
+	  }
+
+	  $i++;
 	}
 
-	$i++;
-      }
+	if(isset($_SESSION['ui'])) {
+	  $_SESSION['ui']['fid'] = $this->isFiltered() ? substr($fids, 0, -1) : null;
+	}
 
-      if(isset($_SESSION['ui'])) {
-	$_SESSION['ui']['fid'] = $this->isFiltered() ? substr($fids, 0, -1) : null;
-      }
+	$this->renderRow();
 
-      $this->renderRow();
+	$total_res = $this->mySQLTotalQuery();
 
-      $total_res = $this->mySQLTotalQuery();
+	if($total_res) $total = $total_res->fetch_assoc();
 
-      if($total_res) $total = $total_res->fetch_assoc();
+	if($total_res && $total) {
+	  $this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), "", $total['tot_dur'], "0", "", "", "", 1, true);
+	  $total_res->free_result();
+	} else {
+	  $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", 4, true);
+	}
 
-      if($total_res && $total) {
-	$this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), "", $total['tot_dur'], "0", "", "", "", 1, true);
-	$total_res->free_result();
-      } else {
-	$this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", 4, true);
-      }
+	$result->free_result();
 
-      $result->free_result();
-
-    } else {
+    } else if(!empty(MySQLBase::instance()->con()->error)) {
       $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", "", 4, true);
+    } else {
+      $this->renderRow(0, "Videos gefunden, überprüfen Sie die Filter!", "", "00:00:00", "0", "", "", "", 1, true);
     }
 
-    echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"middle\" colspan=\"5\">".$this->createPagination($i, $tits)."</td></tr>\n";
+    if($hasRes) {
+      echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"middle\" colspan=\"5\">".
+	$this->createPagination($i, isset($tits) ? $tits : array())."</td></tr>\n";
+    }
+
     echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
 
-    if(isset($_SESSION['ui'])) {
-      MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);
+    if($hasRes && isset($_SESSION['ui'])) {
+	MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);
     }
   }
 
   private function createAllPage($rows, $tits) {
     return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
-      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" title=\"".$tits[0]." &#8594;&#13;&#10;".$tits[$rows - 1]."\" href=\"".
-      $this->createQueryString(true, true, true, false)."&amp;from=0&amp;to=-1\">Alle</a>")."</td>";
+      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" ".(count($tits) ? "title=\"".$tits[0]." &#8594;&#13;&#10;".$tits[$rows - 1]."\"" : "").
+      " href=\"".$this->createQueryString(true, true, true, false)."&amp;from=0&amp;to=-1\">Alle</a>")."</td>";
   }
 
   private function createPagination($rows, $tits) {
@@ -166,8 +173,8 @@ final class Movies extends MoviesBase {
     $next  = ($this->limit_from + $psize + 1) < $rows ? $this->limit_from + $psize + 1 : 0;
 
     $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage($rows, $tits).
-      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a title=\"".$tits[$prev]." &#8594;&#13;&#10;".
-      $tits[min($prev + $psize, $rows - 1)]."\" class=\"page_nr\" href=\"".
+      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a ".(count($tits) ? "title=\"".$tits[$prev]." &#8594;&#13;&#10;".
+      $tits[min($prev + $psize, $rows - 1)]."\"" : "")." class=\"page_nr\" href=\"".
       $this->createQueryString(true, true, true, false)."&amp;from=".$prev."&amp;to=".($prev + $psize)."\">&#10525;</a></td>";
 
     for($i = 0; $i < $pages; $i++) {
@@ -181,9 +188,9 @@ final class Movies extends MoviesBase {
     }
 
     return $pagin."<td width=\"".floor(100/($pages + 4)).
-      "%\" class=\"page_nr\"><a title=\"".$tits[$next]." &#8594;&#13;&#10;".$tits[min($next + $psize, $rows - 1)]."\" class=\"page_nr\" href=\"".
-      $this->createQueryString(true, true, true, false)."&amp;from=".$next."&amp;to=".($next + $psize)."\">&#10526;</a></td>".
-      $this->createAllPage($rows, $tits)."</tr></table>";
+      "%\" class=\"page_nr\"><a ".(count($tits) ? "title=\"".$tits[$next]." &#8594;&#13;&#10;".$tits[min($next + $psize, $rows - 1)].
+      "\" class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false)."&amp;from=".$next."&amp;to=".($next + $psize).
+      "\">&#10526;</a></td>".$this->createAllPage($rows, $tits) : "")."</tr></table>";
   }
 
 }

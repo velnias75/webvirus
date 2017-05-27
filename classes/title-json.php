@@ -24,29 +24,24 @@ final class TitleJSON extends MoviesBase {
 
   private $result;
 
-  function __construct($cat = -1, $q = "") {
+  function __construct($cat = -1) {
     parent::__construct("ltitle", 0, -1, $cat);
 
-    $rex = $q[0] == '/';
-
-    if($rex && substr($q, -1) == "/") $q = substr($q, 0, -1);
-
-    $like = " ".($rex ? "RLIKE '" : "LIKE  CONCAT('%', '").
-      MySQLBase::instance()->con()->real_escape_string($rex ? substr($q, 1) : $q).($rex ? "'" : "', '%')");
-
-    $this->result = $this->mySQLRowsQuery(empty($q) ? "" : " HAVING `ltitle` ".$like);
+    $this->result = $this->mySQLRowsQuery("", true);
   }
 
   function __destruct() {
-    $this->result->free_result();
+    if(!is_null($this->result)) $this->result->free_result();
   }
 
   public function render() {
 
     $array = array();
 
-    while ($row = $this->result->fetch_assoc()) {
-      $array[] = $row['ltitle'];
+    if(!is_null($this->result)) {
+      while ($row = $this->result->fetch_assoc()) {
+	$array[] = $row['ltitle'];
+      }
     }
 
     echo json_encode($array);

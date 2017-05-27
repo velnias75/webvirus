@@ -123,7 +123,7 @@ EOD;
     return "ltitle";
   }
 
-  private function filters() {
+  private function filters($ft = true) {
 
     $ret = "";
 
@@ -131,7 +131,7 @@ EOD;
       $ret .= "&amp;filter_ID=".urlencode($this->filters['filter_ID'][1]);
     }
 
-    if($this->filters['filter_ltitle'][0]) {
+    if($ft && $this->filters['filter_ltitle'][0]) {
       $ret .= "&amp;filter_ltitle=".urlencode($this->filters['filter_ltitle'][1]);
     }
 
@@ -155,6 +155,10 @@ EOD;
     return $this->createQueryString(true, true, true, true);
   }
 
+  public final function filterJSONQueryString() {
+    return str_replace("&amp;", "&", $this->createQueryString(true, false, true, false, true, false));
+  }
+
   public final function catQueryString($cat) {
     return $this->createQueryString(false, true, true, false)."&amp;from=0&amp;to=".urlencode($this->pageSize())."&amp;cat=".urlencode($cat);
   }
@@ -163,10 +167,10 @@ EOD;
     return $this->createQueryString(false, true, false, false)."&amp;from=0&amp;to=-1&amp;filter_disc=".urlencode($disc);
   }
 
-  protected final function createQueryString($cat, $order, $filter, $limits, $qm = true) {
+  protected final function createQueryString($cat, $order, $filter, $limits, $qm = true, $ft = true) {
     return ($qm ? "?" : "").(urlencode($cat) ? "&amp;cat=".urlencode($this->category) : "").
       ($order   ? "&amp;order_by=".urlencode($this->order()) : "").
-      ($filter  ? $this->filters() : "").
+      ($filter  ? $this->filters($ft) : "").
       ($limits  ? "&amp;from=".urlencode($this->limit_from)."&amp;to=".urlencode($this->limit_to) : "");
   }
 
@@ -191,7 +195,7 @@ EOD;
     );
   }
 
-  private function getBuiltQuery($q = "") {
+  private function getBuiltQuery($q = "", $filtered_ids = false) {
 
     $fi = $this->filterSQLArray($q);
     $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);
@@ -201,11 +205,11 @@ EOD;
       $bq = (!$ef ? "(".
 	self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']
-      .") UNION (" : "").
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q'].
+	") UNION (" : "").
 	self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
-	$fi['ifil']." GROUP BY `m`.`ID` "
-      .(!$ef ? ")" : "")." ORDER BY ".$this->order;
+	$fi['ifil']." GROUP BY `m`.`ID` ".($filtered_ids ? " HAVING `ltitle` ".$fi['tfil'].$fi['q'] : "").
+	(!$ef ? ")" : "")." ORDER BY ".$this->order;
 
     } else {
 
@@ -217,9 +221,11 @@ EOD;
     return $bq;
   }
 
-  protected final function mySQLRowsQuery($q = "") {
-//     echo "<pre>".$this->getBuiltQuery($q)."</pre>\n";
-    return $this->con->query($this->getBuiltQuery($q));
+  protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
+//     echo "<pre>".$this->getBuiltQuery($q, $filtered_ids)."</pre>\n";
+    $r = $this->con->query($this->getBuiltQuery($q, $filtered_ids));
+
+    return $r && $r->num_rows ? $r : null;
   }
 
   protected final function mySQLTotalQuery($q = "") {
@@ -229,7 +235,7 @@ EOD;
     return $this->con->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
 	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
 	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
-	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".$this->getBuiltQuery($q).") AS `choice`");
+	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
   }
 
   static public final function pageSize() {

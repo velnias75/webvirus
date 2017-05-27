@@ -22,6 +22,6 @@ require 'classes/title-json.php';
 
 header("Content-type: application/json");
 
-(new TitleJSON(isset($_GET['cat']) ? $_GET['cat'] : -1, isset($_GET['q']) ? $_GET['q'] : ""))->render();
+(new TitleJSON(isset($_GET['cat']) ? $_GET['cat'] : -1))->render();
 
 ?>
