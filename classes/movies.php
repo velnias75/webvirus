@@ -96,7 +96,7 @@ final class Movies extends MoviesBase {
 	"class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
 	"value=\"".($this->filters['filter_ID'][0] ? $this->filters['filter_ID'][1] : "").
 	"\"></td><td title=\"/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.\" ".
-	"class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" ".
+	"class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" placeholder=\"Suchbegriff(e) oder /regul&auml;rer Ausdruck/\" ".
 	"id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
 	"onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
 	($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\"></td>".
