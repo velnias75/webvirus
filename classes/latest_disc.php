@@ -19,15 +19,17 @@
  */
 
 require_once 'mysql_base.php';
-require_once 'irenderable.php';
+require_once 'catnavtable.php';
 
-final class LatestDisc implements IRenderable {
+final class LatestDisc extends CatNavTable {
 
   private $result;
   private $movies;
   private $con;
 
   function __construct(Movies $m) {
+
+    parent::__construct("Neueste DVD");
 
     $this->con = MySQLBase::instance()->con();
     $this->result = $this->con->query("SELECT `id`, `name`, DATE_FORMAT(`created`, '%d.%m.%Y') AS `df` ".
@@ -38,7 +40,6 @@ final class LatestDisc implements IRenderable {
     }
 
     $this->movies = $m;
-
   }
 
   function __destruct() {
@@ -49,13 +50,13 @@ final class LatestDisc implements IRenderable {
 
     $row = $this->result->fetch_assoc();
 
-    echo "<table class=\"cat_nav\" border=\"0\" width=\"100%\"><tr><th class=\"cat_nav\">Neueste DVD</th></tr>".
-    "<tr><td align=\"left\" nowrap><ul class=\"cat_nav\"><li><a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
-      htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").")</li>\n";
+    $this->addRow(new Row(array(), array(new Cell(array('align' => "left", 'nowrap' => null),
+      "<ul class=\"cat_nav\"><li><a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
+      htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").
+      ")</li></ul>"))));
 
-    echo "</ul></td></tr></table>\n";
+    echo parent::render();
   }
-
 }
 
 ?>
