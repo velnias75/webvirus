@@ -51,7 +51,7 @@ EOD;
 
   protected function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
 
-    parent::__construct(array('class' => "list"));
+    parent::__construct(array('class' => "list", 'border' => "0"));
 
     $this->con = MySQLBase::instance()->con();
 

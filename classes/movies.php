@@ -24,6 +24,7 @@ require 'filterdrop_lang.php';
 require 'user_actions.php';
 require 'irenderable.php';
 require 'movies_base.php';
+require 'pagination.php';
 
 final class Movies extends MoviesBase implements IRenderAble {
 
@@ -184,7 +185,9 @@ final class Movies extends MoviesBase implements IRenderAble {
       $this->addRow(new Row(
 	array('id' => "list_topbot"),
 	array(new Cell(array('align' => "center", 'valign' => "middle", 'colspan' => "5"),
-	  $this->createPagination($i, isset($tits) ? $tits : array())))
+	  (new Pagination($i, isset($tits) ? $tits : array(),
+	    $this->createQueryString(true, true, true, false), $this->pageSize(),
+	    $this->limit_from, $this->limit_to))->render()))
       ));
     }
 
@@ -196,42 +199,6 @@ final class Movies extends MoviesBase implements IRenderAble {
 	MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);
     }
   }
-
-  private function createAllPage($rows, $tits) {
-    return "<td class=\"page_nr".($this->limit_to == -1 ? " page_active" : "")."\">".
-      ($this->limit_to == -1 ? "Alle" : "<a class=\"page_nr\" ".(count($tits) ? "title=\"".$tits[0]." &#8594;&#13;&#10;".$tits[$rows - 1]."\"" : "").
-      " href=\"".$this->createQueryString(true, true, true, false)."&amp;from=0&amp;to=-1\">Alle</a>")."</td>";
-  }
-
-  private function createPagination($rows, $tits) {
-
-    $psize = abs(($this->limit_to == -1 ? $this->pageSize() : abs($this->limit_to)) - abs($this->limit_from));
-    $pages = ceil($rows/($psize + 1));
-
-    $prev  = ($this->limit_from - $psize - 1) >= 0 ? $this->limit_from - $psize - 1 : ($pages - 1) * ($psize + 1);
-    $next  = ($this->limit_from + $psize + 1) < $rows ? $this->limit_from + $psize + 1 : 0;
-
-    $pagin = "<table width=\"100%\" border=\"0\"><tr align=\"center\">".$this->createAllPage($rows, $tits).
-      "<td width=\"".floor(100/($pages + 4))."%\" class=\"page_nr\"><a ".(count($tits) ? "title=\"".$tits[$prev]." &#8594;&#13;&#10;".
-      $tits[min($prev + $psize, $rows - 1)]."\"" : "")." class=\"page_nr\" href=\"".
-      $this->createQueryString(true, true, true, false)."&amp;from=".$prev."&amp;to=".($prev + $psize)."\">&#10525;</a></td>";
-
-    for($i = 0; $i < $pages; $i++) {
-
-      $from  = $i * ($psize + 1);
-      $activ = $this->limit_to == -1 || !(abs($this->limit_from) >= $from && abs($this->limit_to) <= ($from + $psize));
-      $pagin = $pagin."<td title=\"".$tits[$from]." &#8594;&#13;&#10;".$tits[min($from + $psize, $rows - 1)]."\" width=\"".
-	floor(100/($pages + 4))."%\" class=\"page_nr".($activ ? "" : " page_active")."\">".
-	($activ ? "<a class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false).
-	"&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").($i + 1).($activ ? "</a>" : "")."</td>";
-    }
-
-    return $pagin."<td width=\"".floor(100/($pages + 4)).
-      "%\" class=\"page_nr\"><a ".(count($tits) ? "title=\"".$tits[$next]." &#8594;&#13;&#10;".$tits[min($next + $psize, $rows - 1)].
-      "\" class=\"page_nr\" href=\"".$this->createQueryString(true, true, true, false)."&amp;from=".$next."&amp;to=".($next + $psize).
-      "\">&#10526;</a></td>".$this->createAllPage($rows, $tits) : "")."</tr></table>";
-  }
-
 }
 
 ?>
