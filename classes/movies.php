@@ -18,12 +18,14 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require 'table/headercell.php';
 require 'filterdrop_disc.php';
 require 'filterdrop_lang.php';
 require 'user_actions.php';
+require 'irenderable.php';
 require 'movies_base.php';
 
-final class Movies extends MoviesBase {
+final class Movies extends MoviesBase implements IRenderAble {
 
   private $par;
   private $loggedIn = false;
@@ -42,23 +44,39 @@ final class Movies extends MoviesBase {
       $isSummary = true;
     }
 
-    echo "<tr ".($isSummary ? "" : "itemscope itemtype=\"http://schema.org/MediaObject\"")." class=\"parity_".($this->par % 2)."\">".
-	"<td nowrap class=\"list hack\" align=\"right\">".($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
+    $atts = array('class' => "parity_".($this->par % 2));
+    $tatt = array('align' => "left", 'class' => "list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle"));
+
+    if(!$isSummary) {
+      $atts['itemscope'] = null;
+      $atts['itemtype']  = "http://schema.org/MediaObject";
+      $tatt['nowrap']    = null;
+    }
+
+    $this->addRow(new Row(
+      $atts,
+      array(
+	new Cell(array('nowrap' => null, 'class' => "list hack", 'align' => "right"),
+	  ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
 	  htmlentities($id, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
 	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>")).
-	  ($isSummary || !$this->loggedIn ? "" : "</div>")."</td>".
-	"<td ".($isSummary ? "" : "nowrap")." align=\"left\" class=\"list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle")."\">".
-	  ($this->loggedIn && !$isSummary ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".urlencode($_SERVER['QUERY_STRING'])."\">" : "").
+	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
+	new Cell($tatt,
+	  ($this->loggedIn && !$isSummary ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
+	  urlencode($_SERVER['QUERY_STRING'])."\">" : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
-	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))."</td>".
-	"<td nowrap align=\"right\" class=\"list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat."\">".
+	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
+	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
 	  ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
 	  ($isSummary ? "" : "<div itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").($isSummary ? "" :">").
-	  htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).($isSummary ? "" : "</div>")."</td>".
-	"<td nowrap align=\"left\" class=\"list cat_".$cat." hack lingos\">".($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))."</td>".
-	"<td nowrap align=\"left\" class=\"list hasTooltip cat_".$cat."\">".($disc === "" ? "&nbsp;" : (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".
-	  htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8"))."</span>")."</td></tr>";
+	  htmlentities($duration, ENT_SUBSTITUTE, "utf-8")).($isSummary ? "" : "</div>")),
+	new Cell(array('nowrap' => null, 'class' => "list cat_".$cat." hack lingos"),
+	  ($lingos === "" ? "&nbsp;" : htmlentities($lingos, ENT_SUBSTITUTE, "utf-8"))),
+	new Cell(array('nowrap' => null, 'align' => "left", 'class' => "list hasTooltip cat_".$cat),
+	  ($disc === "" ? "&nbsp;" : (htmlentities($disc, ENT_SUBSTITUTE, "utf-8")."<span>".
+	  htmlentities(empty($fname) ? "Video-DVD" : $fname, ENT_SUBSTITUTE, "utf-8"))."</span>")))
+    ));
 
     $this->par++;
   }
@@ -72,39 +90,56 @@ final class Movies extends MoviesBase {
       "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
       "<input type=\"hidden\" name=\"from\" value=\"0\">".
       "<input type=\"hidden\" name=\"to\" value=\"-1\">\n";
-    echo "<table class=\"list\" border=\"0\">\n";
 
     $result = $this->mySQLRowsQuery();
     $hasRes = !is_null($result);
 
-      $act_id = ($this->id_order === "");
-      $act_ti = ($this->ti_order === "");
-      $act_du = ($this->du_order === "");
-      $act_di = ($this->di_order === "");
+    $act_id = ($this->id_order === "");
+    $act_ti = ($this->ti_order === "");
+    $act_du = ($this->du_order === "");
+    $act_di = ($this->di_order === "");
 
-      echo "<tr id=\"list_topbot\">".
-	"<th class=\"min_th hack\">".($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->createQueryString(true, false, true, true, false)."\">" : "").
-	"Nr".$this->id_order.($act_id ? "</a>" : "")."</th><th class=\"max_th ltitle\">".($act_ti ? "<a class=\"list\" href=\"?order_by=title".
-	$this->createQueryString(true, false, true, true, false)."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "").
-	"</th><th class=\"min_th duration\">".($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->createQueryString(true, false, true, true, false).
-	"\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")."</th><th class=\"min_th hack lingos\">Sprache(n)</th><th>".
-	($act_di ? "<a class=\"min_th list\" href=\"?order_by=disc".$this->createQueryString(true, false, true, true, false)."\">" : "").
-	"DVD".$this->di_order.($act_di ? "</a>" : "")."</th></tr>\n";
+    $this->addRow(new Row(
+      array('id' => "list_topbot"),
+      array(
+	new HeaderCell(array('class' => "min_th hack"),
+	  ($act_id ? "<a class=\"list\" href=\"?order_by=ID".$this->createQueryString(true, false, true, true, false)."\">" : "").
+	  "Nr".$this->id_order.($act_id ? "</a>" : "")),
+	new HeaderCell(array('class' => "max_th ltitle"),
+	  ($act_ti ? "<a class=\"list\" href=\"?order_by=title".
+	  $this->createQueryString(true, false, true, true, false)."\">" : "")."Titel".$this->ti_order.($act_ti ? "</a>" : "")),
+	new HeaderCell(array('class' => "min_th duration"),
+	  ($act_du ? "<a class=\"list\" href=\"?order_by=duration".$this->createQueryString(true, false, true, true, false).
+	  "\">" : "")."L&auml;nge".$this->du_order.($act_du ? "</a>" : "")),
+	new HeaderCell(array('class' => "min_th hack lingos"),
+	  "Sprache(n)"),
+	new HeaderCell(array(),
+	  ($act_di ? "<a class=\"min_th list\" href=\"?order_by=disc".$this->createQueryString(true, false, true, true, false)."\">" : "").
+	  "DVD".$this->di_order.($act_di ? "</a>" : "")))
+    ));
 
-      echo "<tr class=\"list_filter\">".
-	"<td title=\"Durch Kommata getrennte Liste von Nummern, die an das Ergebnis angef&uuml;gt werden sollen\" ".
-	"class=\"list_filter\"><input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
-	"value=\"".($this->filters['filter_ID'][0] ? $this->filters['filter_ID'][1] : "").
-	"\"></td><td title=\"/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.\" ".
-	"class=\"list_filter\" ><input name=\"filter_ltitle\" class=\"list_filter\" placeholder=\"Suchbegriff(e) oder /regul&auml;rer Ausdruck/\" ".
-	"id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
-	"onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
-	($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\"></td>".
-	"<td class=\"list_filter\">&nbsp;</td><td nowrap class=\"list_filter\">".(new FilterdropLang())->render($this->filters['filter_lingo'][0] ?
-	$this->filters['filter_lingo'][1] : "",$this->filters['filter_lingo_not'][0])."</td>".
-	"<td class=\"list_filter\">".(new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)."</td></tr>\n";
+    $this->addRow(new Row(
+      array('class' => "list_filter"),
+      array(
+	new Cell(array('title' => "Durch Kommata getrennte Liste von Nummern, die an das Ergebnis angef&uuml;gt werden sollen",
+		       'class' => "list_filter"),
+	  "<input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
+	  "value=\"".($this->filters['filter_ID'][0] ? $this->filters['filter_ID'][1] : "")."\">"),
+	new Cell(array('title' => "/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.",
+		       'class' => "list_filter"),
+	  "<input name=\"filter_ltitle\" class=\"list_filter\" placeholder=\"Suchbegriff(e) oder /regul&auml;rer Ausdruck/\" ".
+	  "id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
+	  "onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
+	  ($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\">"),
+	new Cell(array('class' => "list_filter")),
+	new Cell(array('nowrap' => null, 'class' => "list_filter"),
+	  (new FilterdropLang())->render($this->filters['filter_lingo'][0] ?
+	  $this->filters['filter_lingo'][1] : "".$this->filters['filter_lingo_not'][0])),
+	new Cell(array('class' => "list_filter"),
+	  (new FilterdropDisc())->render($this->filters['filter_disc'][0] ? $this->filters['filter_disc'][1] : -1)))
+    ));
 
-      if($result) {
+    if($result) {
 
 	$fids = "";
 	$tits = array();
@@ -139,7 +174,6 @@ final class Movies extends MoviesBase {
 	}
 
 	$result->free_result();
-
     } else if(!empty(MySQLBase::instance()->con()->error)) {
       $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", "", 4, true);
     } else {
@@ -147,11 +181,16 @@ final class Movies extends MoviesBase {
     }
 
     if($hasRes) {
-      echo "<tr id=\"list_topbot\"><td align=\"center\" valign=\"middle\" colspan=\"5\">".
-	$this->createPagination($i, isset($tits) ? $tits : array())."</td></tr>\n";
+      $this->addRow(new Row(
+	array('id' => "list_topbot"),
+	array(new Cell(array('align' => "center", 'valign' => "middle", 'colspan' => "5"),
+	  $this->createPagination($i, isset($tits) ? $tits : array())))
+      ));
     }
 
-    echo "</table><input type=\"submit\" id=\"filter_submit\"></form>\n";
+    echo parent::render();
+
+    echo "<input type=\"submit\" id=\"filter_submit\"></form>\n";
 
     if($hasRes && isset($_SESSION['ui'])) {
 	MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);

@@ -18,10 +18,10 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'irenderable.php';
+require 'table/table.php';
 require_once 'mysql_base.php';
 
-abstract class MoviesBase implements IRenderable {
+abstract class MoviesBase extends Table {
 
   private $con;
   private $order;
@@ -49,7 +49,9 @@ EOD;
 
   protected $filters = array();
 
-  function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
+  protected function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
+
+    parent::__construct(array('class' => "list"));
 
     $this->con = MySQLBase::instance()->con();
 
