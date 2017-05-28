@@ -18,15 +18,20 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'classes/movies_base.php';
+require_once 'table/headercell.php';
+require_once 'table/table.php';
+require_once 'movies_base.php';
 require_once 'irenderable.php';
 
-final class UserBox implements IRenderable {
+final class UserBox extends Table implements IRenderable {
 
   private $m;
   private $ui = null;
 
   function __construct($ui, MoviesBase $m) {
+
+    parent::__construct(array('class' => "cat_nav userbox", 'border' => "0", 'width' => "100%"));
+
     $this->m  = $m;
     $this->ui = $ui;
   }
@@ -40,57 +45,68 @@ final class UserBox implements IRenderable {
       echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
     }
 
-    echo "<table class=\"cat_nav userbox\" border=\"0\" width=\"100%\">\n";
-    echo "<tr><th class=\"cat_nav\">Benutzerbereich</th></tr>\n";
+    $this->addRow(new Row(array(), array(new HeaderCell(array('class' => "cat_nav"), "Benutzerbereich"))));
 
     if(is_null($this->ui) || isset($_SESSION['error'])) {
 
       if(isset($_SESSION['error'])) {
-	echo "<tr><td nowrap><span class=\"red_text\">".
-	htmlentities($_SESSION['error'], ENT_SUBSTITUTE, "utf-8")."</span></td></tr>\n";
-	unset($_SESSION['error']);
+	$this->addRow(new Row(array(), array(new Cell(array('nowrap' => null),
+	"<span class=\"red_text\">".htmlentities($_SESSION['error'], ENT_SUBSTITUTE, "utf-8")."</span>"))));
       }
 
-      echo "<tr><td align=\"center\" nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login\"></label></td></tr>\n";
-      echo "<tr><td align=\"center\" nowrap><label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label></td></tr>\n";
-      echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[login]\" value=\"Einloggen\"></td></tr>\n";
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login\"></label>"))));
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label>"))));
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<input type=\"submit\" name=\"btn[login]\" value=\"Einloggen\">"))));
 
     } else {
 
-      echo "<tr><td align=\"center\">Willkommen ".
-      htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")."!</td></tr>\n";
-      echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[logout]\" value=\"Ausloggen\"></td></tr>\n";
-      echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center"),
+      "Willkommen ".htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")."!"))));
 
-      echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
-	"title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".$this->m->noFilterQueryString()."\">Alle Filter l&ouml;schen</a></td></tr>\n";
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<input type=\"submit\" name=\"btn[logout]\" value=\"Ausloggen\">"))));
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null), "<hr>"))));
 
-      echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
-	"title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
-	(isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a><hr></td></tr>\n";
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<a id=\"remember_button\" title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".
+      $this->m->noFilterQueryString()."\">Alle Filter l&ouml;schen</a>"))));
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<a id=\"remember_button\" ".
+      "title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
+      (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a><hr>"))));
 
-      echo "<tr><td nowrap>Passwort &auml;ndern:</td></tr>\n";
-      echo "<tr><td align=\"center\" nowrap><label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label></td></tr>\n";
-      echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\"></td></tr>\n";
+      $this->addRow(new Row(array(), array(new Cell(array('nowrap' => null), "Passwort &auml;ndern:"))));
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label>"))));
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\">"))));
 
       if($this->ui['admin']) {
-	echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
-	echo "<tr><td nowrap>Benutzer anlegen:</td></tr>\n";
-	echo "<tr><td align=\"center\" nowrap><label>Name:&nbsp;<input type=\"text\" size=\"5\" name=\"display\"></label></td></tr>\n";
-	echo "<tr><td align=\"center\" nowrap><label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login_new\"></label></td></tr>\n";
-	echo "<tr><td align=\"center\" nowrap><label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_new\"></label></td></tr>\n";
-	echo "<tr><td align=\"center\" nowrap><input type=\"submit\" name=\"btn[create]\" value=\"Anlegen\"></td></tr>\n";
+	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null), "<hr>"))));
+	$this->addRow(new Row(array(), array(new Cell(array('nowrap' => null), "Benutzer anlegen:"))));
+	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	"<label>Name:&nbsp;<input type=\"text\" size=\"5\" name=\"display\"></label>"))));
+	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	"<label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login_new\"></label>"))));
+	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	"<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_new\"></label>"))));
+	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	"<input type=\"submit\" name=\"btn[create]\" value=\"Anlegen\">"))));
       }
     }
 
     if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
-      echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
-      echo "<tr><td><form action=\"update.php\" method=\"POST\" enctype=\"multipart/form-data\">";
-      echo "<label class=\"fileContainer\">Datenupdate: <input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
-	"name=\"btn[upload]\" accept=\"application/sql\"></label></form></td></tr>\n";
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null), "<hr>"))));
+      $this->addRow(new Row(array(), array(new Cell(array(),
+      "<form action=\"update.php\" method=\"POST\" enctype=\"multipart/form-data\">".
+      "<label class=\"fileContainer\">Datenupdate: <input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
+      "name=\"btn[upload]\" accept=\"application/sql\"></label>"))));
     }
 
-    echo "</table>\n";
+    echo parent::render();
     echo "</form>\n";
 
   }

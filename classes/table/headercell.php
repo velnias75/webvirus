@@ -22,7 +22,7 @@ require_once 'cell.php';
 
 final class HeaderCell extends Cell {
 
-  function __construct($attributes, $content) {
+  function __construct($attributes, $content = "&nbsp;") {
     parent::__construct($attributes, $content);
   }
 
