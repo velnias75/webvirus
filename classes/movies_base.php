@@ -157,6 +157,10 @@ EOD;
     return $this->createQueryString(true, true, true, true);
   }
 
+  public final function noFilterQueryString() {
+    return $this->createQueryString(false, true, false, true);
+  }
+
   public final function filterJSONQueryString() {
     return str_replace("&amp;", "&", $this->createQueryString(true, false, true, false, true, false));
   }
