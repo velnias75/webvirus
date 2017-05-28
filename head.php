@@ -65,7 +65,7 @@ $(document).ready(function() {
   }, {
     source: titles,
     templates: {
-      empty: 'Dieser Suchbegriff wird Sie zu keinem Film f&uuml;hren!',
+      empty: 'Liebe(r) Nutzer(in), <span class="red_text"><strong>dieser Suchbegriff wird Sie zu keinem Film f&uuml;hren!</strong></span>',
       pending: 'Schnarch&#8230;'
     },
     limit: 1e06
