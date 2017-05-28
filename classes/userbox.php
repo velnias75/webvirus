@@ -18,22 +18,24 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'table/headercell.php';
-require_once 'table/table.php';
 require_once 'movies_base.php';
-require_once 'irenderable.php';
+require_once 'catnavtable.php';
 
-final class UserBox extends Table implements IRenderable {
+final class UserBox extends CatNavTable {
 
   private $m;
   private $ui = null;
 
   function __construct($ui, MoviesBase $m) {
 
-    parent::__construct(array('class' => "cat_nav userbox", 'border' => "0", 'width' => "100%"));
+    parent::__construct("Benutzerbereich", "userbox");
 
     $this->m  = $m;
     $this->ui = $ui;
+  }
+
+  protected function getClass() {
+    return "userbox";
   }
 
   public function render() {
@@ -44,8 +46,6 @@ final class UserBox extends Table implements IRenderable {
     if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
       echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
     }
-
-    $this->addRow(new Row(array(), array(new HeaderCell(array('class' => "cat_nav"), "Benutzerbereich"))));
 
     if(is_null($this->ui) || isset($_SESSION['error'])) {
 
@@ -108,7 +108,6 @@ final class UserBox extends Table implements IRenderable {
 
     echo parent::render();
     echo "</form>\n";
-
   }
 }
 

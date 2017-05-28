@@ -19,15 +19,17 @@
  */
 
 require_once 'mysql_base.php';
-require_once 'irenderable.php';
+require_once 'catnavtable.php';
 
-final class CatChoice implements IRenderable {
+final class CatChoice extends CatNavTable {
 
   private $result;
   private $movies;
   private $con;
 
   function __construct(Movies $m) {
+
+    parent::__construct("Kategorie");
 
     $this->con = MySQLBase::instance()->con();
     $this->result = $this->con->query("SELECT `id`, `name` FROM `categories` ORDER BY `id`");
@@ -46,20 +48,19 @@ final class CatChoice implements IRenderable {
 
   public function render() {
 
-    echo "<table class=\"cat_nav\" border=\"0\" width=\"100%\"><tr><th class=\"cat_nav\">Kategorie</th></tr>".
-    "<tr><td align=\"left\"><ul class=\"cat_nav\"><li class=\"cat_0".($this->movies->category() == -1 ? " cat_nav_active" : "")."\">".
+    $html = "<ul class=\"cat_nav\"><li class=\"cat_0".($this->movies->category() == -1 ? " cat_nav_active" : "")."\">".
       ($this->movies->category() != -1 ? "<a class=\"cat_nav\" href=\"".$this->movies->catQueryString(-1)."\">" : "").
-      "Alle Videos".($this->movies->category() != -1 ? "</a>" : "")."</li>\n";
+      "Alle Videos".($this->movies->category() != -1 ? "</a>" : "")."</li>";
 
     while($row = $this->result->fetch_assoc()) {
-      echo "<li class=\"cat_".$row['id'].($this->movies->category() == $row['id'] ? " cat_nav_active" : "")."\">".
+      $html .= "<li class=\"cat_".$row['id'].($this->movies->category() == $row['id'] ? " cat_nav_active" : "")."\">".
 	($this->movies->category() != $row['id'] ? "<a class=\"cat_nav\" href=\"".$this->movies->catQueryString($row['id'])."\">" : "").
-	htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8").
-	($this->movies->category() != $row['id'] ? "</a>" : "").
-	"</li>";
+	htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8").($this->movies->category() != $row['id'] ? "</a>" : "")."</li>";
     }
 
-    echo "</ul></td></tr></table>\n";
+    $this->addRow(new Row(array(), array(new Cell(array('align' => "left"), $html))));
+
+    echo parent::render();
   }
 
 }
