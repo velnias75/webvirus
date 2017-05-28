@@ -18,13 +18,16 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'classes/movies_base.php';
 require_once 'irenderable.php';
 
 final class UserBox implements IRenderable {
 
+  private $m;
   private $ui = null;
 
-  function __construct($ui) {
+  function __construct($ui, MoviesBase $m) {
+    $this->m  = $m;
     $this->ui = $ui;
   }
 
@@ -60,7 +63,7 @@ final class UserBox implements IRenderable {
       echo "<tr><td align=\"center\" nowrap><hr></td></tr>\n";
 
       echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
-	"title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"index.php\">Alle Filter l&ouml;schen</a></td></tr>\n";
+	"title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".$this->m->noFilterQueryString()."\">Alle Filter l&ouml;schen</a></td></tr>\n";
 
       echo "<tr><td align=\"center\" nowrap><a id=\"remember_button\" ".
 	"title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".

@@ -40,7 +40,7 @@
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
-      <?php (new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null))->render(); ?>
+      <?php (new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null, $movies))->render(); ?>
     </td>
     <td id="layout_content" align="center" valign="top">
       <?php
