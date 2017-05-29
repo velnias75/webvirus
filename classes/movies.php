@@ -90,7 +90,7 @@ final class Movies extends MoviesBase implements IRenderAble {
     echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\">".
       "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
       "<input type=\"hidden\" name=\"from\" value=\"0\">".
-      "<input type=\"hidden\" name=\"to\" value=\"-1\">\n";
+      "<input type=\"hidden\" name=\"to\" value=\"".$this->pageSize()."\">\n";
 
     $result = $this->mySQLRowsQuery();
     $hasRes = !is_null($result);

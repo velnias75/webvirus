@@ -170,7 +170,7 @@ EOD;
   }
 
   public final function discQueryString($disc) {
-    return $this->createQueryString(false, true, false, false)."&amp;from=0&amp;to=-1&amp;filter_disc=".urlencode($disc);
+    return $this->createQueryString(false, true, false, false)."&amp;from=0&amp;to=".urlencode($this->pageSize())."&amp;filter_disc=".urlencode($disc);
   }
 
   protected final function createQueryString($cat, $order, $filter, $limits, $qm = true, $ft = true) {
@@ -245,6 +245,11 @@ EOD;
   }
 
   static public final function pageSize() {
+
+    if(!(!isset($_SESSION['ui']) || isset($_SESSION['error']))) {
+      return $_SESSION['ui']['pagesize'];
+    }
+
     return 24;
   }
 

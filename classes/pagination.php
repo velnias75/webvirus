@@ -32,7 +32,7 @@ final class Pagination extends Table {
     $prev  = ($limit_from - $psize - 1) >= 0 ? $limit_from - $psize - 1 : ($pages - 1) * ($psize + 1);
     $next  = ($limit_from + $psize + 1) < $rows ? $limit_from + $psize + 1 : 0;
 
-    $lratt = array('width' => floor(100/($pages + 4))."%", 'class' => "page_nr");
+    $lratt = array('width' => min(2, floor(100/($pages + 4)))."%", 'class' => "page_nr");
 
     $cells = array(
       $this->createAllPage($rows, $tits, $limit_from, $limit_to, $q),
@@ -41,23 +41,50 @@ final class Pagination extends Table {
       $tits[min($prev + $psize, $rows - 1)]."\"" : "")." class=\"page_nr\" href=\"".
       $q."&amp;from=".$prev."&amp;to=".($prev + $psize)."\">&#10525;</a>"));
 
+    $ncell = new Cell($lratt, "&#8230;");
+
+    $fill_l = false;
+    $fill_r = false;
+
+    $curr_m = ceil($limit_from/($psize + 1));
+
+    if($curr_m <= 36) {
+      $curr_l = 0;
+      $curr_r = 38;
+    } else if($curr_m >= (($pages - 1) - 36)) {
+      $curr_l = ($pages - 1) - 38;
+      $curr_r = ($pages - 1);
+    } else {
+      $curr_l = $curr_m - 18;
+      $curr_r = $curr_m + 18;
+    }
+
     for($i = 0; $i < $pages; $i++) {
 
       $from  = $i * ($psize + 1);
       $activ = $limit_to == -1 || !(abs($limit_from) >= $from && abs($limit_to) <= ($from + $psize));
 
-      $patt = array('width' => floor(100/($pages + 4))."%",
-      'title' => $tits[$from]." &#8594;&#13;&#10;".$tits[min($from + $psize, $rows - 1)]);
+      if($pages <= 40 || ($i == 0 || $i == ($pages - 1) || ($i > $curr_l && $i < $curr_r))) {
 
-      if($activ) {
-	$patt['class'] = "page_nr";
-      } else {
-	$patt['class'] = "page_nr page_active ";
+	$patt = array('width' => min(2, floor(100/($pages + 4)))."%",
+	'title' => $tits[$from]." &#8594;&#13;&#10;".$tits[min($from + $psize, $rows - 1)]);
+
+	if($activ) {
+	  $patt['class'] = "page_nr";
+	} else {
+	  $patt['class'] = "page_nr page_active ";
+	}
+
+	$cells[] = new Cell($patt, ($activ ? "<a class=\"page_nr\" href=\"".$q."&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").
+	($i + 1).($activ ? "</a>" : ""));
+
+      } else if(!$fill_l && $i <= $curr_l) {
+	$cells[] = $ncell;
+	$fill_l  = true;
+      } else if(!$fill_r && $i >= $curr_r) {
+	$cells[] = $ncell;
+	$fill_r  = true;
       }
-
-      $cells[] = new Cell($patt, ($activ ? "<a class=\"page_nr\" href=\"".$q."&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").
-      ($i + 1).($activ ? "</a>" : ""));
-
     }
 
     $cells[] = new Cell($lratt,

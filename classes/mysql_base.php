@@ -84,8 +84,8 @@ final class MySQLBase {
   public function login($login, $pass, $auto = false) {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login, style, fid ".
-      "FROM users WHERE login = '".$login."' LIMIT 1");
+      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login, style, fid, ".
+      "pagesize FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
 
@@ -101,7 +101,8 @@ final class MySQLBase {
 	  'last_login' => $row['last_login'],
 	  'auto_login' => $auto,
 	  'style' => $row['style'],
-	  'fid' => $row['fid']
+	  'fid' => $row['fid'],
+	  'pagesize' => $row['pagesize']
 	);
 
       $result->free_result();
