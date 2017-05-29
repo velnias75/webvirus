@@ -23,6 +23,8 @@ require_once 'catnavtable.php';
 
 final class UserBox extends CatNavTable {
 
+  private static $ALIGN_NOWRAP_ATTRS = array('align' => "center", 'nowrap' => null);
+
   private $m;
   private $ui = null;
 
@@ -54,11 +56,11 @@ final class UserBox extends CatNavTable {
 	"<span class=\"red_text\">".htmlentities($_SESSION['error'], ENT_SUBSTITUTE, "utf-8")."</span>"))));
       }
 
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login\"></label>"))));
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label>"))));
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<input type=\"submit\" name=\"btn[login]\" value=\"Einloggen\">"))));
 
     } else {
@@ -66,40 +68,40 @@ final class UserBox extends CatNavTable {
       $this->addRow(new Row(array(), array(new Cell(array('align' => "center"),
       "Willkommen ".htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")."!"))));
 
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<input type=\"submit\" name=\"btn[logout]\" value=\"Ausloggen\">"))));
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null), "<hr>"))));
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
 
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<a id=\"remember_button\" title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".
       $this->m->noFilterQueryString()."\">Alle Filter l&ouml;schen</a>"))));
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<a id=\"remember_button\" ".
       "title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
       (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a><hr>"))));
 
       $this->addRow(new Row(array(), array(new Cell(array('nowrap' => null), "Passwort &auml;ndern:"))));
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label>"))));
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\">"))));
 
       if($this->ui['admin']) {
-	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null), "<hr>"))));
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
 	$this->addRow(new Row(array(), array(new Cell(array('nowrap' => null), "Benutzer anlegen:"))));
-	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<label>Name:&nbsp;<input type=\"text\" size=\"5\" name=\"display\"></label>"))));
-	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<label>Login:&nbsp;<input type=\"text\" size=\"5\" name=\"login_new\"></label>"))));
-	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_new\"></label>"))));
-	$this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<input type=\"submit\" name=\"btn[create]\" value=\"Anlegen\">"))));
       }
     }
 
     if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
-      $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null), "<hr>"))));
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
       $this->addRow(new Row(array(), array(new Cell(array(),
       "<form action=\"update.php\" method=\"POST\" enctype=\"multipart/form-data\">".
       "<label class=\"fileContainer\">Datenupdate: <input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".

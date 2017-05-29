@@ -41,7 +41,8 @@ $cols = array(
   'col13' => array("#ccccff", "#ccddff"),
   'col14' => array("blue",    "#0011ff"),
   'col15' => array("red",     "red"),
-  'tgrad_moz' => array("-moz-linear-gradient(-45deg, #eeeeee 0%, #cccccc 100%)", 
+  'col16' => array("#ffffff", "#eeffee"),
+  'tgrad_moz' => array("-moz-linear-gradient(-45deg, #eeeeee 0%, #cccccc 100%)",
     "-moz-linear-gradient(-45deg, #eeffee 0%, #cceecc 100%)"),
   'tgrad_wbk' => array("-webkit-linear-gradient(-45deg, #eeeeee 0%, #cccccc 100%)",
     "-webkit-linear-gradient(-45deg, #eeffee 0%, #cceecc 100%)"),
@@ -77,6 +78,7 @@ echo ":root {".
   "--col13: ".$cols['col13'][$style].";".
   "--col14: ".$cols['col14'][$style].";".
   "--col15: ".$cols['col15'][$style].";".
+  "--col16: ".$cols['col16'][$style].";".
   "--tgrad_moz: ".$cols['tgrad_moz'][$style].";".
   "--tgrad_wbk: ".$cols['tgrad_wbk'][$style].";".
   "--tgrad_std: ".$cols['tgrad_std'][$style].";".

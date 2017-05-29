@@ -316,6 +316,7 @@ tr.list_filter {
 
 a.page_nr {
   display: block;
+  background-color: var(--col16);
 }
 
 td.page_nr {
