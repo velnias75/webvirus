@@ -170,6 +170,8 @@ td.list {
 td.list a, td.list.hack a {
   font: inherit;
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .modalDialog {
