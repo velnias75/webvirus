@@ -178,7 +178,9 @@ final class Movies extends MoviesBase implements IFormable {
 	if($total_res) $total = $total_res->fetch_assoc();
 
 	if($total_res && $total) {
-	  $this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), "", $total['tot_dur'], "0", "", "", "", 1, true);
+	  $this->renderRow($result->num_rows, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), "",
+	  (new DateTime('@'.(($now = time()) + $total['tot_dur'])))->diff(date_create('@'.$now))->
+	    format(($total['tot_dur'] >= 86400 ? "%a:" : "")."%H:%I:%S"), "0", "", "", "", 1, true);
 	  $total_res->free_result();
 	} else {
 	  $this->renderRow(0, "MySQL-Fehler: ".MySQLBase::instance()->con()->error, "", "00:00:00", "0", "", "", 4, true);

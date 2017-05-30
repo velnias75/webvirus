@@ -235,13 +235,7 @@ EOD;
   }
 
   protected final function mySQLTotalQuery($q = "") {
-
-    $fi = $this->filterSQLArray();
-
-    return $this->con->query("SELECT CONCAT( IF( FLOOR( SUM( `dur_sec` ) / 3600 ) <= 99, ".
-	"RIGHT( CONCAT( '00', FLOOR( SUM( `dur_sec` ) / 3600 ) ), 2 ), FLOOR( SUM( `dur_sec` ) / 3600 ) ), ':', ".
-	"RIGHT( CONCAT( '00', FLOOR( MOD( SUM( `dur_sec` ), 3600 ) / 60 ) ), 2 ), ':', ".
-	"RIGHT( CONCAT( '00', MOD( SUM( `dur_sec` ), 60 ) ), 2 ) ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
+    return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
   }
 
   static public final function pageSize() {
