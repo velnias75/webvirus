@@ -20,6 +20,8 @@
 
   require 'head.php';
   require 'classes/userbox.php';
+  require 'classes/form/form.php';
+  require 'classes/dataupdate.php';
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
 ?>
@@ -40,12 +42,17 @@
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
-      <?php (new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null, $movies))->render(); ?>
+      <?php (new Form(new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null, $movies)))->render(); ?>
+      <?php
+	if(isset($_SESSION['ui']) && !isset($_SESSION['error']) && $_SESSION['ui']['admin'] && MySQLBase::instance()->update_allowed()) {
+	  (new DataUpdate())->render();
+	}
+      ?>
     </td>
     <td id="layout_content" align="center" valign="top">
       <?php
 	try {
-	  $movies->render();
+	  (new Form($movies))->render();
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}

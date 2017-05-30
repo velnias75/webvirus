@@ -18,21 +18,18 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'irenderable.php';
-require_once 'table/table.php';
-require_once 'table/headercell.php';
+require_once 'classes/irenderable.php';
 
-class CatNavTable extends Table implements IRenderable {
+interface IFormable extends IRenderable {
 
-  protected function __construct($title, $clazz = "") {
-    parent::__construct(array('class' => trim("cat_nav ".$clazz), 'border' => "0", 'width' => "100%"));
-    $this->addRow(new Row(array(), array(new HeaderCell(array('class' => "cat_nav"), $title))));
-  }
+  const GET  = "GET";
+  const POST = "POST";
 
-  public function render() {
-    echo parent::render();
-  }
-
+  public function method();
+  public function action();
+  public function hidden();
+  public function encType();
+  public function embed();
 }
 
 ?>

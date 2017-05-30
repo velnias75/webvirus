@@ -18,15 +18,18 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require 'form/formabletraits.php';
 require 'table/headercell.php';
 require 'filterdrop_disc.php';
 require 'filterdrop_lang.php';
+require 'form/iformable.php';
 require 'user_actions.php';
-require 'irenderable.php';
 require 'movies_base.php';
 require 'pagination.php';
 
-final class Movies extends MoviesBase implements IRenderAble {
+final class Movies extends MoviesBase implements IFormable {
+
+  use FormableTraits;
 
   private $par;
   private $loggedIn = false;
@@ -37,6 +40,19 @@ final class Movies extends MoviesBase implements IRenderAble {
 
     $this->par = 1;
     $this->loggedIn = isset($_SESSION['ui']);
+  }
+
+  public function hidden() {
+    return array(
+      'order_by' => $this->order(),
+      'cat' => $this->category(),
+      'from' => 0,
+      'to' => $this->pageSize()
+      );
+  }
+
+  public function action() {
+    return null;
   }
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1, $isSummary = false) {
@@ -85,12 +101,6 @@ final class Movies extends MoviesBase implements IRenderAble {
   public final function render() {
 
     $i = 0;
-
-    echo "<form method=\"GET\">\n";
-    echo "<input type=\"hidden\" name=\"order_by\" value=\"".$this->order()."\">".
-      "<input type=\"hidden\" name=\"cat\" value=\"".$this->category()."\">".
-      "<input type=\"hidden\" name=\"from\" value=\"0\">".
-      "<input type=\"hidden\" name=\"to\" value=\"".$this->pageSize()."\">\n";
 
     $result = $this->mySQLRowsQuery();
     $hasRes = !is_null($result);
@@ -192,8 +202,7 @@ final class Movies extends MoviesBase implements IRenderAble {
     }
 
     echo parent::render();
-
-    echo "<input type=\"submit\" id=\"filter_submit\"></form>\n";
+    echo "<input type=\"submit\" id=\"filter_submit\">";
 
     if($hasRes && isset($_SESSION['ui'])) {
 	MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);

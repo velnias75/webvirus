@@ -20,8 +20,11 @@
 
 require_once 'movies_base.php';
 require_once 'catnavtable.php';
+require_once 'form/formabletraits.php';
 
-final class UserBox extends CatNavTable {
+final class UserBox extends CatNavTable implements IFormable {
+
+  use FormableTraits;
 
   private static $ALIGN_NOWRAP_ATTRS = array('align' => "center", 'nowrap' => null);
 
@@ -40,14 +43,26 @@ final class UserBox extends CatNavTable {
     return "userbox";
   }
 
-  public function render() {
-
-    echo "<form method=\"POST\" action=\"login.php\">\n";
-    echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
+  public function hidden() {
 
     if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
-      echo "<input type=\"hidden\" name=\"q\" value=\"".urlencode($_SERVER['QUERY_STRING'])."\">\n";
+      return array(
+	'q' => urlencode($_SERVER['QUERY_STRING'])
+      );
+    } else {
+      return array();
     }
+  }
+
+  public function method() {
+    return IFormable::POST;
+  }
+
+  public function action() {
+    return "login.php";
+  }
+
+  public function render() {
 
     if(is_null($this->ui) || isset($_SESSION['error'])) {
 
@@ -100,16 +115,7 @@ final class UserBox extends CatNavTable {
       }
     }
 
-    if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
-      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
-      $this->addRow(new Row(array(), array(new Cell(array(),
-      "<form action=\"update.php\" method=\"POST\" enctype=\"multipart/form-data\">".
-      "<label class=\"fileContainer\">Datenupdate: <input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
-      "name=\"btn[upload]\" accept=\"application/sql\"></label>"))));
-    }
-
     echo parent::render();
-    echo "</form>\n";
   }
 }
 
