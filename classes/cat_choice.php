@@ -60,7 +60,7 @@ final class CatChoice extends CatNavTable {
 
     $this->addRow(new Row(array(), array(new Cell(array('align' => "left"), $html))));
 
-    echo parent::render();
+    return parent::render();
   }
 
 }

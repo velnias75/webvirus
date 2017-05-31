@@ -24,11 +24,6 @@ final class UpdateSQL implements IFormable {
 
   use FormableTraits;
 
-  public function __toString() {
-    return  "<label class=\"fileContainer\"><input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
-    "name=\"btn[upload]\" accept=\"application/sql\"></label>";
-  }
-
   public function method() {
     return IFormable::POST;
   }
@@ -40,13 +35,14 @@ final class UpdateSQL implements IFormable {
   public function encType() {
     return "multipart/form-data";
   }
-  
+
   public function embed() {
     return true;
   }
 
   public function render() {
-    echo $this;
+    return  "<label class=\"fileContainer\"><input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
+      "name=\"btn[upload]\" accept=\"application/sql\"></label>";
   }
 
 }
@@ -58,9 +54,9 @@ final class DataUpdate extends CatNavTable implements IRenderable {
     $this->addRow(new Row(array(), array(new Cell(array(), new Form(new UpdateSQL())))));
   }
 
-  public function render() {
-    echo parent::render();
-  }
+//   public function render() {
+//     return parent::render();
+//   }
 }
 
 ?>

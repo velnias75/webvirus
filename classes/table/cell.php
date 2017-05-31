@@ -37,7 +37,7 @@ class Cell extends TableEntityBase {
     return "td";
   }
 
-  protected final function render() {
+  public final function render() {
 
     $html = "<".$this->tag().$this->renderAttributes().">";
 

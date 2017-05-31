@@ -200,14 +200,13 @@ final class Movies extends MoviesBase implements IFormable {
 	    $this->createQueryString(true, true, true, false), $this->pageSize(),
 	    $this->limit_from, $this->limit_to))->render()))
       ));
-    }
 
-    echo parent::render();
-    echo "<input type=\"submit\" id=\"filter_submit\">";
-
-    if($hasRes && isset($_SESSION['ui'])) {
+      if(isset($_SESSION['ui'])) {
 	MySQLBase::instance()->update_fid($_SESSION['ui']['id'], $this->isFiltered() ? $_SESSION['ui']['fid'] : null);
+      }
     }
+
+    return parent::render()."<input type=\"submit\" id=\"filter_submit\">";
   }
 }
 

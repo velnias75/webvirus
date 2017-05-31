@@ -38,24 +38,13 @@ final class Form implements IRenderable {
       $this->html .= "<input type=\"hidden\" name=\"".$k."\" value=\"".$v."\">";
     }
 
-    if($this->body->embed()) {
-      $this->html .= $this->body."</form>";
-    }
+    $this->html .= $this->body->render()."</form>";
 
     return $this->html;
   }
 
   public function render() {
-
-    if(!$this->body->embed()) {
-
-      echo $this->__toString();
-      echo $this->body->render();
-      echo "</form>";
-
-    } else {
-      return $this->__toString();
-    }
+    return $this->__toString();
   }
 }
 

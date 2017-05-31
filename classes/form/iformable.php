@@ -29,7 +29,7 @@ interface IFormable extends IRenderable {
   public function action();
   public function hidden();
   public function encType();
-  public function embed();
+
 }
 
 ?>

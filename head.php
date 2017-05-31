@@ -42,9 +42,9 @@
 <meta name="description" content="Liste der auf DVD gespeicherten Filme, Dokumentationen und Konzerten">
 <meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
-<link rel="stylesheet" href="css/master.php?t=<?php echo time(); ?>" title="Hirnloser Stil" type="text/css" media="screen">
-<link href="css/print.css?t=<?php echo time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
-<link rel="stylesheet" href="css/print.css?t=<?php echo time(); ?>" type="text/css" media="print">
+<link rel="stylesheet" href="css/master.php?t=<?= time(); ?>" title="Hirnloser Stil" type="text/css" media="screen">
+<link href="css/print.css?t=<?= time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
+<link rel="stylesheet" href="css/print.css?t=<?= time(); ?>" type="text/css" media="print">
 <script src="https://cdn.jsdelivr.net/g/jquery,typeahead.js" type="text/javascript"></script>
 <script type="text/javascript">
 var titles = new Bloodhound({

@@ -18,7 +18,9 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-abstract class TableEntityBase {
+require 'classes/irenderable.php';
+
+abstract class TableEntityBase implements IRenderable {
 
   private $html;
   private $attributes;
@@ -39,7 +41,7 @@ abstract class TableEntityBase {
     return " ".trim($this->html);
   }
 
-  protected function render() {
+  public function render() {
 
     $this->html = "<".$this->tag().$this->renderAttributes().">";
 

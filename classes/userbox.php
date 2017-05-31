@@ -115,7 +115,7 @@ final class UserBox extends CatNavTable implements IFormable {
       }
     }
 
-    echo parent::render();
+    return parent::render();
   }
 }
 

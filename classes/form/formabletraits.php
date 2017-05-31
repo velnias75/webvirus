@@ -32,10 +32,6 @@ trait FormableTraits {
     return null;
   }
 
-  public function embed() {
-    return false;
-  }
-
 }
 
 ?>

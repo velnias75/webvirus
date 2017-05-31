@@ -22,17 +22,12 @@ require_once 'irenderable.php';
 require_once 'table/table.php';
 require_once 'table/headercell.php';
 
-class CatNavTable extends Table implements IRenderable {
+class CatNavTable extends Table {
 
   protected function __construct($title, $clazz = "") {
     parent::__construct(array('class' => trim("cat_nav ".$clazz), 'border' => "0", 'width' => "100%"));
     $this->addRow(new Row(array(), array(new HeaderCell(array('class' => "cat_nav"), $title))));
   }
-
-  public function render() {
-    echo parent::render();
-  }
-
 }
 
 ?>

@@ -33,8 +33,7 @@
   <tr><td id="layout_left" align="center" valign="top">
       <?php
 	try {
-	  (new CatChoice($movies))->render();
-	  (new LatestDisc($movies))->render();
+	  echo (new CatChoice($movies))->render().(new LatestDisc($movies))->render();
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}
@@ -42,17 +41,17 @@
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
-      <?php (new Form(new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null, $movies)))->render(); ?>
+      <?= (new Form(new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null, $movies)))->render(); ?>
       <?php
 	if(isset($_SESSION['ui']) && !isset($_SESSION['error']) && $_SESSION['ui']['admin'] && MySQLBase::instance()->update_allowed()) {
-	  (new DataUpdate())->render();
+	  echo (new DataUpdate())->render();
 	}
       ?>
     </td>
     <td id="layout_content" align="center" valign="top">
       <?php
 	try {
-	  (new Form($movies))->render();
+	  echo (new Form($movies))->render();
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}

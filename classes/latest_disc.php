@@ -55,7 +55,7 @@ final class LatestDisc extends CatNavTable {
       htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").
       ")</li></ul>"))));
 
-    echo parent::render();
+    return parent::render();
   }
 }
 
