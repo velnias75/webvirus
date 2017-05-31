@@ -234,6 +234,10 @@ EOD;
     return $r && $r->num_rows ? $r : null;
   }
 
+  protected final function secondsToDHMS($sec) {
+    return (new DateTime('@'.(($now = time()) + $sec)))->diff(date_create('@'.$now))->format(($sec >= 86400 ? "%a:" : "")."%H:%I:%S");
+  }
+
   protected final function mySQLTotalQuery($q = "") {
     return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
   }

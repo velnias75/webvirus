@@ -197,7 +197,7 @@ final class PDF extends MoviesBase {
 	$this->pdf->pdf()->SetFont('Arial', '', $fs);
 	$this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), 0, 0, "L");
 	$this->pdf->pdf()->SetFont('Courier', '', $fs);
-	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $total['tot_dur'], 0, 0, "R");
+	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $this->secondsToDHMS($total['tot_dur']), 0, 0, "R");
 	$this->pdf->pdf()->SetFont('Hack', 'I', $fs);
 	$this->pdf->pdf()->Cell($wx['lingos_w'], $pt, "", 0, 0, "L");
 	$this->pdf->pdf()->SetFont('Arial', '', $fs);
