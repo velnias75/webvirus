@@ -93,7 +93,14 @@ $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`na
   "LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
   "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC");
 
+$lm = false;
+
 while($rssdata = $result->fetch_assoc()) {
+
+    if(!$lm) {
+      $lm = true;
+      header("Last-Modified: ".date(DATE_RFC2822, $rssdata['created']));
+    }
 
     $item = $xml->createElement('item');
     $channel->appendChild($item);
