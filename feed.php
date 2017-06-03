@@ -98,12 +98,12 @@ while($rssdata = $result->fetch_assoc()) {
     $item = $xml->createElement('item');
     $channel->appendChild($item);
 
-    $data = $xml->createElement('title', $rssdata['title']);
+    $data = $xml->createElement('title', str_replace("&", "&amp;", $rssdata['title']));
     $item->appendChild($data);
 
     $data = $xml->createElement('description', "&lt;dl&gt;".
       "&lt;dt&gt;&lt;b&gt;Nr&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['ID']."&lt;/dd&gt;".
-      "&lt;dt&gt;&lt;b&gt;Titel&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['title']."&lt;/dd&gt;".
+      "&lt;dt&gt;&lt;b&gt;Titel&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".str_replace("&", "&amp;", $rssdata['title'])."&lt;/dd&gt;".
       "&lt;dt&gt;&lt;b&gt;Länge&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['duration']."&lt;/dd&gt;".
       "&lt;dt&gt;&lt;b&gt;Sprachen(n)&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['lingos']."&lt;/dd&gt;".
       "&lt;dt&gt;&lt;b&gt;DVD&lt;/b&gt;&lt;/dt&gt;&lt;dd&gt;".$rssdata['name']."&lt;/dd&gt;".
