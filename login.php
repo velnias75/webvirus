@@ -44,7 +44,7 @@ if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
 
     if(isset($_COOKIE['wvpltok'])) {
       MySQLBase::instance()->deletePLSet(substr($_COOKIE['wvpltok'], 32));
-      setcookie('wvpltok', null);
+      setcookie('wvpltok', '', time() - 3600, dirname($_SERVER['REQUEST_URI'])."/");
     }
 
     session_write_close();

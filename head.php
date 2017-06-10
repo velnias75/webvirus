@@ -22,6 +22,12 @@
 
   session_start();
 
+  if(isset($_COOKIE['wvpltok'])) {
+    MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->
+    plogin(substr($_COOKIE['wvpltok'], 32, 8), substr($_COOKIE['wvpltok'], 0, 32)),
+    isset($_SESSION['ui']) && $_SESSION['ui']['auto_login']);
+  }
+
   try {
     $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
       isset($_GET['from']) ? $_GET['from'] : 0,

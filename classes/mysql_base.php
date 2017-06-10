@@ -84,7 +84,7 @@ final class MySQLBase {
   public function plogin($uid, $tok) {
 
     $sql = "SELECT id, login, pass FROM users LEFT JOIN users_plogins ON users_plogins.uid = users.id ".
-      "WHERE users_plogins.uid = ".$uid." AND users_plogins.token = '".$tok."'";
+      "WHERE users_plogins.uid = ".hexdec($uid)." AND users_plogins.token = '".$tok."'";
 
     $result = $this->mysqli->query($sql);
 
@@ -138,13 +138,15 @@ final class MySQLBase {
   public function setLoggedInSession($ui, $update = false) {
 
     if(is_string($ui)) {
+
       $_SESSION['error'] = $ui;
+
     } else {
 
       $_SESSION['ui'] = $ui;
 
       if($update) {
-	setcookie('wvpltok', MySQLBase::instance()->updatePLSet($ui['id']), time()+60*60*24*365);
+	setcookie('wvpltok', MySQLBase::instance()->updatePLSet($ui['id']), time()+60*60*24*365, dirname($_SERVER['REQUEST_URI'])."/");
       }
 
       if(!empty($ui['fid']) && !$ui['auto_login']) {
@@ -154,13 +156,13 @@ final class MySQLBase {
     }
   }
 
-  public function createPLSet($uid) {
-    $tok = strtoupper(bin2hex(openssl_random_pseudo_bytes(16)));
-    return array('uid' => (int)$uid, 'tok' => $tok, 'str' => strtoupper($tok.dechex($uid)));
+  private function createPLSet($uid) {
+    $tok = strtoupper(substr("00000000000000000000000000000000".bin2hex(openssl_random_pseudo_bytes(16)), -32));
+    return array('uid' => (int)$uid, 'tok' => $tok, 'str' => $tok.strtoupper(substr("00000000".dechex($uid), -8)));
   }
 
   public function deletePLSet($uid) {
-    $this->mysqli->query("DELETE FROM users_plogins WHERE uid = ".$uid);
+    $this->mysqli->query("DELETE FROM users_plogins WHERE uid = ".dechex($uid));
   }
 
   public function updatePLSet($uid) {

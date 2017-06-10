@@ -25,11 +25,6 @@
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
 
-  if(isset($_COOKIE['wvpltok'])) {
-    MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->
-      plogin(substr($_COOKIE['wvpltok'], 32), substr($_COOKIE['wvpltok'], 0, 32)));
-  }
-
 ?>
 
 <table id="layout" border="0" width="100%">
