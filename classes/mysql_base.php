@@ -81,10 +81,27 @@ final class MySQLBase {
       $this->mysqli->real_escape_string($display)."')");
   }
 
+  public function plogin($uid, $tok) {
+
+    $sql = "SELECT id, login, pass FROM users LEFT JOIN users_plogins ON users_plogins.uid = users.id ".
+      "WHERE users_plogins.uid = ".$uid." AND users_plogins.token = '".$tok."'";
+
+    $result = $this->mysqli->query($sql);
+
+    if($result->num_rows) {
+      $row = $result->fetch_assoc();
+      $result->free_result();
+
+      return $this->login($row['login'], $row['pass'], true);
+    }
+
+    return null;
+  }
+
   public function login($login, $pass, $auto = false) {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-      $this->secret."', 512))) AS CHAR (50)) AS cpass, "."display_name, admin, last_login, style, fid, ".
+      $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, last_login, style, fid, ".
       "pagesize FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
@@ -116,6 +133,40 @@ final class MySQLBase {
     } else {
       return "Benutzer nicht gefunden";
     }
+  }
+
+  public function setLoggedInSession($ui, $update = false) {
+
+    if(is_string($ui)) {
+      $_SESSION['error'] = $ui;
+    } else {
+
+      $_SESSION['ui'] = $ui;
+
+      if($update) {
+	setcookie('wvpltok', MySQLBase::instance()->updatePLSet($ui['id']), time()+60*60*24*365);
+      }
+
+      if(!empty($ui['fid']) && !$ui['auto_login']) {
+	header("Location: ".dirname($_SERVER['REQUEST_URI'])."/fid.php");
+	die;
+      }
+    }
+  }
+
+  public function createPLSet($uid) {
+    $tok = strtoupper(bin2hex(openssl_random_pseudo_bytes(16)));
+    return array('uid' => (int)$uid, 'tok' => $tok, 'str' => strtoupper($tok.dechex($uid)));
+  }
+
+  public function deletePLSet($uid) {
+    $this->mysqli->query("DELETE FROM users_plogins WHERE uid = ".$uid);
+  }
+
+  public function updatePLSet($uid) {
+    $pls = $this->createPLSet($uid);
+    $this->mysqli->query("REPLACE INTO users_plogins (uid, token) VALUES (".$pls['uid'].", '".$pls['tok']."')");
+    return $pls['str'];
   }
 }
 

@@ -24,19 +24,9 @@ session_start();
 
 if(isset($_POST['btn']) && isset($_POST['btn']['login']) &&
   isset($_POST['login']) && isset($_POST['pass'])) {
-
-  $ui = MySQLBase::instance()->login($_POST['login'], $_POST['pass']);
-
-  if(is_string($ui)) {
-    $_SESSION['error'] = $ui;
-  } else {
-    $_SESSION['ui'] = $ui;
-
-    if(!empty($ui['fid'])) {
-      header("Location: ".dirname($_SERVER['REQUEST_URI'])."/fid.php");
-      die;
-    }
-  }
+  MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->login($_POST['login'], $_POST['pass']),
+    isset($_POST['pl']));
+  $_SESSION['authd'] = true;
 }
 
 if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
@@ -50,6 +40,12 @@ if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
 
     unset($_SESSION['error']);
     unset($_SESSION['ui']);
+    unset($_SESSION['authd']);
+
+    if(isset($_COOKIE['wvpltok'])) {
+      MySQLBase::instance()->deletePLSet(substr($_COOKIE['wvpltok'], 32));
+      setcookie('wvpltok', null);
+    }
 
     session_write_close();
   }

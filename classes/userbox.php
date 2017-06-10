@@ -76,6 +76,8 @@ final class UserBox extends CatNavTable implements IFormable {
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<label>Passwort:&nbsp;<input type=\"password\" size=\"5\" name=\"pass\"></label>"))));
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
+      "<input type=\"checkbox\" name=\"pl\">&nbsp;eingeloggt bleiben"))));
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<input type=\"submit\" name=\"btn[login]\" value=\"Einloggen\">"))));
 
     } else {
@@ -93,13 +95,17 @@ final class UserBox extends CatNavTable implements IFormable {
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<a id=\"remember_button\" ".
       "title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
-      (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a><hr>"))));
+      (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a>"))));
 
-      $this->addRow(new Row(array(), array(new Cell(array('nowrap' => null), "Passwort &auml;ndern:"))));
-      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label>"))));
-      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\">"))));
+      if(isset($_SESSION['authd']) && $_SESSION['authd']) {
+
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
+	$this->addRow(new Row(array(), array(new Cell(array('nowrap' => null), "Passwort &auml;ndern:"))));
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
+	"<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label>"))));
+	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
+	"<input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\">"))));
+      }
 
       if($this->ui['admin']) {
 	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
