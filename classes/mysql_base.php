@@ -23,6 +23,7 @@ final class MySQLBase {
   private $mysqli = null;
   private $secret = null;
   private $update = false;
+  private $secure = false;
 
   private function __construct() {
 
@@ -38,6 +39,7 @@ final class MySQLBase {
 
     $this->secret = $secret;
     $this->upload = !isset($update) || $update == true;
+    $this->secure = isset($secure) || $secure == true;
   }
 
   function __destruct() {
@@ -169,6 +171,10 @@ final class MySQLBase {
     $pls = $this->createPLSet($uid);
     $this->mysqli->query("REPLACE INTO users_plogins (uid, token) VALUES (".$pls['uid'].", '".$pls['tok']."')");
     return $pls['str'];
+  }
+
+  public function protocol() {
+    return "http".($this->secure ? "s" : "");
   }
 }
 

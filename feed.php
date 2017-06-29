@@ -20,6 +20,10 @@
 
 require 'classes/mysql_base.php';
 
+function getLink() {
+  return MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI']);
+}
+
 header("Content-Type: application/rss+xml");
 // header("Content-Type: text/plain");
 
@@ -57,10 +61,10 @@ $imago = $xml->createElement('image');
 $imago_t = $xml->createElement('title', 'Heikos Schrott- und Rentnerfilme');
 $imago->appendChild($imago_t);
 
-$imago_l = $xml->createElement('link', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/");
+$imago_l = $xml->createElement('link', getLink()."/");
 $imago->appendChild($imago_l);
 
-$imago_u = $xml->createElement('url', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/img/feed.png");
+$imago_u = $xml->createElement('url', getLink()."/img/feed.png");
 $imago->appendChild($imago_u);
 
 $imago_w = $xml->createElement('width', '48');
@@ -71,10 +75,10 @@ $imago->appendChild($imago_h);
 
 $channel->appendChild($imago);
 
-$head = $xml->createElement('link', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/");
+$head = $xml->createElement('link', getLink()."/");
 
 $atomlink = $xml->createElementNS('http://www.w3.org/2005/Atom', 'atom:link');
-$atomlink->setAttribute('href', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/feed.php");
+$atomlink->setAttribute('href', getLink()."/feed.php");
 $atomlink->setAttribute('rel',  'self');
 $atomlink->setAttribute('type', 'application/rss+xml');
 $channel->appendChild($atomlink);
@@ -91,7 +95,7 @@ $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`na
   "LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
   "LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` ".
   "LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
-  "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC");
+  "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC LIMIT 20");
 
 $lm = false;
 
@@ -120,13 +124,13 @@ while($rssdata = $result->fetch_assoc()) {
     $data = $xml->createElement('category', $rssdata['cat']);
     $item->appendChild($data);
 
-    $data = $xml->createElement('link', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/?filter_disc=".$rssdata['did']);
+    $data = $xml->createElement('link', getLink()."/?filter_disc=".$rssdata['did']);
     $item->appendChild($data);
 
     $data = $xml->createElement('pubDate', gmdate("D, j M Y H:i:s ", $rssdata['created']).'GMT');
     $item->appendChild($data);
 
-    $data = $xml->createElement('guid', "http://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/?filter_ID=".$rssdata['ID']);
+    $data = $xml->createElement('guid', getLink()."/?filter_ID=".$rssdata['ID']);
     $data->setAttribute("isPermaLink", "true");
     $item->appendChild($data);
 }

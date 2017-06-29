@@ -66,7 +66,7 @@
       <table class="cat_nav" border="0" width="100%">
 	<tr><th class="cat_nav">Sonstiges</th></tr>
 	<tr><td align="center"><a target="_blank" href="https://www.openhub.net/accounts/Velnias?ref=sample"><img alt='Open Hub profile for Heiko Schäfer' border='0' height='15' src='https://www.openhub.net/accounts/Velnias/widgets/account_tiny?format=gif&amp;ref=sample' width='80'></a></td></tr>
-	<tr><td align="center"><img border="0" alt="Ja, ich mag L&auml;rm und Krach!" src="http://www.rangun.de/metal-button.png"></td></tr>
+	<tr><td align="center"><img border="0" alt="Ja, ich mag L&auml;rm und Krach!" src="https://www.rangun.de/metal-button.png"></td></tr>
       </table>
     </td></tr>
   <tr><td id="layout_bottom" valign="middle" align="center" colspan="3">
