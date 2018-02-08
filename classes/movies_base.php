@@ -248,7 +248,7 @@ EOD;
       return $_SESSION['ui']['pagesize'];
     }
 
-    return 24;
+    return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ? -1 : 24;
   }
 
 }

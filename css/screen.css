@@ -29,6 +29,9 @@
     --layout-lr-width: 176px;
     --input-width: 96px;
     --label-width: 160px;
+    --searchfield_height: auto;
+    --searchfield_fontsize: auto;
+    --sugg-font-size: auto;
   }
 }
 
@@ -44,23 +47,27 @@
     --layout-lr-width: 220px;
     --input-width: 120px;
     --label-width: 200px;
+    --searchfield_height: auto;
+    --searchfield_fontsize: auto;
+    --sugg-font-size: auto;
   }
 }
 
-@media (max-width: 1101px) {
+@media screen and (max-width: 1280px) and (max-height: 720px) {
   :root {
-    --nf: 8pt;
-    --lf: 17pt;
-    --mf: 8pt;
-    --tf: 7.5pt;
-    --ef: 7.5pt;
+    --nf: 9pt;
+    --lf: 8pt;
+    --mf: 16pt;
+    --tf: 10pt;
+    --ef: 15pt;
     --pdfpic: 30px;
-    /*--list-table-width: 936px;
-    --layout-lr-width: 176px;*/
     --list-table-width: 900px;
     --layout-lr-width: 176px;
     --input-width: 96px;
     --label-width: 160px;
+    --searchfield_height: 80px;
+    --searchfield_fontsize: 20pt;
+    --sugg-font-size: 16pt;
   }
 }
 
@@ -92,6 +99,8 @@ input[type=text] {
   padding-top: 5px;
   border: 2px solid var(--col5);
   border-radius: 5px;
+  height: var(--searchfield_height);
+  font-size: var(--searchfield_fontsize);
 }
 
 input[type=text]:focus {
@@ -104,9 +113,15 @@ table.userbox td label {
   text-align: right;
 }
 
+select.input_filter {
+  height: var(--searchfield_height);
+  font-size: var(--searchfield_fontsize);
+}
+
 table.userbox td label input[type=text], table.userbox td label input[type=password] {
   border-color: var(--col6);
   width: var(--input-width);
+  height: auto;
 }
 
 table.userbox td input[type=submit], #remember_button {
@@ -300,6 +315,12 @@ a.pdflink {
   font-style: italic;
 }
 
+@media screen and (max-width: 1281px) {
+  .lingos {
+    display: none;
+  }
+}
+
 .duration {
   font-family: 'Courier New', 'Lucida Console', monospace;
 }
@@ -406,7 +427,7 @@ td.page_nr.page_active {
   min-width: var(--layout-lr-width);
 }
 
-@media (max-width: 1101px) {
+@media screen and (max-width: 1281px) {
   #layout_right {
     display:none;
   }
@@ -482,6 +503,8 @@ td.page_nr.page_active {
 
 .tt-dataset {
   border: none;
+  font-size: var(--sugg-font-size);
+  white-space: nowrap;
 }
 
 .tt-cursor {

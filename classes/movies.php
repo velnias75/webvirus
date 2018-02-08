@@ -143,7 +143,7 @@ final class Movies extends MoviesBase implements IFormable {
 	  "onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
 	  ($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\">"),
 	new Cell(array('class' => "list_filter")),
-	new Cell(array('nowrap' => null, 'class' => "list_filter"),
+	new Cell(array('nowrap' => null, 'class' => "list_filter lingos"),
 	  (new FilterdropLang())->render($this->filters['filter_lingo'][0] ?
 	  $this->filters['filter_lingo'][1] : "".$this->filters['filter_lingo_not'][0])),
 	new Cell(array('class' => "list_filter"),
