@@ -29,7 +29,7 @@ final class CatChoice extends CatNavTable {
 
   function __construct(Movies $m) {
 
-    parent::__construct("Kategorie");
+    parent::__construct("Kategorie" , "cat_select");
 
     $this->con = MySQLBase::instance()->con();
     $this->result = $this->con->query("SELECT `id`, `name` FROM `categories` ORDER BY `id`");

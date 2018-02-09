@@ -32,6 +32,7 @@
     --searchfield_height: auto;
     --searchfield_fontsize: auto;
     --sugg-font-size: auto;
+    --top-height: 60pt;
   }
 }
 
@@ -50,24 +51,26 @@
     --searchfield_height: auto;
     --searchfield_fontsize: auto;
     --sugg-font-size: auto;
+    --top-height: 60pt;
   }
 }
 
 @media screen and (max-width: 1280px) and (max-height: 720px) {
   :root {
-    --nf: 9pt;
-    --lf: 8pt;
+    --nf: 13pt;
+    --lf: 16pt;
     --mf: 16pt;
     --tf: 10pt;
     --ef: 15pt;
     --pdfpic: 30px;
-    --list-table-width: 900px;
-    --layout-lr-width: 176px;
+    --list-table-width: 1100px;
+    --layout-lr-width: none;
     --input-width: 96px;
     --label-width: 160px;
     --searchfield_height: 80px;
     --searchfield_fontsize: 20pt;
     --sugg-font-size: 16pt;
+    --top-height: 100pt;
   }
 }
 
@@ -105,6 +108,30 @@ input[type=text] {
 
 input[type=text]:focus {
   border-color: var(--col14);
+}
+
+@media screen and (max-width: 1281px) {
+  .cat_select {
+    position: absolute;
+    top: 5px;
+    left: 200px;
+    width: 20%;
+  }
+
+  .latest_dvd {
+    position: absolute;
+    top: 45px;
+    left: 840px;
+    width: 20%;
+  }
+
+  .downloads {
+    display: none;
+  }
+
+  table.userbox {
+    display: none;
+  }
 }
 
 table.userbox td label {
@@ -438,7 +465,7 @@ td.page_nr.page_active {
   background-color: var(--col6);
   padding-top: 10px;
   padding-bottom: 10px;
-  height: 60px;
+  height: var(--top-height);
   min-height: 60px;
   max-height: 60px;
   background: var(--col1);

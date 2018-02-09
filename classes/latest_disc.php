@@ -29,7 +29,7 @@ final class LatestDisc extends CatNavTable {
 
   function __construct(Movies $m) {
 
-    parent::__construct("Neueste DVD");
+    parent::__construct("Neueste DVD", "latest_dvd");
 
     $this->con = MySQLBase::instance()->con();
     $this->result = $this->con->query("SELECT `id`, `name`, DATE_FORMAT(`created`, '%d.%m.%Y') AS `df` ".

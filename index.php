@@ -38,7 +38,7 @@
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}
-      ?><table class="cat_nav" border="0" width="100%">
+      ?><table class="cat_nav downloads" border="0" width="100%">
 	<tr><th class="cat_nav">Downloads</th></tr>
 	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
