@@ -25,8 +25,8 @@
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
 
+  if(preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT'])) echo "<div id=\"standard\">";
 ?>
-
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="middle" align="center" colspan="3">
     <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>">Heikos Schrott- &amp; Rentnerfilme</a></h1>
@@ -73,5 +73,7 @@
     <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by <a class="note_link" href="mailto:heiko@rangun.de?subject=Schrottfilme">Heiko Sch&auml;fer</a>
     <em>(<a class="note_link" target="_blank" href="https://github.com/velnias75/webvirus">work in progess</a>)</em></small></td></tr>
 </table>
-
-<?php require 'foot.php'; ?>
+<?php
+  if(preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT'])) echo "</div><div id=\"portrait\"><p>QUERFORMAT!</p></div>";
+  require 'foot.php';
+?>

@@ -84,6 +84,44 @@ html, body {
   font-size: var(--nf);
 }
 
+@media screen and (orientation:portrait) {
+  #portrait {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    background: midnightblue;
+  }
+
+  div#portrait p {
+    font-size: 80pt;
+    font-family: monospace;
+    color: #95e3e3;
+    font-weight: bolder;
+    transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+  }
+
+  #standard {
+    display: none;
+  }
+}
+
+@media screen and (orientation:landscape) {
+  #standard {
+    height: 100%;
+  }
+
+  #portrait {
+    display: none;
+  }
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -528,10 +566,13 @@ td.page_nr.page_active {
   background-color: var(--col2);
 }
 
-.tt-dataset {
-  border: none;
+.tt-suggestion {
   font-size: var(--sugg-font-size);
   white-space: nowrap;
+}
+
+.tt-dataset {
+  border: none;
 }
 
 .tt-cursor {

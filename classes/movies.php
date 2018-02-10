@@ -158,7 +158,7 @@ final class Movies extends MoviesBase implements IFormable {
 	while($row = $result->fetch_assoc()) {
 
 	  $fids  .= $row['ID'].",";
-	  $tits[] = htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8");
+	  $tits[] = preg_replace("/\\\"/", "&quot;", htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8"));
 
 	  if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
 	    $this->renderRow($row['ID'], $row['ltitle'], $row['st'], $row['duration'], $row['dur_sec'], $row['lingos'], $row['disc'], $row['filename'], $row['category']);
