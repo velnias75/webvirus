@@ -61,6 +61,15 @@ final class Movies extends MoviesBase implements IFormable {
       $isSummary = true;
     }
 
+    if(!$isSummary) {
+      for($i = 0; $i < $this->leadingZeros(); $i++) $nid .= "0";
+
+      $nid .= $id;
+      $nid = substr($nid, ($this->leadingZeros()+1)*-1);
+    } else {
+      $nid = $id;
+    }
+
     $atts = array('class' => "parity_".($this->par % 2));
     $tatt = array('align' => "left", 'class' => "list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle"));
 
@@ -75,7 +84,7 @@ final class Movies extends MoviesBase implements IFormable {
       array(
 	new Cell(array('nowrap' => null, 'class' => "list hack", 'align' => "right"),
 	  ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
-	  htmlentities($id, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
+	  htmlentities($nid, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
 	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),

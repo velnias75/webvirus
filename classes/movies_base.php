@@ -23,6 +23,7 @@ require_once 'mysql_base.php';
 
 abstract class MoviesBase extends Table {
 
+  private $lz;
   private $con;
   private $order;
   private $latest;
@@ -94,10 +95,18 @@ EOD;
     $this->latest = $latest_res->fetch_assoc()['df'];
     $latest_res->free_result();
 
+    $grand_total = $this->con->query("SELECT count(*) as cnt from movies");
+    $this->lz = floor(log10($grand_total->fetch_assoc()['cnt']));
+    $grand_total->free_result();
+
     if($this->filters['filter_ID'][0] ||
       $this->filters['filter_ltitle'][0] ||
       $this->filters['filter_lingo'][0] ||
       $this->filters['filter_disc'][0]) $this->filtered = true;
+  }
+
+  protected final function leadingZeros() {
+    return $this->lz;
   }
 
   protected final function isFiltered() {
