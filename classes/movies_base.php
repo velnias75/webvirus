@@ -28,6 +28,7 @@ abstract class MoviesBase extends Table {
   private $order;
   private $latest;
   private $category;
+  private $lzs = "";
   private $filtered = false;
 
   protected $limit_to;
@@ -99,10 +100,17 @@ EOD;
     $this->lz = floor(log10($grand_total->fetch_assoc()['cnt']));
     $grand_total->free_result();
 
+    for($i = 0; $i < $this->lz; $i++) $this->lzs .= "0";
+    $this->lz++;
+
     if($this->filters['filter_ID'][0] ||
       $this->filters['filter_ltitle'][0] ||
       $this->filters['filter_lingo'][0] ||
       $this->filters['filter_disc'][0]) $this->filtered = true;
+  }
+
+  protected final function leadingZerosString() {
+    return $this->lzs;
   }
 
   protected final function leadingZeros() {

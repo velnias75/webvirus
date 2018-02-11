@@ -62,10 +62,7 @@ final class Movies extends MoviesBase implements IFormable {
     }
 
     if(!$isSummary) {
-      for($i = 0; $i < $this->leadingZeros(); $i++) $nid .= "0";
-
-      $nid .= $id;
-      $nid = substr($nid, ($this->leadingZeros()+1)*-1);
+      $nid = substr($this->leadingZerosString().$id, $this->leadingZeros() * -1);
     } else {
       $nid = $id;
     }
