@@ -23,6 +23,9 @@ require_once 'mysql_base.php';
 
 abstract class MoviesBase extends Table {
 
+  const STD_PAGESIZE    = 24;
+  const MOBILE_PAGESIZE = 99;
+
   private $lz;
   private $con;
   private $order;
@@ -263,7 +266,7 @@ EOD;
       return $_SESSION['ui']['pagesize'];
     }
 
-    return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ? -1 : 24;
+    return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ? MoviesBase::MOBILE_PAGESIZE : MoviesBase::STD_PAGESIZE;
   }
 
 }

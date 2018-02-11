@@ -203,7 +203,9 @@ final class Movies extends MoviesBase implements IFormable {
 	array('id' => "list_topbot"),
 	array(new Cell(array('align' => "center", 'valign' => "middle", 'colspan' => "5"),
 	  (new Pagination($i, isset($tits) ? $tits : array(),
-	    $this->createQueryString(true, true, true, false), $this->pageSize(),
+	    $this->createQueryString(true, true, true, false),
+	    $this->pageSize() == -1 ? (preg_match("/Android.*Mobile/",
+	      $_SERVER['HTTP_USER_AGENT']) ? MoviesBase::MOBILE_PAGESIZE : MoviesBase::STD_PAGESIZE) : $this->pageSize(),
 	    $this->limit_from, $this->limit_to))->render()))
       ));
 
