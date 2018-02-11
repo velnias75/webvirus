@@ -86,5 +86,6 @@ $(document).ready(function() {
 <link rel="alternate" title="Heikos Schrott- &amp; Rentnerfilme" type="application/rss+xml" href="feed.php">
 <link href='hsrsearch.xml' rel='search' title='Suche in Heikos Schrott- &amp; Rentnerfilmen' type='application/opensearchdescription+xml'>
 <title>Heikos Schrott- &amp; Rentnerfilme</title>
+<?php include 'extra_js.php'; ?>
 </head>
 <body>
