@@ -25,14 +25,14 @@
   require 'classes/cat_choice.php';
   require 'classes/latest_disc.php';
 
-  if(preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT'])) echo "<div id=\"standard\">";
+  if(MoviesBase::isMobile()) echo "<div id=\"standard\">";
 ?>
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="middle" align="center" colspan="3">
     <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>">Heikos Schrott- &amp; Rentnerfilme</a></h1>
     <h3><span class="red_text">&#9995;</span>&nbsp;Die&nbsp;Webvirenversion&nbsp;<span class="red_text">&#9995;</span></h3>
     <?php
-      if(preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT'])) {
+    if(MoviesBase::isMobile()) {
 	$from = isset($_GET['from']) ? $_GET['from'] : 0;
 	$dist = (isset($_GET['from']) && isset($_GET['to'])) ? abs($_GET['to'] - $from) : MoviesBase::MOBILE_PAGESIZE;
 	$sel  = array(($dist >=  0 && $dist < 10) ? "selected" : "", ($dist >= 10 && $dist < 20) ? "selected" : "",
@@ -92,6 +92,6 @@
     <em>(<a class="note_link" target="_blank" href="https://github.com/velnias75/webvirus">work in progess</a>)</em></small></td></tr>
 </table>
 <?php
-  if(preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT'])) echo "</div><div id=\"portrait\"><p>QUERFORMAT!</p></div>";
+  if(MoviesBase::isMobile()) echo "</div><div id=\"portrait\"><p>QUERFORMAT!</p></div>";
   require 'foot.php';
 ?>

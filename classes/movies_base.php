@@ -260,13 +260,20 @@ EOD;
     return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
   }
 
+  static public final function isMobile() {
+    return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ||
+      preg_match("/iPhone/", $_SERVER['HTTP_USER_AGENT']) ||
+      preg_match("/BlackBerry/", $_SERVER['HTTP_USER_AGENT']) ||
+      preg_match("/Windows Phone/", $_SERVER['HTTP_USER_AGENT']);
+  }
+
   static public final function pageSize() {
 
     if(!(!isset($_SESSION['ui']) || isset($_SESSION['error']))) {
       return $_SESSION['ui']['pagesize'];
     }
 
-    return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ? MoviesBase::MOBILE_PAGESIZE : MoviesBase::STD_PAGESIZE;
+    return MoviesBase::isMobile() ? MoviesBase::MOBILE_PAGESIZE : MoviesBase::STD_PAGESIZE;
   }
 
 }
