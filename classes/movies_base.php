@@ -101,7 +101,9 @@ EOD;
     $grand_total->free_result();
 
     for($i = 0; $i < $this->lz; $i++) $this->lzs .= "0";
+
     $this->lz++;
+    $this->lz *= -1;
 
     if($this->filters['filter_ID'][0] ||
       $this->filters['filter_ltitle'][0] ||
@@ -109,12 +111,8 @@ EOD;
       $this->filters['filter_disc'][0]) $this->filtered = true;
   }
 
-  protected final function leadingZerosString() {
-    return $this->lzs;
-  }
-
-  protected final function leadingZeros() {
-    return $this->lz;
+  protected final function makeLZID($id) {
+    return substr($this->lzs.$id, $this->lz);
   }
 
   protected final function isFiltered() {

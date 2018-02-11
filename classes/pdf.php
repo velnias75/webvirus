@@ -81,7 +81,7 @@ final class PDF extends MoviesBase {
       while($row = $result->fetch_assoc()) {
 
 	$this->pdf->pdf()->SetFont('Hack', '', $fs);
-	array_push($id, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', substr($this->leadingZerosString().$row['ID'], $this->leadingZeros() * -1)));
+	array_push($id, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $this->makeLZID($row['ID'])));
 	array_push($id_w, $this->pdf->pdf()->GetStringWidth($id[$i]));
 
 	$this->pdf->pdf()->SetFont('Arial', 'B', $fs);
