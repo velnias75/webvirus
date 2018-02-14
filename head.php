@@ -30,7 +30,7 @@
 
   $GLOBALS['dblastvisit'] = isset($_COOKIE["dblastvisit"]) ? $_COOKIE["dblastvisit"] : null;
 
-  setcookie("dblastvisit", time());
+  setcookie("dblastvisit", time(), time()+60*60*24*365);
 
   try {
     $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
