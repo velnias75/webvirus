@@ -23,6 +23,7 @@ require_once 'catnavtable.php';
 
 final class LatestDisc extends CatNavTable {
 
+  private $created;
   private $result;
   private $movies;
   private $con;
@@ -32,6 +33,14 @@ final class LatestDisc extends CatNavTable {
     parent::__construct("Neueste DVD", "latest_dvd");
 
     $this->con = MySQLBase::instance()->con();
+
+    $this->result = $this->con->query("SELECT `id`, `name`, `created` ".
+      "FROM `disc` ORDER BY `created` DESC LIMIT 1");
+
+    $pdate = date_parse_from_format("Y-m-d H:i:s", $this->result->fetch_assoc()['created']);
+    $this->created = mktime($pdate['hour'], $pdate['minute'], $pdate['second'], $pdate['month'], $pdate['day'], $pdate['year']);
+    $this->result->free_result();
+
     $this->result = $this->con->query("SELECT `id`, `name`, DATE_FORMAT(`created`, '%d.%m.%Y') AS `df` ".
       "FROM `disc` ORDER BY `created` DESC LIMIT 1");
 
@@ -50,10 +59,12 @@ final class LatestDisc extends CatNavTable {
 
     $row = $this->result->fetch_assoc();
 
+    $newdvd = ($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) ? array("<font color=\"red\">", "</font>") : array("", "");
+
     $this->addRow(new Row(array(), array(new Cell(array('align' => "left", 'nowrap' => null),
-      "<ul class=\"cat_nav\"><li><a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
+      "<ul class=\"cat_nav\"><li>".$newdvd[0]."<a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
       htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").
-      ")</li></ul>"))));
+      ")".$newdvd[1]."</li></ul>"))));
     if($GLOBALS['dblastvisit'] != null ) $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
       "<small><b>Mein letzter Besuch:&nbsp;".strftime("%d.%m.%Y", $GLOBALS['dblastvisit'])."</b></small>"))));
 
