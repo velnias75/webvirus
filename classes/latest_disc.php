@@ -54,6 +54,8 @@ final class LatestDisc extends CatNavTable {
       "<ul class=\"cat_nav\"><li><a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
       htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").
       ")</li></ul>"))));
+    if($GLOBALS['dblastvisit'] != null ) $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
+      "<small><b>Mein letzter Besuch:&nbsp;".strftime("%d.%m.%Y", $GLOBALS['dblastvisit'])."</b></small>"))));
 
     return parent::render();
   }

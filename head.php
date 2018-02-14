@@ -28,6 +28,10 @@
     isset($_SESSION['ui']) && $_SESSION['ui']['auto_login']);
   }
 
+  $GLOBALS['dblastvisit'] = isset($_COOKIE["dblastvisit"]) ? $_COOKIE["dblastvisit"] : null;
+
+  setcookie("dblastvisit", time());
+
   try {
     $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
       isset($_GET['from']) ? $_GET['from'] : 0,
