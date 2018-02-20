@@ -67,7 +67,7 @@
     --layout-lr-width: none;
     --input-width: 96px;
     --label-width: 160px;
-    --searchfield_height: 80px;
+    --searchfield_height: 40px;
     --searchfield_fontsize: 20pt;
     --sugg-font-size: 16pt;
     --top-height: 20%;
@@ -159,15 +159,15 @@ input[type=text]:focus {
 @media screen and (max-width: 1281px) {
   .cat_select {
     position: absolute;
-    top: 0px;
-    left: 15.625%;
+    top: 5px;
+    left: 200px;
     width: 20%;
   }
 
   .latest_dvd {
     position: absolute;
-    top: 40px;
-    left: 65.625%;
+    top: 30px;
+    left: 840px;
     width: 20%;
   }
 
@@ -566,8 +566,8 @@ td.page_nr.page_active {
 
 #mobile_pagesize {
   position: absolute;
-  top: 105px;
-  left: 65.625%;
+  top: 110px;
+  left: 840px;
   width: 20%;
   font-family: 'Verdana', sans-serif;
 }

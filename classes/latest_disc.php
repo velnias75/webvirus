@@ -59,7 +59,12 @@ final class LatestDisc extends CatNavTable {
 
     $row = $this->result->fetch_assoc();
 
-    $newdvd = ($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) ? array("<font color=\"red\">", "</font>") : array("", "");
+    $newdvd = (($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) ||
+      (isset($_COOKIE["dbnewdvd"]) && $_COOKIE["dbnewdvd"])) ? array("<font color=\"red\">", "</font>") : array("", "");
+
+    if(($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) && !isset($_COOKIE["dbnewdvd"])) {
+	setcookie("dbnewdvd", true, time()+60*60*24);
+    }
 
     $this->addRow(new Row(array(), array(new Cell(array('align' => "left", 'nowrap' => null),
       "<ul class=\"cat_nav\"><li>".$newdvd[0]."<a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
