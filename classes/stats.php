@@ -40,7 +40,7 @@ final class Stats extends Table {
 
   public final function render() {
 
-    $stat_res = $this->con->query("SELECT cid, stat, duration, category, title FROM statistics");
+    $stat_res = $this->con->query("SELECT cid, stat, duration, category, mid, title FROM statistics");
 
     while($row = $stat_res->fetch_assoc()) {
       $this->addRow(new Row(
@@ -52,7 +52,12 @@ final class Stats extends Table {
 	    htmlentities($row['duration'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
 	    htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
-	  new Cell(null, "&nbsp;&nbsp;"),
+	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
+	    is_null($row['title']) ? null : "&nbsp;&ndash;&nbsp;"),
+	  new Cell(array('align' => 'right', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
+	    is_null($row['title']) ? null : htmlentities($row['mid'], ENT_SUBSTITUTE, "utf-8")),
+	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
+	    is_null($row['title']) ? null : "&nbsp;".htmlentities($row['title'], ENT_SUBSTITUTE, "utf-8")."&nbsp;")
       )));
     }
 

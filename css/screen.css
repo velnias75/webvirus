@@ -298,7 +298,7 @@ td.list a, td.list.hack a {
 }
 
 .modalDialog > div {
-  width: 400px;
+  display: table;
   position: relative;
   margin: 10% auto;
   padding: 5px 20px 13px 20px;
