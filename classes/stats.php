@@ -29,18 +29,30 @@ final class Stats extends Table {
     $this->con = MySQLBase::instance()->con();
   }
 
+  private function cid2class($cid) {
+
+    if($cid != -1) {
+      return "cat_".$cid;
+    }
+
+    return "cat_0";
+  }
+
   public final function render() {
 
-    $stat_res = $this->con->query("SELECT stat, duration, category, title FROM statistics");
+    $stat_res = $this->con->query("SELECT cid, stat, duration, category, title FROM statistics");
 
     while($row = $stat_res->fetch_assoc()) {
       $this->addRow(new Row(
 	null,
 	array(
-	  new Cell(array('align' => 'right', 'nowrap' => null), htmlentities($row['stat'], ENT_SUBSTITUTE, "utf-8").":&nbsp;"),
-	  new Cell(array('align' => 'center', 'nowrap' => null), htmlentities($row['duration'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
-	  new Cell(array('align' => 'left', 'nowrap' => null), htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
-	  new Cell(null),
+	  new Cell(array('align' => 'right', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
+	    htmlentities($row['stat'], ENT_SUBSTITUTE, "utf-8").":&nbsp;"),
+	  new Cell(array('align' => 'center', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
+	    htmlentities($row['duration'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
+	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
+	    htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
+	  new Cell(null, "&nbsp;&nsbp;"),
       )));
     }
 
