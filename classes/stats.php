@@ -52,7 +52,7 @@ final class Stats extends Table {
 	    htmlentities($row['duration'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
 	    htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
-	  new Cell(null, "&nbsp;&nsbp;"),
+	  new Cell(null, "&nbsp;&nbsp;"),
       )));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -69,7 +69,7 @@ td.lingos {
   font-size: 10.5pt;
 }
 
-#layout_left, #layout_right, #filter_submit, .page_nr, .list_filter, td.list.hack div {
+#layout_left, #layout_right, #filter_submit, .page_nr, .list_filter, .modalDialog, td.list.hack div {
   display: none;
 }
 
@@ -89,7 +89,7 @@ td.lingos {
     display: none;
 }
 
-.cat_0 { 
+.cat_0 {
   color: #3333ff;
 }
 
