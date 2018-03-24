@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -34,8 +34,10 @@ abstract class TableEntityBase implements IRenderable {
 
   protected final function renderAttributes() {
 
-    foreach($this->attributes as $k => $v) {
-      $this->html .= $k.(is_null($v) ? " " : "=\"".$v."\" ");
+    if($this->attributes != null) {
+      foreach($this->attributes as $k => $v) {
+	$this->html .= $k.(is_null($v) ? " " : "=\"".$v."\" ");
+      }
     }
 
     return " ".trim($this->html);

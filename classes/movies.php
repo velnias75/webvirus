@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -87,7 +87,7 @@ final class Movies extends MoviesBase implements IFormable {
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
 	  ($this->loggedIn && !$isSummary ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
-	  urlencode($_SERVER['QUERY_STRING'])."\">" : "").
+	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a href=\"#openModal_stats\">").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
 	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
 	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),

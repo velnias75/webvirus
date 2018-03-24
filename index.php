@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -19,6 +19,7 @@
  */
 
   require 'head.php';
+  require 'classes/stats.php';
   require 'classes/userbox.php';
   require 'classes/form/form.php';
   require 'classes/dataupdate.php';
@@ -91,6 +92,8 @@
     <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by <a class="note_link" href="mailto:heiko@rangun.de?subject=Schrottfilme">Heiko Sch&auml;fer</a>
     <em>(<a class="note_link" target="_blank" href="https://github.com/velnias75/webvirus">work in progess</a>)</em></small></td></tr>
 </table>
+<div id="openModal_stats" class="modalDialog"><div><a href="#close" title="Schlie&szlig;en" class="close">X</a>
+<b><u>Hirnlose Statistiken</u></b><?= (new Stats())->render(); ?></div></div>
 <?php
   if(MoviesBase::isMobile()) echo "</div><div id=\"portrait\"><p>QUERFORMAT!</p></div>";
   require 'foot.php';
