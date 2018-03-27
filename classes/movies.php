@@ -86,7 +86,7 @@ final class Movies extends MoviesBase implements IFormable {
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
-	  ($this->loggedIn && !$isSummary ? "<a target=\"_blank\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
+	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a href=\"#openModal_stats\">").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
 	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
