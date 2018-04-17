@@ -470,6 +470,7 @@ a.page_nr {
 td.page_nr {
   font-family: 'Arial', sans-serif;
   font-size: var(--nf);
+  width: 2.5ex;
   padding: 3px;
   border-width: 1px;
   border-style:solid;
