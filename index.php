@@ -91,7 +91,7 @@
     </td></tr>
   <tr><td id="layout_bottom" valign="middle" align="center" colspan="3">
     <small>&copy;&nbsp;<?php echo strftime("%Y"); ?>&nbsp;by <a class="note_link" href="mailto:heiko@rangun.de?subject=Schrottfilme">Heiko Sch&auml;fer</a>
-    <em>(<a class="note_link" target="_blank" href="https://github.com/velnias75/webvirus">work in progess</a>)</em></small></td></tr>
+    <em>(<a class="note_link" target="_blank" href="https://github.com/velnias75/webvirus">work in progress</a>)</em></small></td></tr>
 </table>
 <div id="openModal_stats" class="modalDialog"><div><a href="#close" title="Schlie&szlig;en" class="close">X</a>
 <b><u>Hirnlose Statistiken</u></b><?= (new Stats())->render(); ?></div></div>
