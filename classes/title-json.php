@@ -23,9 +23,12 @@ require 'classes/movies_base.php';
 final class TitleJSON extends MoviesBase {
 
   private $result;
+  private $id;
 
   function __construct($cat = -1) {
     parent::__construct("ltitle", 0, -1, $cat);
+
+    $this->id = isset($_GET['id']);
 
     $this->result = $this->mySQLRowsQuery("", true);
   }
@@ -40,7 +43,11 @@ final class TitleJSON extends MoviesBase {
 
     if(!is_null($this->result)) {
       while ($row = $this->result->fetch_assoc()) {
-	$array[] = $row['ltitle'];
+	if($this->id) {
+	  $array[] = array('id' => $row['ID'], 'title' => $row['ltitle']);
+	} else {
+	  $array[] = $row['ltitle'];
+	}
       }
     }
 
