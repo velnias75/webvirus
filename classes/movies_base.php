@@ -254,6 +254,74 @@ EOD;
     return $r && $r->num_rows ? $r : null;
   }
 
+  public final function mySQLRowsJSON() {
+
+    $result = $this->mySQLRowsQuery();
+    $jrows = array();
+
+    while($row = $result->fetch_assoc()) {
+      $jrows[] = array('id' => (integer)$row['ID'],
+		       'title' => $row['ltitle'],
+		       'duration' => $row['duration'],
+		       'dur_sec' => (integer)$row['dur_sec'],
+		       'languages' => $row['lingos'],
+		       'disc' => $row['disc'],
+		       'category' => (integer)$row['category'],
+		       'filename' => $row['filename'],
+		       'omu' => (boolean)$row['omu'],
+		       'top250' => (boolean)$row['top250']);
+    }
+
+    return json_encode($jrows);
+  }
+
+  public final function mySQLRowsXML() {
+
+    $result = $this->mySQLRowsQuery();
+
+    $xml = new DOMDocument('1.0', 'utf-8');
+    $xml->formatOutput = true;
+
+    $movies = $xml->createElement('movies');
+    $xml->appendChild($movies);
+
+    while($row = $result->fetch_assoc()) {
+
+      $movie = $xml->createElement('movie');
+      $movie->setAttribute("omu", $row['omu'] ? "true" : "false");
+      $movie->setAttribute("top250", $row['top250'] ? "true" : "false");
+
+      $id = $xml->createElement('id', (integer)$row['ID']);
+      $movie->appendChild($id);
+
+      $title = $xml->createElement('title', htmlspecialchars($row['ltitle'], ENT_XML1|ENT_QUOTES|ENT_COMPAT, 'UTF-8'));
+      $movie->appendChild($title);
+
+      $duration = $xml->createElement('duration', $row['duration']);
+      $duration->setAttribute("seconds", (integer)$row['dur_sec']);
+      $movie->appendChild($duration);
+
+      $lingos = $xml->createElement('languages');
+      foreach(preg_split("/[\s,]+/", $row['lingos'], -1, PREG_SPLIT_NO_EMPTY) as $l) {
+	$lingo = $xml->createElement('language', htmlspecialchars($l, ENT_XML1|ENT_QUOTES|ENT_COMPAT, 'UTF-8'));
+	$lingos->appendChild($lingo);
+      }
+      $movie->appendChild($lingos);
+
+      $cat = $xml->createElement('category', (integer)$row['category']);
+      $movie->appendChild($cat);
+
+      if(!is_null($row['filename'])) {
+	$fname = $xml->createElement('filename', htmlspecialchars($row['filename'], ENT_XML1|ENT_QUOTES|ENT_COMPAT, 'UTF-8'));
+	$movie->appendChild($fname);
+      }
+
+      $movies->appendChild($movie);
+    }
+
+    return $xml->saveXML();
+  }
+
   protected final function secondsToDHMS($sec) {
     return (new DateTime('@'.(($now = time()) + $sec)))->diff(date_create('@'.$now))->format(($sec >= 86400 ? "%a:" : "")."%H:%I:%S");
   }
