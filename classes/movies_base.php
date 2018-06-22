@@ -18,10 +18,10 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+define("ZERO_ID", "812"); // ID bis eine gueltige Zahl erreicht ist
+
 require 'table/table.php';
 require_once 'mysql_base.php';
-
-define(OMU, " [Original mit Untertitel]");
 
 abstract class MoviesBase extends Table {
 
@@ -45,12 +45,12 @@ abstract class MoviesBase extends Table {
   protected $ti_order = "";
 
   private static $dvd_choice = <<<'EOD'
-    SELECT `m`.`ID`, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`) AS `ltitle`, `m`.`title` AS `st`,
+    SELECT `m`.`ID`, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`, `m`.`omu`) AS `ltitle`, `m`.`title` AS `st`,
     SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name`
     ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`, `disc`.`name` AS `ddisc`, `category`,
-    `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`), `m`.`skey`) AS `msk`,
-    `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
-    LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
+    `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`, `m`.`omu`),
+    `m`.`skey`) AS `msk`, `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es`
+    ON  `m`.`ID` =`es`.`movie_id` LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
     LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` WHERE `disc`.`ID` = `m`.`disc`
 EOD;
 
@@ -223,32 +223,39 @@ EOD;
 
   private function getBuiltQuery($q = "", $filtered_ids = false) {
 
-    $fi = $this->filterSQLArray($q);
-    $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);
+    if(!substr($q, 0, 4) == "#~~#") {
 
-    if($this->filters['filter_ID'][0]) {
+      $fi = $this->filterSQLArray($q);
+      $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);
 
-      $bq = (!$ef ? "(".
-	self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q'].
-	") UNION (" : "").
-	self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
-	$fi['ifil']." GROUP BY `m`.`ID` ".($filtered_ids ? " HAVING `ltitle` ".$fi['tfil'].$fi['q'] : "").
-	(!$ef ? ")" : "")." ORDER BY ".$this->order;
+      if($this->filters['filter_ID'][0]) {
 
-    } else {
+	$bq = (!$ef ? "(".
+	  self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	  $fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
+	  (empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q'].
+	  ") UNION (" : "").
+	  self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
+	  $fi['ifil']." GROUP BY `m`.`ID` ".($filtered_ids ? " HAVING `ltitle` ".$fi['tfil'].$fi['q'] : "").
+	  (!$ef ? ")" : "")." ORDER BY ".$this->order;
 
-      $bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']." ORDER BY ".$this->order;
+      } else {
+
+	$bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	  $fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
+	  (empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']." ORDER BY ".$this->order;
+      }
+
+      return $bq;
+
     }
 
-    return $bq;
+    return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = ".ZERO_ID : " = ".substr($q, 4));
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
 //     echo "<pre>".$this->getBuiltQuery($q, $filtered_ids)."</pre>\n";
+
     $r = $this->con->query($this->getBuiltQuery($q, $filtered_ids));
 
     return $r && $r->num_rows ? $r : null;

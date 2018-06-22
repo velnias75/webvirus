@@ -85,7 +85,7 @@ final class PDF extends MoviesBase {
 	array_push($id_w, $this->pdf->pdf()->GetStringWidth($id[$i]));
 
 	$this->pdf->pdf()->SetFont('Arial', 'B', $fs);
-	array_push($ltitle, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $row['ltitle'].($row['omu'] == true ? OMU : '')));
+	array_push($ltitle, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $row['ltitle']));
 	array_push($ltitle_w, $this->pdf->pdf()->GetStringWidth($ltitle[$i]));
 
 	$this->pdf->pdf()->SetFont('Courier', '', $fs);
