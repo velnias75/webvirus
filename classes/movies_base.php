@@ -18,8 +18,6 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define("ZERO_ID", "812"); // ID bis eine gueltige Zahl erreicht ist
-
 require 'table/table.php';
 require_once 'mysql_base.php';
 
@@ -250,7 +248,7 @@ EOD;
 
     }
 
-    return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = ".ZERO_ID : " = ".substr($q, 4));
+    return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
