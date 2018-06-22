@@ -53,7 +53,7 @@ final class TitleJSON extends MoviesBase {
       }
     }
 
-    echo json_encode($array);
+    echo json_encode(!is_null($array[0]) ? $array : array());
   }
 }
 
