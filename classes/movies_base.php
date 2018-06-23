@@ -23,6 +23,8 @@ require_once 'mysql_base.php';
 
 abstract class MoviesBase extends Table {
 
+  const IDSEARCH_REGEX  = "/^#(0*(?!0)[0-9]+)$/";
+  const IDSEARCH_STRING = "#~~#";
   const STD_PAGESIZE    = 24;
   const MOBILE_PAGESIZE = 99;
 
@@ -221,7 +223,7 @@ EOD;
 
   private function getBuiltQuery($q = "", $filtered_ids = false) {
 
-    if(!substr($q, 0, 4) == "#~~#") {
+    if(!substr($q, 0, 4) == IDSEARCH_STRING) {
 
       $fi = $this->filterSQLArray($q);
       $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);

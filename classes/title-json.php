@@ -30,9 +30,9 @@ final class TitleJSON extends MoviesBase {
 
     $this->id = isset($_GET['id']);
 
-    $sid = isset($_GET['filter_ltitle']) && preg_match("/^#(0*(?!0)[0-9]+)$/", urldecode($_GET['filter_ltitle']), $m);
+    $sid = isset($_GET['filter_ltitle']) && preg_match($this::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
 
-    $this->result = $this->mySQLRowsQuery($sid ? "#~~#".$m[1] : "", true);
+    $this->result = $this->mySQLRowsQuery($sid ? $this::IDSEARCH_STRING.$m[1] : "", true);
   }
 
   function __destruct() {
