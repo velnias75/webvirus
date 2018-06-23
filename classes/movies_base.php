@@ -223,7 +223,7 @@ EOD;
 
   private function getBuiltQuery($q = "", $filtered_ids = false) {
 
-    if(!substr($q, 0, 4) == IDSEARCH_STRING) {
+    if(!substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
 
       $fi = $this->filterSQLArray($q);
       $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);
@@ -251,6 +251,11 @@ EOD;
     }
 
     return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
+  }
+
+  protected final function SIDQuery($q = "") {
+    $sid = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
+    return $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : $q;
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {

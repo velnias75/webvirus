@@ -109,9 +109,7 @@ final class Movies extends MoviesBase implements IFormable {
 
     $i      = 0;
 
-    $sid    = isset($_GET['filter_ltitle']) && preg_match($this::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
-
-    $result = $this->mySQLRowsQuery($sid ? $this::IDSEARCH_STRING.$m[1] : "");
+    $result = $this->mySQLRowsQuery($this->SIDQuery());
     $hasRes = !is_null($result);
 
     $act_id = ($this->id_order === "");
