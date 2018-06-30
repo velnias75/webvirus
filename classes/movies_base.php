@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -25,6 +25,8 @@ abstract class MoviesBase extends Table {
 
   const IDSEARCH_REGEX  = "/^#(0*(?!0)[0-9]+)$/";
   const IDSEARCH_STRING = "#~~#";
+  const TPSEARCH_REGEX  = "/^#[Tt][Oo][Pp](250)?$/";
+  const TPSEARCH_STRING = "#T~#";
   const STD_PAGESIZE    = 24;
   const MOBILE_PAGESIZE = 99;
 
@@ -223,7 +225,11 @@ EOD;
 
   private function getBuiltQuery($q = "", $filtered_ids = false) {
 
-    if(!substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
+    if(substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
+      return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
+    } else if(substr($q, 0, 4) == MoviesBase::TPSEARCH_STRING) {
+      return self::$dvd_choice." AND top250 IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+    } else {
 
       $fi = $this->filterSQLArray($q);
       $ef = empty($fi['tfil'].$fi['dfil'].$fi['lfil']);
@@ -249,13 +255,14 @@ EOD;
       return $bq;
 
     }
-
-    return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
   }
 
   protected final function SIDQuery($q = "") {
+
     $sid = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
-    return $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : $q;
+    $top = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::TPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+
+    return $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING : $q);
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
@@ -339,7 +346,8 @@ EOD;
   }
 
   protected final function mySQLTotalQuery($q = "") {
-    return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
+    //return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
+    return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($this->SIDQuery($q), false).") AS `choice`");
   }
 
   static public final function isMobile() {

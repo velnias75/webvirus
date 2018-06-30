@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
