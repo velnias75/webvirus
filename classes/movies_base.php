@@ -27,6 +27,12 @@ abstract class MoviesBase extends Table {
   const IDSEARCH_STRING = "#~~#";
   const TPSEARCH_REGEX  = "/^#[Tt][Oo][Pp](250)?$/";
   const TPSEARCH_STRING = "#T~#";
+  const FPSEARCH_REGEX  = "/^#[Ff][Ll][Oo][Pp]$/";
+  const FPSEARCH_STRING = "#~F#";
+  const OUSEARCH_REGEX  = "/^#[Oo][Mm][Uu]$/";
+  const OUSEARCH_STRING = "~OU~";
+  const OOSEARCH_REGEX  = "/^#[Oo][Oo][Uu]$/";
+  const OOSEARCH_STRING = "~OO~";
   const STD_PAGESIZE    = 24;
   const MOBILE_PAGESIZE = 99;
 
@@ -228,7 +234,17 @@ EOD;
     if(substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
       return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
     } else if(substr($q, 0, 4) == MoviesBase::TPSEARCH_STRING) {
-      return self::$dvd_choice." AND top250 IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	" AND top250 IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::FPSEARCH_STRING) {
+      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	" AND top250 IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::OUSEARCH_STRING) {
+      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	" AND omu IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::OOSEARCH_STRING) {
+      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	" AND omu IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else {
 
       $fi = $this->filterSQLArray($q);
@@ -259,10 +275,14 @@ EOD;
 
   protected final function SIDQuery($q = "") {
 
-    $sid = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
-    $top = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::TPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $sid  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
+    $top  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::TPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $flop = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::FPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $omu  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OUSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $oou  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OOSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
 
-    return $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING : $q);
+    return $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING :
+      ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING : $q))));
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
