@@ -109,7 +109,7 @@ final class Movies extends MoviesBase implements IFormable {
 
     $i      = 0;
 
-    $result = $this->mySQLRowsQuery($this->SIDQuery());
+    $result = $this->mySQLRowsQuery();
     $hasRes = !is_null($result);
 
     $act_id = ($this->id_order === "");

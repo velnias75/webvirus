@@ -30,7 +30,7 @@ final class TitleJSON extends MoviesBase {
 
     $this->id = isset($_GET['id']);
 
-    $this->result = $this->mySQLRowsQuery($this->SIDQuery(), true);
+    $this->result = $this->mySQLRowsQuery("", true);
   }
 
   function __destruct() {

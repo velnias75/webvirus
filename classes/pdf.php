@@ -54,7 +54,7 @@ final class PDF extends MoviesBase {
 
   public function render() {
 
-    $result = $this->mySQLRowsQuery($this->SIDQuery());
+    $result = $this->mySQLRowsQuery();
 
     if($result) {
 

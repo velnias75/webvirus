@@ -231,6 +231,15 @@ EOD;
 
   private function getBuiltQuery($q = "", $filtered_ids = false) {
 
+    $sid  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
+    $top  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::TPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $flop = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::FPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $omu  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OUSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $oou  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OOSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+
+    $q =  $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING :
+      ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING : $q))));
+
     if(substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
       return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
     } else if(substr($q, 0, 4) == MoviesBase::TPSEARCH_STRING) {
@@ -271,18 +280,6 @@ EOD;
       return $bq;
 
     }
-  }
-
-  protected final function SIDQuery($q = "") {
-
-    $sid  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::IDSEARCH_REGEX, urldecode($_GET['filter_ltitle']), $m);
-    $top  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::TPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
-    $flop = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::FPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
-    $omu  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OUSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
-    $oou  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OOSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
-
-    return $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING :
-      ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING : $q))));
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
@@ -367,7 +364,7 @@ EOD;
 
   protected final function mySQLTotalQuery($q = "") {
     //return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
-    return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($this->SIDQuery($q), false).") AS `choice`");
+    return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
   }
 
   static public final function isMobile() {
