@@ -61,7 +61,7 @@ var titles = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
   queryTokenizer: Bloodhound.tokenizers.whitespace,
   remote: {
-      url: '<?= dirname($_SERVER['REQUEST_URI'])."/" ?>title-json.php<?= $movies->filterJSONQueryString(); ?>&filter_ltitle=%QUERY',
+      url: 'title-json.php<?= $movies->filterJSONQueryString(); ?>&filter_ltitle=%QUERY',
       wildcard: '%QUERY',
       rateLimitBy: 'throttle'
     }
