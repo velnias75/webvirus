@@ -57,12 +57,20 @@ abstract class MoviesBase extends Table {
     SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name`
     ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`, `disc`.`name` AS `ddisc`, `category`,
     `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`, `m`.`omu`),
-    `m`.`skey`) AS `msk`, `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250` FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es`
-    ON  `m`.`ID` =`es`.`movie_id` LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
-    LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` WHERE `disc`.`ID` = `m`.`disc`
+    `m`.`skey`) AS `msk`, `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250`, `user_ratings`.`rating` AS `rating`,
+    (SELECT FLOOR((AVG(`user_ratings`.`rating`)) + 0.5) FROM `user_ratings` WHERE `user_ratings`.`movie_id` = `m`.`ID`) AS avg_rating
+    FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
+    LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
+    LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id`
+    LEFT JOIN `user_ratings` ON `m`.`ID` = `user_ratings`.`movie_id`AND `user_ratings`.`uid` = //UID//
+    WHERE `disc`.`ID` = `m`.`disc`
 EOD;
 
   protected $filters = array();
+
+  private function dvdChoice($uid) {
+    return preg_replace("/\\/\\/UID\\/\\//", empty($uid) ? 0 : $uid, self::$dvd_choice);
+  }
 
   protected function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
 
@@ -241,18 +249,18 @@ EOD;
       ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING : $q))));
 
     if(substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
-      return self::$dvd_choice." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null)." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
     } else if(substr($q, 0, 4) == MoviesBase::TPSEARCH_STRING) {
-      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	" AND top250 IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::FPSEARCH_STRING) {
-      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	" AND top250 IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::OUSEARCH_STRING) {
-      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	" AND omu IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::OOSEARCH_STRING) {
-      return self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	" AND omu IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else {
 
@@ -262,17 +270,17 @@ EOD;
       if($this->filters['filter_ID'][0]) {
 
 	$bq = (!$ef ? "(".
-	  self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	  $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	  $fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
 	  (empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q'].
 	  ") UNION (" : "").
-	  self::$dvd_choice./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
+	  $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null)./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
 	  $fi['ifil']." GROUP BY `m`.`ID` ".($filtered_ids ? " HAVING `ltitle` ".$fi['tfil'].$fi['q'] : "").
 	  (!$ef ? ")" : "")." ORDER BY ".$this->order;
 
       } else {
 
-	$bq = self::$dvd_choice.($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	$bq = $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	  $fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
 	  (empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']." ORDER BY ".$this->order;
       }
@@ -283,7 +291,7 @@ EOD;
   }
 
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
-//     echo "<pre>".$this->getBuiltQuery($q, $filtered_ids)."</pre>\n";
+    // echo "<pre>".$this->getBuiltQuery($q, $filtered_ids)."</pre>\n";
 
     $r = $this->con->query($this->getBuiltQuery($q, $filtered_ids));
 

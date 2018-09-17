@@ -20,16 +20,33 @@
 
 final class UserActions {
 
+  private $rating = -1;
   private $ui = null;
   private $id = -1;
 
-  function __construct($ui, $id) {
-    $this->ui = $ui;
-    $this->id = $id;
+  function __construct($ui, $id, $rating) {
+    $this->ui     = $ui;
+    $this->id     = $id;
+    $this->rating = $rating;
   }
 
   public function render() {
-    return "Render some useless user actions<br>for ".htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")." here...";
+
+    $rcheck = array($this->rating == -1 ? "checked" : "",
+		    $this->rating ==  2 ? "checked" : "",
+		    $this->rating ==  1 ? "checked" : "",
+		    $this->rating ==  0 ? "checked" : "");
+
+    return "<br />Hirnlose Bewertung:<table>".
+      "<tr><td><input id=\"ampleoff\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0].">".
+      "<label for=\"ampleoff\"><div id=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
+      "<tr><td><input id=\"amplegreen\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1].">".
+      "<label for=\"amplegreen\"><div id=\"ample_green\">&nbsp;</div>gut</label></td></tr>".
+      "<tr><td><input id=\"ampleyellow\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2].">".
+      "<label for=\"ampleyellow\"><div id=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
+      "<tr><td><input id=\"amplered\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3].">".
+      "<label for=\"amplered\"><div id=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
+      "</table>";
   }
 
 }

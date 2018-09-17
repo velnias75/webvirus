@@ -55,8 +55,17 @@ final class Movies extends MoviesBase implements IFormable {
     return null;
   }
 
+  private function ample($rating) {
+	   switch((int)$rating) {
+	     case -1: return "<div id=\"ample_off\">&nbsp;</div>";
+	     case 0: return "<div id=\"ample_red\">&nbsp;</div>";
+	     case 1: return "<div id=\"ample_yellow\">&nbsp;</div>";
+	     case 2: return "<div id=\"ample_green\">&nbsp;</div>";
+	   }
+  }
+
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
-    $isSummary = false, $isTop250 = false) {
+    $isSummary = false, $isTop250 = false, $rating = -1) {
 
     if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
       $isSummary = true;
@@ -84,11 +93,12 @@ final class Movies extends MoviesBase implements IFormable {
 	  ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
 	  htmlentities($nid, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
 	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
-	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id))->render()."</div>")).
+	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
 	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a ".($isSummary ? "href=\"#openModal_stats\">" : ">")).
+	  (!$isSummary ? $this->ample($rating) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
 	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
 	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
@@ -171,7 +181,8 @@ final class Movies extends MoviesBase implements IFormable {
 	    $this->renderRow($row['ID'], $row['ltitle'],
 	      $row['st'], $row['duration'], $row['dur_sec'],
 	      $row['lingos'], $row['disc'], $row['filename'],
-	      $row['category'], false, $row['top250']);
+	      $row['category'], false, $row['top250'],
+	      isset($_SESSION['ui']) ? (is_null($row['rating']) ? -1 : $row['rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']));
 	  }
 
 	  $i++;
