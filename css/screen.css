@@ -600,7 +600,7 @@ td.page_nr.page_active {
   background-color: var(--col5);
 }
 
-#ample_red {
+.ample_red {
   display: inline-flex;
   background: #ff000080;
   height: 1em;
@@ -609,7 +609,7 @@ td.page_nr.page_active {
   border-radius: 100%;
 }
 
-#ample_yellow {
+.ample_yellow {
   display: inline-flex;
   background: #ffff0080;
   height: 1em;
@@ -618,7 +618,7 @@ td.page_nr.page_active {
   border-radius: 100%;
 }
 
-#ample_green {
+.ample_green {
   display: inline-flex;
   background: #00ff0080;
   height: 1em;
@@ -627,7 +627,7 @@ td.page_nr.page_active {
   border-radius: 100%;
 }
 
-#ample_off {
+.ample_off {
   display: inline-flex;
   background: #00000007;
   height: 1em;

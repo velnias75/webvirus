@@ -68,6 +68,14 @@ final class MySQLBase {
     return $this->upload;
   }
 
+  public function update_rating($uid, $mid, $rating) {
+    if($rating != -1) {
+      $this->mysqli->query("REPLACE INTO user_ratings VALUES (".$uid.", ".$mid.", ".$rating.")");
+    } else {
+      $this->mysqli->query("DELETE FROM user_ratings WHERE uid=".$uid." AND movie_id=".$mid);
+    }
+  }
+
   public function chg_pass($id, $pass) {
     $this->mysqli->query("UPDATE users SET pass=HEX(AES_ENCRYPT('".
       $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".

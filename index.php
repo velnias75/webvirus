@@ -71,7 +71,7 @@
     <td id="layout_content" align="center" valign="top">
       <?php
 	try {
-	  echo (new Form($movies))->render();
+	  echo (new Form($movies, "movies"))->render();
 	} catch(Exception $e) {
 	  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 	}

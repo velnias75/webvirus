@@ -55,13 +55,13 @@ final class Movies extends MoviesBase implements IFormable {
     return null;
   }
 
-  private function ample($rating) {
-	   switch((int)$rating) {
-	     case -1: return "<div id=\"ample_off\">&nbsp;</div>";
-	     case 0: return "<div id=\"ample_red\">&nbsp;</div>";
-	     case 1: return "<div id=\"ample_yellow\">&nbsp;</div>";
-	     case 2: return "<div id=\"ample_green\">&nbsp;</div>";
-	   }
+  private function ample($rating, $mid) {
+    switch((int)$rating) {
+      case -1: return "<div id=\"".ample_mid.$mid."\" class=\"ample_off\">&nbsp;</div>";
+      case  0: return "<div id=\"".ample_mid.$mid."\" class=\"ample_red\">&nbsp;</div>";
+      case  1: return "<div id=\"".ample_mid.$mid."\" class=\"ample_yellow\">&nbsp;</div>";
+      case  2: return "<div id=\"".ample_mid.$mid."\" class=\"ample_green\">&nbsp;</div>";
+    }
   }
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
@@ -98,7 +98,7 @@ final class Movies extends MoviesBase implements IFormable {
 	new Cell($tatt,
 	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a ".($isSummary ? "href=\"#openModal_stats\">" : ">")).
-	  (!$isSummary ? $this->ample($rating) : "").
+	  (!$isSummary ? $this->ample($rating, $id) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
 	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
 	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),

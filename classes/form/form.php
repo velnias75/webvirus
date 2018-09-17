@@ -25,9 +25,9 @@ final class Form implements IRenderable {
   private $body;
   private $html;
 
-  function __construct(IFormable $body) {
+  function __construct(IFormable $body, $name = null) {
     $this->body = $body;
-    $this->html = "<form method=\"".$body->method()."\"".
+    $this->html = "<form ".(!is_null($name) ? "name=\"".$name."\" " : "")."method=\"".$body->method()."\"".
     (empty($body->action()) ? "" : " action=\"".$body->action()."\" ").
     (empty($body->encType()) ? "" : " enctype=\"".$body->enctype()."\"").">";
   }
