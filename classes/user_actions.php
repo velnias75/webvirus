@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -39,9 +39,14 @@ final class UserActions {
 	  "if(this !== prev_".$this->id.") {".
 	    "prev_".$this->id." = this;".
 	    "document.getElementById('ample_mid".$this->id."').setAttribute('class', (this.value == 0 ? 'ample_red' : (this.value == 1 ? 'ample_yellow' : (this.value == 2 ? 'ample_green' : 'ample_off'))));".
-	    "var oReq = new XMLHttpRequest();".
-	    "oReq.open('GET', 'update_rating.php?uid=".$this->ui['id']."&mid=".$this->id."&rating=' + this.value);".
-	    "oReq.send();".
+	    "var oReq_".$this->id." = new XMLHttpRequest();".
+	    "oReq_".$this->id.".addEventListener('loadend', function(e) { ".
+	      "if(oReq_".$this->id.".status != 200) {".
+		"alert('Aktualisierung der Bewertung fehlgeschlagen.\\nGrund: ' + oReq_".$this->id.".status + ' ' + oReq_".$this->id.".statusText);".
+	      "}".
+	    " });".
+	    "oReq_".$this->id.".open('GET', 'update_rating.php?uid=".$this->ui['id']."&mid=".$this->id."&rating=' + this.value);".
+	    "oReq_".$this->id.".send();".
 	  "}".
       "};".
     "}";
@@ -53,18 +58,19 @@ final class UserActions {
 		    $this->rating ==  2 ? "checked" : "",
 		    $this->rating ==  1 ? "checked" : "",
 		    $this->rating ==  0 ? "checked" : "");
-
   return
-      "<br />Hirnlose Bewertung:<table>".
-      "<tr><td><input id=\"ampleoff\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0].">".
-      "<label for=\"ampleoff\"><div class=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
-      "<tr><td><input id=\"amplegreen\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1].">".
-      "<label for=\"amplegreen\"><div class=\"ample_green\">&nbsp;</div>gut</label></td></tr>".
-      "<tr><td><input id=\"ampleyellow\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2].">".
-      "<label for=\"ampleyellow\"><div class=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
-      "<tr><td><input id=\"amplered\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3].">".
-      "<label for=\"amplered\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
-      "</table>"."<script>".$this->script()."</script>";
+      "<center><br /><b>Hirnlose Bewertung:</b><table>".
+      "<tr><td><input id=\"ampleoff_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0].">".
+      "<label for=\"ampleoff_".$this->id."\"><div class=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
+      "<tr><td><input id=\"amplegreen_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1].">".
+      "<label for=\"amplegreen_".$this->id."\"><div class=\"ample_green\">&nbsp;</div>gut</label></td></tr>".
+      "<tr><td><input id=\"ampleyellow_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2].">".
+      "<label for=\"ampleyellow_".$this->id."\"><div class=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
+      "<tr><td><input id=\"amplered_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3].">".
+      "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
+      "<tr><td>&nbsp;</td></tr>".
+      "<tr><td align=\"center\"><a class=\"button\" href=\"#close\">Fertig</a></td></tr>".
+      "</table></center><script>".$this->script()."</script>";
   }
 
 }

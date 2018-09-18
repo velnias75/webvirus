@@ -108,3 +108,24 @@ td.lingos {
 .cat_4 {
   color: #510000;
 }
+
+.ample_red {
+  display: none;
+  background: #ff000080;
+  height: 1em;
+  width: 1em;
+  margin-right: 0.25em;
+  border-radius: 100%;
+}
+
+.ample_yellow {
+  display: none;
+}
+
+.ample_green {
+  display: none;
+}
+
+.ample_off {
+  display: none;
+}

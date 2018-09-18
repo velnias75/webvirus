@@ -78,7 +78,7 @@ final class UserBox extends CatNavTable implements IFormable {
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
       "<input type=\"checkbox\" name=\"pl\">&nbsp;eingeloggt bleiben"))));
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<input type=\"submit\" name=\"btn[login]\" value=\"Einloggen\">"))));
+      "<input class=\"button\" type=\"submit\" name=\"btn[login]\" value=\"Einloggen\">"))));
 
     } else {
 
@@ -86,14 +86,14 @@ final class UserBox extends CatNavTable implements IFormable {
       "Willkommen ".htmlentities($this->ui['display_name'], ENT_SUBSTITUTE, "utf-8")."!"))));
 
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<input type=\"submit\" name=\"btn[logout]\" value=\"Ausloggen\">"))));
+      "<input class=\"button\" type=\"submit\" name=\"btn[logout]\" value=\"Ausloggen\">"))));
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
 
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<a id=\"remember_button\" title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".
+      "<a id=\"remember_button\" class=\"button\" title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".
       $this->m->noFilterQueryString()."\">Alle Filter l&ouml;schen</a>"))));
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<a id=\"remember_button\" ".
+      "<a id=\"remember_button\" class=\"button\" ".
       "title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
       (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a>"))));
 
@@ -104,7 +104,7 @@ final class UserBox extends CatNavTable implements IFormable {
 	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_chg\"></label>"))));
 	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-	"<input type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\">"))));
+	"<input class=\"button\" type=\"submit\" name=\"btn[chg]\" value=\"&Auml;ndern\">"))));
       }
 
       if($this->ui['admin']) {
@@ -117,7 +117,7 @@ final class UserBox extends CatNavTable implements IFormable {
 	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<label>Passwort:&nbsp;<input type=\"text\" size=\"5\" name=\"pass_new\"></label>"))));
 	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-	"<input type=\"submit\" name=\"btn[create]\" value=\"Anlegen\">"))));
+	"<input class=\"button\" type=\"submit\" name=\"btn[create]\" value=\"Anlegen\">"))));
       }
     }
 
