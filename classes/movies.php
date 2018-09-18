@@ -153,7 +153,15 @@ final class Movies extends MoviesBase implements IFormable {
 		       'class' => "list_filter"),
 	  "<input name=\"filter_ID\" class=\"list_filter\" id=\"list_filter_id\" size=\"3\" type=\"text\" ".
 	  "value=\"".($this->filters['filter_ID'][0] ? $this->filters['filter_ID'][1] : "")."\">"),
-	new Cell(array('title' => "/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.",
+	new Cell(array('title' => "/REGEXP/ erm&ouml;glicht Filterung mit regul&auml;ren Ausdr&uuml;cken.&#13;&#10;".
+				  "&#13;&#10;Spezialsuchen:&#13;&#10;".
+				  "#top, #top250 &ndash; Filme in der imdb-Top250&#13;&#10;".
+				  "#flop &ndash; Filme NICHT in der imdb-Top250&#13;&#10;".
+				  "#omu &ndash; Originale MIT Untertitel&#13;&#10;".
+				  "#oou &ndash; Originale OHNE Untertitel&#13;&#10;".
+				  "#good &ndash; gut bewertete Filme&#13;&#10;".
+				  "#okay &ndash; OK bewertete Filme&#13;&#10;".
+				  "#bad &ndash; schlecht bewertete Filme&#13;&#10;",
 		       'class' => "list_filter"),
 	  "<input name=\"filter_ltitle\" class=\"list_filter\" placeholder=\"Suchbegriff(e) oder /regul&auml;rer Ausdruck/\" ".
 	  "id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
@@ -182,7 +190,7 @@ final class Movies extends MoviesBase implements IFormable {
 	      $row['st'], $row['duration'], $row['dur_sec'],
 	      $row['lingos'], $row['disc'], $row['filename'],
 	      $row['category'], false, $row['top250'],
-	      isset($_SESSION['ui']) ? (is_null($row['rating']) ? -1 : $row['rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']));
+	      isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']));
 	  }
 
 	  $i++;

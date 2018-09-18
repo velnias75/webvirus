@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -41,8 +41,8 @@ final class UpdateSQL implements IFormable {
   }
 
   public function render() {
-    return  "<label class=\"fileContainer\"><input type=\"file\" name=\"dateiupload\"><input type=\"submit\" ".
-      "name=\"btn[upload]\" accept=\"application/sql\"></label>";
+    return  "<label class=\"fileContainer\"><input type=\"file\" name=\"dateiupload\">".
+	    "<input class=\"button\" type=\"submit\" name=\"btn[upload]\" accept=\"application/sql\"></label>";
   }
 
 }

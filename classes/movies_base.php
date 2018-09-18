@@ -33,6 +33,15 @@ abstract class MoviesBase extends Table {
   const OUSEARCH_STRING = "~OU~";
   const OOSEARCH_REGEX  = "/^#[Oo][Oo][Uu]$/";
   const OOSEARCH_STRING = "~OO~";
+  const RNSEARCH_REGEX  = "/^#[Uu][Nn][Rr][Aa][Tt][Ee][Dd]$/";
+  const RNSEARCH_STRING = "~RN~";
+  const RGSEARCH_REGEX  = "/^#[Gg][Oo][Oo][Dd]$/";
+  const RGSEARCH_STRING = "~RG~";
+  const ROSEARCH_REGEX  = "/^#[Oo][Kk][Aa][Yy]$/";
+  const ROSEARCH_STRING = "~RO~";
+  const RBSEARCH_REGEX  = "/^#[Bb][Aa][Dd]$/";
+  const RBSEARCH_STRING = "~RB~";
+
   const STD_PAGESIZE    = 24;
   const MOBILE_PAGESIZE = 99;
 
@@ -57,8 +66,8 @@ abstract class MoviesBase extends Table {
     SEC_TO_TIME(m.duration) AS `duration`, `m`.`duration` AS `dur_sec`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name`
     ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`, `disc`.`name` AS `ddisc`, `category`,
     `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`, `m`.`omu`),
-    `m`.`skey`) AS `msk`, `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250`, `user_ratings`.`rating` AS `rating`,
-    (SELECT FLOOR((AVG(`user_ratings`.`rating`)) + 0.5) FROM `user_ratings` WHERE `user_ratings`.`movie_id` = `m`.`ID`) AS avg_rating
+    `m`.`skey`) AS `msk`, `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250`, `user_ratings`.`rating` AS `user_rating`,
+    (SELECT FLOOR((AVG(`user_ratings`.`rating`)) + 0.5) FROM `user_ratings` WHERE `user_ratings`.`movie_id` = `m`.`ID`) AS `avg_rating`
     FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
     LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
     LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id`
@@ -244,9 +253,15 @@ EOD;
     $flop = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::FPSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
     $omu  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OUSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
     $oou  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::OOSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $urn  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::RNSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $urg  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::RGSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $uro  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::ROSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
+    $urb  = isset($_GET['filter_ltitle']) && preg_match(MoviesBase::RBSEARCH_REGEX, urldecode($_GET['filter_ltitle']));
 
-    $q =  $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING :
-      ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING : $q))));
+    $q = $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING :
+      ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING :
+      ($urn ? MoviesBase::RNSEARCH_STRING : ($urg ? MoviesBase::RGSEARCH_STRING : ($uro ? MoviesBase::ROSEARCH_STRING :
+      ($urb ? MoviesBase::RBSEARCH_STRING : $q))))))));
 
     if(substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null)." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
@@ -262,6 +277,18 @@ EOD;
     } else if(substr($q, 0, 4) == MoviesBase::OOSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
 	" AND omu IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::RNSEARCH_STRING) {
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	" GROUP BY `m`.`ID` HAVING `user_rating` IS NULL ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::RGSEARCH_STRING) {
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      " GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 2, `avg_rating` = 2) ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::ROSEARCH_STRING) {
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      " GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 1, `avg_rating` = 1) ORDER BY ".$this->order;
+    } else if(substr($q, 0, 4) == MoviesBase::RBSEARCH_STRING) {
+      return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
+      " GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 0, avg_rating = 0) ORDER BY ".$this->order;
     } else {
 
       $fi = $this->filterSQLArray($q);
