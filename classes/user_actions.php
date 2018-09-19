@@ -18,15 +18,21 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'ampletraits.php';
+
 final class UserActions {
 
+  use AmpleTraits;
+
   private $rating = -1;
+  private $avg = -1;
   private $ui = null;
   private $id = -1;
 
-  function __construct($ui, $id, $rating) {
+  function __construct($ui, $id, $rating, $avg) {
     $this->ui     = $ui;
     $this->id     = $id;
+    $this->avg    = is_null($avg) ? -1 : $avg;
     $this->rating = $rating;
   }
 
@@ -58,8 +64,9 @@ final class UserActions {
 		    $this->rating ==  2 ? "checked" : "",
 		    $this->rating ==  1 ? "checked" : "",
 		    $this->rating ==  0 ? "checked" : "");
-  return
+    return
       "<center><br /><b>Hirnlose Bewertung:</b><table>".
+      ($this->avg != -1 ? "<tr><td align=\"center\"><small>(".$this->ample($this->avg, $this->id, "ua_ample_mid")."durchschn. Bewertung)</small></td></tr>" : "").
       "<tr><td><input id=\"ampleoff_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0].">".
       "<label for=\"ampleoff_".$this->id."\"><div class=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
       "<tr><td><input id=\"amplegreen_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1].">".

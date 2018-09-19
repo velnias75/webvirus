@@ -18,6 +18,8 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'ampletraits.php';
+
 require 'form/formabletraits.php';
 require 'table/headercell.php';
 require 'filterdrop_disc.php';
@@ -30,6 +32,7 @@ require 'pagination.php';
 final class Movies extends MoviesBase implements IFormable {
 
   use FormableTraits;
+  use AmpleTraits;
 
   private $par;
   private $loggedIn = false;
@@ -55,17 +58,9 @@ final class Movies extends MoviesBase implements IFormable {
     return null;
   }
 
-  private function ample($rating, $mid) {
-    switch((int)$rating) {
-      case -1: return "<div id=\"".ample_mid.$mid."\" class=\"ample_off\">&nbsp;</div>";
-      case  0: return "<div id=\"".ample_mid.$mid."\" class=\"ample_red\">&nbsp;</div>";
-      case  1: return "<div id=\"".ample_mid.$mid."\" class=\"ample_yellow\">&nbsp;</div>";
-      case  2: return "<div id=\"".ample_mid.$mid."\" class=\"ample_green\">&nbsp;</div>";
-    }
-  }
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
-    $isSummary = false, $isTop250 = false, $rating = -1) {
+    $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1) {
 
     if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
       $isSummary = true;
@@ -93,14 +88,15 @@ final class Movies extends MoviesBase implements IFormable {
 	  ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
 	  htmlentities($nid, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
 	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
-	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating))->render()."</div>")).
+	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
 	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a ".($isSummary ? "href=\"#openModal_stats\">" : ">")).
 	  (!$isSummary ? $this->ample($rating, $id) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
-	  ($isSummary ? "" : "<span itemprop=\"name\">".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
+	  ($isSummary ? "" : "<span itemprop=\"name\">".(!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
+	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
 	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
 	  ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
 	  ($isSummary ? "" : "<div itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").($isSummary ? "" :">").
@@ -190,7 +186,8 @@ final class Movies extends MoviesBase implements IFormable {
 	      $row['st'], $row['duration'], $row['dur_sec'],
 	      $row['lingos'], $row['disc'], $row['filename'],
 	      $row['category'], false, $row['top250'],
-	      isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']));
+	      isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']),
+	      $row['avg_rating']);
 	  }
 
 	  $i++;
