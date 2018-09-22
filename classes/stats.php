@@ -18,10 +18,13 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'ampletraits.php';
 require_once 'table/table.php';
 require_once 'mysql_base.php';
 
 final class Stats extends Table {
+
+  use AmpleTraits;
 
   private $con;
 
@@ -40,7 +43,7 @@ final class Stats extends Table {
 
   public final function render() {
 
-    $stat_res = $this->con->query("SELECT cid, stat, duration, category, mid, title FROM statistics");
+    $stat_res = $this->con->query("SELECT cid, stat, duration, category, mid, title, ord FROM statistics");
 
     while($row = $stat_res->fetch_assoc()) {
       $this->addRow(new Row(
@@ -49,7 +52,8 @@ final class Stats extends Table {
 	  new Cell(array('align' => 'right', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
 	    htmlentities($row['stat'], ENT_SUBSTITUTE, "utf-8").":&nbsp;"),
 	  new Cell(array('align' => 'center', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    htmlentities($row['duration'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
+	  $row['ord'] != 3 ? $row['duration'] : ($this->ample(floor((float)$row['duration'] + 0.5), $row['category'], "ample_stat").
+	    "&nbsp;(".round((float)$row['duration'], 2).")&nbsp;")),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
 	    htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
