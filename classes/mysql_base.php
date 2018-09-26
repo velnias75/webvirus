@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -18,6 +18,26 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+final class compressed_mysqli extends mysqli {
+
+  public function __construct($host, $user, $pass, $db) {
+
+    parent::init();
+
+    /*if (!parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 0')) {
+      die('Setting MYSQLI_INIT_COMMAND failed');
+    }*/
+
+    /* if (!parent::options(MYSQLI_OPT_CONNECT_TIMEOUT, 5)) {
+      die('Setting MYSQLI_OPT_CONNECT_TIMEOUT failed');
+    } */
+
+    if(!parent::real_connect($host, $user, $pass, $db, 0, '', MYSQLI_CLIENT_COMPRESS)) {
+      die('Connect Error (' . mysqli_connect_errno() . ') '.mysqli_connect_error());
+    }
+  }
+}
+
 final class MySQLBase {
 
   private $mysqli = null;
@@ -29,7 +49,7 @@ final class MySQLBase {
 
     require 'db_cred.php';
 
-    $this->mysqli = new mysqli($server, $user, $pass, $db);
+    $this->mysqli = new compressed_mysqli($server, $user, $pass, $db);
 
     if($this->mysqli->connect_errno) {
       throw new ErrorException("Konnte keine Verbindung zu MySQL aufbauen: ".$this->mysqli->connect_error);
