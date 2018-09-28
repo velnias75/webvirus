@@ -24,7 +24,7 @@ trait AmpleTraits {
 
     $ret = "";
 
-    switch((int)$rating) {
+    switch((int)(floor((double)$rating + 0.5))) {
       case -1: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_off\">&nbsp;</div>"; break;
       case  0: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_red\">&nbsp;</div>"; break;
       case  1: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_yellow\">&nbsp;</div>"; break;
