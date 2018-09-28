@@ -20,13 +20,33 @@
 
 trait AmpleTraits {
 
-  private function ample($rating, $mid, $hid = "ample_mid") {
+  private function ample($rating, $mid, $hid = "ample_mid", $frac = null) {
+
+    $ret = "";
+
     switch((int)$rating) {
-      case -1: return "<div id=\"".$hid.$mid."\" class=\"ample_off\">&nbsp;</div>";
-      case  0: return "<div id=\"".$hid.$mid."\" class=\"ample_red\">&nbsp;</div>";
-      case  1: return "<div id=\"".$hid.$mid."\" class=\"ample_yellow\">&nbsp;</div>";
-      case  2: return "<div id=\"".$hid.$mid."\" class=\"ample_green\">&nbsp;</div>";
+      case -1: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_off\">&nbsp;</div>"; break;
+      case  0: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_red\">&nbsp;</div>"; break;
+      case  1: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_yellow\">&nbsp;</div>"; break;
+      case  2: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_green\">&nbsp;</div>"; break;
     }
+
+    if(!((int)$rating == -1 || is_null($frac))) {
+
+      $r = 255;
+      $g = 255;
+
+      if((double)$rating < 1.0) { // yellow towards red
+	$g -= $frac;
+      } else if((double)$rating > 1.0) { // yellow towards green
+	$r -= $frac;
+      }
+
+      //$ret .= "<script>".$rating." ".$frac." #".dechex($r).dechex($g)."0080</script>";
+      $ret .= "<script>document.getElementById('".$hid.$mid."').style.background='#".dechex($r).dechex($g)."0080';</script>";
+    }
+
+    return $ret;
   }
 
 }

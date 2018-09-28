@@ -20,7 +20,7 @@
 
 final class compressed_mysqli extends mysqli {
 
-  public function __construct($host, $user, $pass, $db) {
+  public function __construct($host, $user, $pass, $db, $socket) {
 
     parent::init();
 
@@ -32,7 +32,7 @@ final class compressed_mysqli extends mysqli {
       die('Setting MYSQLI_OPT_CONNECT_TIMEOUT failed');
     } */
 
-    if(!parent::real_connect($host, $user, $pass, $db, 0, '', MYSQLI_CLIENT_COMPRESS)) {
+    if(!parent::real_connect($host, $user, $pass, $db, 0, $socket, MYSQLI_CLIENT_COMPRESS)) {
       die('Connect Error (' . mysqli_connect_errno() . ') '.mysqli_connect_error());
     }
   }
@@ -49,7 +49,7 @@ final class MySQLBase {
 
     require 'db_cred.php';
 
-    $this->mysqli = new compressed_mysqli($server, $user, $pass, $db);
+    $this->mysqli = new compressed_mysqli($server, $user, $pass, $db, empty($socket) ? '' : $socket);
 
     if($this->mysqli->connect_errno) {
       throw new ErrorException("Konnte keine Verbindung zu MySQL aufbauen: ".$this->mysqli->connect_error);
