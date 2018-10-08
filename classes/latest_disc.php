@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -48,6 +48,8 @@ final class LatestDisc extends CatNavTable {
       throw new ErrorException("MySQL-Fehler: ".$this->con->error);
     }
 
+    if(!isset($_SESSION['display_ldnot'])) $_SESSION['display_ldnot'] = true;
+
     $this->movies = $m;
   }
 
@@ -60,7 +62,16 @@ final class LatestDisc extends CatNavTable {
     $row = $this->result->fetch_assoc();
 
     $newdvd = (($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) ||
-      (isset($_COOKIE["dbnewdvd"]) && $_COOKIE["dbnewdvd"])) ? array("<font color=\"red\">", "</font>") : array("", "");
+      (isset($_COOKIE["dbnewdvd"]) && $_COOKIE["dbnewdvd"])) ? array("<font color=\"red\">", "</font>".
+	(isset($_SESSION['display_ldnot']) && $_SESSION['display_ldnot'] ? "<script>".
+	  "Notification.requestPermission().then(function(result) {".
+	  "if(result == 'granted') {".
+	    "var notification = new Notification('Heikos Schrott- & Rentnerfilme', { body: 'Es gibt eine neue DVD: ".$row['name']."', icon: 'img/favicon.ico' });".
+	    "window.setTimeout(notification.close.bind(notification), 10000);".
+	  "}".
+	"});</script>" : "")) : array("", "");
+
+    $_SESSION['display_ldnot'] = false;
 
     if(($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) && !isset($_COOKIE["dbnewdvd"])) {
 	setcookie("dbnewdvd", true, time()+60*60*24);
