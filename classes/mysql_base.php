@@ -132,7 +132,8 @@ final class MySQLBase {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
       $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, last_login, style, fid, ".
-      "pagesize FROM users WHERE login = '".$login."' LIMIT 1");
+      "pagesize, oauth_access_token, oauth_access_token_secret, consumer_key, consumer_secret ".
+      "FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
 
@@ -149,7 +150,11 @@ final class MySQLBase {
 	  'auto_login' => $auto,
 	  'style' => $row['style'],
 	  'fid' => $row['fid'],
-	  'pagesize' => $row['pagesize']
+	  'pagesize' => $row['pagesize'],
+	  'oauth_access_token' => $row['oauth_access_token'],
+	  'oauth_access_token_secret' => $row['oauth_access_token_secret'],
+	  'consumer_key' => $row['consumer_key'],
+	  'consumer_secret' => $row['consumer_secret']
 	);
 
       $result->free_result();

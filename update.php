@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -19,6 +19,8 @@
  */
 
 require 'classes/mysql_base.php';
+
+require_once 'TwitterAPIExchange.php';
 
 session_start();
 
@@ -42,7 +44,23 @@ if(MySQLBase::instance()->update_allowed()) {
 	  $templine.'\': '.MySQLBase::instance()->con()->error.'</strong>');
 	$templine = '';
       }
-  }
+    }
+
+    $settings = array(
+      'oauth_access_token' => $_SESSION['ui']['oauth_access_token'],
+      'oauth_access_token_secret' => $_SESSION['ui']['oauth_access_token_secret'],
+      'consumer_key' => $_SESSION['ui']['consumer_key'],
+      'consumer_secret' => $_SESSION['ui']['consumer_secret']
+    );
+
+    try {
+      $twitter = new TwitterAPIExchange($settings);
+      $twitter->buildOauth("https://api.twitter.com/1.1/statuses/update.json", "POST")
+	->setPostfields(array('status' => 'Neue hirnlose Schrott- & Rentnerfilme wurden soeben auf https://rangun.de/db/index.php hinzugefügt!'))
+	->performRequest();
+    } catch(Exception $e) {
+      echo '<pre>Twitter-API-Exception: ',  $e->getMessage(), "</pre>\n";
+    }
 
   } else if(!(isset($_SESSION['ui']) && $_SESSION['ui']['admin'])) {
     echo "<pre>Nur Administratoren d&uuml;rfen ein Datenupdate durchf&uuml;hren!</pre>\n";

@@ -71,7 +71,7 @@ final class LatestDisc extends CatNavTable {
 	  "}".
 	"});</script>" : "")) : array("", "");
 
-    $_SESSION['display_ldnot'] = false;
+    if(isset($_COOKIE["dbnewdvd"]) && $_COOKIE["dbnewdvd"]) $_SESSION['display_ldnot'] = false;
 
     if(($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) && !isset($_COOKIE["dbnewdvd"])) {
 	setcookie("dbnewdvd", true, time()+60*60*24);
