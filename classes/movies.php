@@ -60,7 +60,7 @@ final class Movies extends MoviesBase implements IFormable {
 
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
-    $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1) {
+    $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null) {
 
     if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
       $isSummary = true;
@@ -91,7 +91,8 @@ final class Movies extends MoviesBase implements IFormable {
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
-	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"omdb.php?search=".urlencode($st)."&amp;q=".
+	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=".
+	  (is_null($omdb_id) ? "\"omdb.php?search=".urlencode($st) : "omdb.php?id=".$omdb_id)."&amp;q=".
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a ".($isSummary ? "href=\"#openModal_stats\">" : ">")).
 	  (!$isSummary ? $this->ample($rating, $id) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
@@ -187,7 +188,7 @@ final class Movies extends MoviesBase implements IFormable {
 	      $row['lingos'], $row['disc'], $row['filename'],
 	      $row['category'], false, $row['top250'],
 	      isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']),
-	      $row['avg_rating']);
+	      $row['avg_rating'], $row['omdb_id']);
 	  }
 
 	  $i++;

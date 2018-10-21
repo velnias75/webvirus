@@ -88,6 +88,10 @@ final class MySQLBase {
     return $this->upload;
   }
 
+  public function update_omdb_id($mid, $oid) {
+    $this->mysqli->query("UPDATE movies SET omdb_id=".$oid." WHERE ID=".$mid);
+  }
+
   public function update_rating($uid, $mid, $rating) {
     if($rating != -1) {
       $this->mysqli->query("REPLACE INTO user_ratings VALUES (".$uid.", ".$mid.", ".$rating.")");
