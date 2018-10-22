@@ -80,11 +80,23 @@ $(document).ready(function() {
     },
     limit: 1e06
   });
-})
+});
 
 $(document).ready(function() {
   $('#list_filter_ltitle').focus();
-})
+  $('.list.hasTooltip').mouseover(function(e) {
+
+    var tooltip = $(this).children("span");
+    var tooltipTop = tooltip.offset().top;
+    var tooltipBottom = tooltipTop + tooltip.outerHeight();
+    var viewportTop = $(window).scrollTop();
+    var viewportBottom = viewportTop + $(window).height();
+
+    if(tooltipBottom > viewportBottom) {
+      tooltip.css({ top: (viewportBottom - tooltip.outerHeight() - 25) });
+    }
+  });
+});
 </script>
 <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
 <link rel="alternate" title="Heikos Schrott- &amp; Rentnerfilme" type="application/rss+xml" href="feed.php">
