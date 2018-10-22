@@ -95,9 +95,10 @@ final class Movies extends MoviesBase implements IFormable {
 	  (is_null($omdb_id) ? "\"omdb.php?search=".urlencode($st) : "omdb.php?id=".$omdb_id)."&amp;q=".
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a ".($isSummary ? "href=\"#openModal_stats\">" : ">")).
 	  (!$isSummary ? $this->ample($rating, $id) : "").
-	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn  && !$isSummary ? "</a>" : "").
-	  ($isSummary ? "" : "<span itemprop=\"name\">".(!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
-	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
+	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn && !$isSummary ? "</a>" : "").
+	  ($isSummary ? "" : "<span itemprop=\"name\">".(is_null($omdb_id) ? "" : "<center><img src=\"omdb.php?cover-oid=".$omdb_id."\"></center><br>").
+	    (!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
+	    htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
 	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
 	  ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
 	  ($isSummary ? "" : "<div itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").($isSummary ? "" :">").

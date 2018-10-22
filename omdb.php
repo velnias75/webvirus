@@ -22,7 +22,33 @@ require 'classes/mysql_base.php';
 
 session_start();
 
-if(isset($_GET['mid']) && isset($_GET['oid']) && isset($_GET['url']) && isset($_SESSION['ui'])) {
+if(isset($_GET['cover-oid'])) {
+
+  $ch = curl_init("https://www.omdb.org/movie/".$_GET['cover-oid']);
+  curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+  $doc = DOMDocument::loadHTML(curl_exec($ch));
+  curl_close($ch);
+
+  $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
+  curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+  //curl_setopt($ch, CURLOPT_HEADER, true);
+  $pic = curl_exec($ch);
+  curl_close($ch);
+
+  header("Content-Type: image");
+  header("Cache-Control: public");
+
+  echo $pic;
+
+} else if(isset($_GET['mid']) && isset($_GET['oid']) && isset($_GET['url']) && isset($_SESSION['ui'])) {
   MySQLBase::instance()->update_omdb_id($_GET['mid'], $_GET['oid']);
   header("Location: ".urldecode($_GET['url']));
 } else if(isset($_GET['search']) && isset($_SESSION['ui'])) {
