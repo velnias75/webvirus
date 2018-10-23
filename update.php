@@ -46,6 +46,7 @@ if(MySQLBase::instance()->update_allowed()) {
       }
     }
 
+    // Twitter
     $settings = array(
       'oauth_access_token' => $_SESSION['ui']['oauth_access_token'],
       'oauth_access_token_secret' => $_SESSION['ui']['oauth_access_token_secret'],
@@ -61,6 +62,23 @@ if(MySQLBase::instance()->update_allowed()) {
     } catch(Exception $e) {
       echo '<pre>Twitter-API-Exception: ',  $e->getMessage(), "</pre>\n";
     }
+
+    // Reddit (seems not to work from webhoster STRATO)
+    /*
+    $ch = curl_init("https://www.reddit.com/api/v1/access_token");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: rangun.de: v1.0 (by /u/Velnias75)"));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERNAME, curl_escape($ch, "aaa:bbb"));
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=password&username=uuu&password=ppp");
+    $ansa = json_decode(curl_exec($ch), true);
+    curl_close($ch);
+
+    if(!isset($ansa['error'])) {
+      echo "<pre>Reddit access_token: ".$ansa['access_token']."</pre>\n";
+    } else {
+      echo "<pre>Reddit-API-Exception: ".$ansa['message']." (".$ansa['error'].")</pre>\n";
+    } */
 
   } else if(!(isset($_SESSION['ui']) && $_SESSION['ui']['admin'])) {
     echo "<pre>Nur Administratoren d&uuml;rfen ein Datenupdate durchf&uuml;hren!</pre>\n";

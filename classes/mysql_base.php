@@ -40,6 +40,7 @@ final class compressed_mysqli extends mysqli {
 
 final class MySQLBase {
 
+  private $proxy = null;
   private $mysqli = null;
   private $secret = null;
   private $update = false;
@@ -57,6 +58,7 @@ final class MySQLBase {
 
     $this->mysqli->set_charset('utf8');
 
+    $this->proxy  = $proxy;
     $this->secret = $secret;
     $this->upload = !isset($update) || $update == true;
     $this->secure = isset($secure) || $secure == true;
@@ -77,6 +79,10 @@ final class MySQLBase {
 
   public function con() {
     return $this->mysqli;
+  }
+
+  public function proxy() {
+    return $this->proxy;
   }
 
   public function update_fid($id, $fid) {
