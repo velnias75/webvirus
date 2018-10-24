@@ -87,13 +87,19 @@ $(document).ready(function() {
   $('.list.hasTooltip').mouseover(function(e) {
 
     var tooltip = $(this).children("span");
-    var tooltipTop = tooltip.offset().top;
-    var tooltipBottom = tooltipTop + tooltip.outerHeight();
-    var viewportTop = $(window).scrollTop();
-    var viewportBottom = viewportTop + $(window).height();
 
-    if(tooltipBottom > viewportBottom) {
-      tooltip.css({ top: (viewportBottom - tooltip.outerHeight() - 25) });
+    if(tooltip.find("img").length) {
+      var tooltipTop = tooltip.offset().top;
+      var tooltipLeft = ($(this).offset().left + $(this).width()) - tooltip.width() - 20;
+      var tooltipBottom = tooltipTop + tooltip.outerHeight();
+      var viewportTop = $(window).scrollTop();
+      var viewportBottom = viewportTop + $(window).height();
+
+      tooltip.css({ left: tooltipLeft });
+
+      if(tooltipBottom > viewportBottom) {
+	tooltip.css({ top: (viewportBottom - tooltip.outerHeight() - 25) });
+      }
     }
   });
 });
