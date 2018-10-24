@@ -97,9 +97,30 @@ if(isset($_GET['cover-oid'])) {
   if($etag === $etagHeader) {
     header("HTTP/1.1 304 Not Modified");
   } else {
-    header("Content-Type: ".$headers['content-type'][0]);
-    header("Content-Length: ".strlen($pic));
-    echo $pic;
+
+    $im = imagecreatefromstring($pic);
+
+    $stamp = imagecreatetruecolor(110, 30);
+    imagefilledrectangle($stamp, 0, 0, 109, 29, 0xFF0000);
+    imagefilledrectangle($stamp, 2, 2, 107, 27, 0xFFFFFF);
+    if(isset($_GET['top250'])) {
+      imagestring($stamp, 5, 30, 7, 'top250', 0x66339F);
+    } else {
+      imagestring($stamp, 3, 10, 3, 'Rentner- bzw.', 0x66339F);
+      imagestring($stamp, 3, 10, 13, ' Schrottfilm', 0x66339F);
+    }
+
+    $marge_right = 2;
+    $marge_bottom = 2;
+    $sx = imagesx($stamp);
+    $sy = imagesy($stamp);
+
+    imagecopymerge($im, $stamp, imagesx($im) - $sx - $marge_right, imagesy($im) - $sy - $marge_bottom, 0, 0, imagesx($stamp), imagesy($stamp), 75);
+
+    header("Content-Type: image/png");
+
+    imagepng($im);
+    imagedestroy($im);
   }
 
 } else if(isset($_GET['mid']) && isset($_GET['oid']) && isset($_GET['url']) && isset($_SESSION['ui'])) {
