@@ -80,15 +80,16 @@ $(document).ready(function() {
     },
     limit: 1e06
   });
-});
 
-$(document).ready(function() {
   $('#list_filter_ltitle').focus();
+
   $('.list.hasTooltip').mouseover(function(e) {
 
     var base     = $(this);
     var tooltipp = base.children("span");
     var image    = tooltipp.find("img");
+
+    $('.hasTooltip span').removeAttr('style');
 
     if(image.length) {
 
