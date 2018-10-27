@@ -95,9 +95,9 @@ EOD;
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
-	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=".
-	  (is_null($omdb_id) ? "\"omdb.php?search=".urlencode($st) : "omdb.php?id=".$omdb_id)."&amp;q=".
-	  urlencode($_SERVER['QUERY_STRING'])."\">" : "<a ".($isSummary ? "href=\"#openModal_stats\">" : ">")).
+	  ($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"".
+	  (is_null($omdb_id) ? "omdb.php?search=".urlencode($st) : "omdb.php?id=".$omdb_id)."&amp;q=".
+	  urlencode($_SERVER['QUERY_STRING'])."\">" : ($isSummary ? "<a href=\"#openModal_stats\">" : "")).
 	  (!$isSummary ? $this->ample($rating, $id) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn && !$isSummary ? "</a>" : "").
 	  ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".(is_null($omdb_id) ? "" : "<center><img src=\"".self::$spinner."\" ".
