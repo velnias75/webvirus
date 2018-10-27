@@ -341,7 +341,7 @@ div.ua {
   overflow: hidden;
 }
 
-td.top250 a {
+td.top250 {
   background: transparent url('../img/top250.png') no-repeat right;
 }
 
