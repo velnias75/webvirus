@@ -341,8 +341,18 @@ div.ua {
   overflow: hidden;
 }
 
+td.spooky {
+  background-color: transparent;
+  background-position-x: right;
+  background-position-y: center;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  background-image: url("../img/spooky.svg");
+  background-size: 1em;
+}
+
 td.top250 {
-  background: transparent url('../img/top250.png') no-repeat right;
+  background: transparent url('../img/top250.png') no-repeat right !important;
 }
 
 a.list {
@@ -602,7 +612,12 @@ td.page_nr.page_active {
 
 .ample_red {
   display: inline-flex;
-  background: #ff000080;
+  background-color: #ff000080;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  background-image: url('../img/thumb-down.svg');
+  background-size: 0.75em;
   height: 1em;
   width: 1em;
   margin-right: 0.25em;
@@ -611,7 +626,12 @@ td.page_nr.page_active {
 
 .ample_yellow {
   display: inline-flex;
-  background: #ffff0080;
+  background-color: #ffff0080;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  background-image: url('../img/finger-of-a-hand-pointing-to-right-direction.svg');
+  background-size: 0.75em;
   height: 1em;
   width: 1em;
   margin-right: 0.25em;
@@ -620,7 +640,12 @@ td.page_nr.page_active {
 
 .ample_green {
   display: inline-flex;
-  background: #00ff0080;
+  background-color: #00ff0080;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  background-image: url('../img/thumbs-up2.svg');
+  background-size: 0.75em;
   height: 1em;
   width: 1em;
   margin-right: 0.25em;

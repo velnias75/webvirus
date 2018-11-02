@@ -67,7 +67,7 @@ abstract class MoviesBase extends Table {
     ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos`, `disc`.`name` AS `disc`, `disc`.`name` AS `ddisc`, `category`,
     `m`.`filename` AS `filename`, MAKE_MOVIE_SORTKEY(MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`,`es`.`episode`, `s`.`prepend`, `m`.`omu`),
     `m`.`skey`) AS `msk`, `m`.`ID` as `mid`, `m`.`omu` AS `omu`, `m`.`top250` AS `top250`, `user_ratings`.`rating` AS `user_rating`,
-    (SELECT FLOOR((AVG(`user_ratings`.`rating`)) + 0.5) FROM `user_ratings` WHERE `user_ratings`.`movie_id` = `m`.`ID`) AS `avg_rating`, `omdb_id`
+    (SELECT FLOOR((AVG(`user_ratings`.`rating`)) + 0.5) FROM `user_ratings` WHERE `user_ratings`.`movie_id` = `m`.`ID`) AS `avg_rating`, `omdb_id`, `spooky`
     FROM `disc` AS `disc`, `movies` AS `m` LEFT JOIN `episode_series` AS `es` ON  `m`.`ID` =`es`.`movie_id`
     LEFT JOIN`series`AS `s` ON `s`.`id` = `es`.`series_id` LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id`
     LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id`

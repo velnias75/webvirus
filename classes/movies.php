@@ -64,7 +64,7 @@ EOD;
 
 
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
-    $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null) {
+    $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null, $spooky = null) {
 
     if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
       $isSummary = true;
@@ -77,7 +77,8 @@ EOD;
     }
 
     $atts = array('class' => "parity_".($this->par % 2));
-    $tatt = array('align' => "left", 'class' => ($isTop250 ? "top250 " : "")."list ".($isSummary ? "" : "hasTooltip")." cat_".$cat.($isSummary ? "" : " ltitle"));
+    $tatt = array('align' => "left", 'class' => ($isTop250 ? "top250 " : "")."list ".($isSummary ? "" : "hasTooltip")." cat_".
+      $cat.($isSummary ? "" : " ltitle".(($spooky && !$isTop250) ? " spooky" : "")));
 
     if(!$isSummary) {
       $atts['itemscope'] = null;
@@ -194,7 +195,7 @@ EOD;
 	      $row['lingos'], $row['disc'], $row['filename'],
 	      $row['category'], false, $row['top250'],
 	      isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']),
-	      $row['avg_rating'], $row['omdb_id']);
+	      $row['avg_rating'], $row['omdb_id'], $row['spooky']);
 	  }
 
 	  $i++;

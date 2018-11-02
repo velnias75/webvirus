@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -47,10 +47,10 @@
 <meta http-equiv="cache-control" content="max-age=0">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
-<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT">
+<meta http-equiv="expires" content="<?= gmdate('D, d M Y H:i:s T', time() - 86400); ?>">
 <meta http-equiv="pragma" content="no-cache">
-<meta name="description" content="Liste der auf DVD gespeicherten Filme, Dokumentationen und Konzerten">
-<meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte">
+<meta name="description" content="Filmsammlung eines von der modernen Psychiatrie als v&ouml;llig schwachsinnig diagnostizierten PC-konsums&uuml;chtigen (Informatiker)">
+<meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte, L&uuml;genmedien (&Ouml;R-TV)">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
 <link rel="stylesheet" href="css/master.php?t=<?= time(); ?>" title="Hirnloser Stil" type="text/css" media="screen">
 <link href="css/print.css?t=<?= time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
