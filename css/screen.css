@@ -92,7 +92,10 @@ html, body {
     align-items: center;
     text-align: center;
     min-height: 100vh;
-    background: midnightblue;
+    background-color: midnightblue;
+    background-position-y: center;
+    background-repeat: repeat-x;
+    background-image: url('../img/rotate.gif');
   }
 
   div#portrait p {
