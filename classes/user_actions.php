@@ -67,19 +67,18 @@ final class UserActions {
     return
       "<center><br /><b>Hirnlose Bewertung:</b><table>".
       ($this->avg != -1 ? "<tr><td align=\"center\"><small>(".$this->ample($this->avg, $this->id, "ua_ample_mid")."durchschn. Bewertung)</small></td></tr>" : "").
-      "<tr><td><input id=\"ampleoff_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0].">".
+      "<tr><td><input id=\"ampleoff_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0]." disabled>".
       "<label for=\"ampleoff_".$this->id."\"><div class=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
-      "<tr><td><input id=\"amplegreen_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1].">".
+      "<tr><td><input id=\"amplegreen_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1]." disabled>".
       "<label for=\"amplegreen_".$this->id."\"><div class=\"ample_green\">&nbsp;</div>gut</label></td></tr>".
-      "<tr><td><input id=\"ampleyellow_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2].">".
+      "<tr><td><input id=\"ampleyellow_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2]." disabled>".
       "<label for=\"ampleyellow_".$this->id."\"><div class=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
-      "<tr><td><input id=\"amplered_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3].">".
+      "<tr><td><input id=\"amplered_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3]." disabled>".
       "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
       "<tr><td>&nbsp;</td></tr>".
-      "<tr><td align=\"center\"><a class=\"button\" href=\"#close\">Fertig</a></td></tr>".
+      "<tr><td align=\"center\"><a class=\"button\" href=\"#close\" onclick=\"enableUserActions(".$this->id.", false)\">Fertig</a></td></tr>".
       "</table></center><script>".$this->script()."</script>";
   }
-
 }
 
 ?>

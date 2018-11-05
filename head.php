@@ -67,6 +67,11 @@ var titles = new Bloodhound({
     }
 });
 
+function enableUserActions(id, enabled) {
+  $('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });
+  return false;
+}
+
 $(document).ready(function() {
   $('#list_filter_ltitle').typeahead({
     hint: true,

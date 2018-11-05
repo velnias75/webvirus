@@ -62,7 +62,6 @@ EOD;
     return null;
   }
 
-
   private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
     $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null, $spooky = null) {
 
@@ -90,9 +89,9 @@ EOD;
       $atts,
       array(
 	new Cell(array('nowrap' => null, 'class' => "list hack", 'align' => "right"),
-	  ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\">").
+	  ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\" onclick=\"enableUserActions(".$id.", true)\">").
 	  htmlentities($nid, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
-	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\">X</a><div class=\"ua cat_".$cat."\">".
+	  "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\" onclick=\"enableUserActions(".$id.", false)\">X</a><div class=\"ua cat_".$cat."\">".
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg))->render()."</div>")).
 	  ($isSummary || !$this->loggedIn ? "" : "</div>")),
 	new Cell($tatt,
