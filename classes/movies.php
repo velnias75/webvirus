@@ -170,7 +170,10 @@ EOD;
 	  "id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
 	  "onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
 	  ($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\">"),
-	new Cell(array('class' => "list_filter")),
+	  new Cell(array('title' => 'L&auml;nge in Minuten',
+	    'class' => "list_filter"), "<input name=\"filter_duration\" class=\"list_filter\" id=\"list_filter_duration\" size=\"4\" type=\"text\" ".
+	    "value=\"".($this->filters['filter_duration'][0] ? $this->filters['filter_duration'][1] : "").
+	    "\" style=\"width: 94%; text-align: right;\">"),
 	new Cell(array('nowrap' => null, 'class' => "list_filter lingos"),
 	  (new FilterdropLang())->render($this->filters['filter_lingo'][0] ?
 	  $this->filters['filter_lingo'][1] : "".$this->filters['filter_lingo_not'][0])),
