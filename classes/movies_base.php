@@ -112,7 +112,7 @@ EOD;
       isset($_GET['filter_ltitle']) ? $_GET['filter_ltitle'] : "",
       isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "");
     $this->filters['filter_duration'] = array(isset($_GET['filter_duration']) && !empty($_GET['filter_duration']),
-      isset($_GET['filter_duration']) ? abs($_GET['filter_duration']) : "",
+      isset($_GET['filter_duration']) ? $_GET['filter_duration'] : "",
       isset($_GET['filter_duration']) ? urldecode($_GET['filter_duration']) : "");
     $this->filters['filter_lingo'] = array(isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']),
       isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "",
@@ -243,8 +243,13 @@ EOD;
 
     $fids = $this->filters['filter_ID'][0] ? str_replace(",", " OR `m`.`ID` = ", $this->filters['filter_ID'][2]) : "";
 
-    $mlo = ((((int)$this->filters['filter_duration'][1]) - 0) * 60) + 00;
-    $mhi = ((((int)$this->filters['filter_duration'][1]) + 0) * 60) + 59;
+    if(((int)$this->filters['filter_duration'][1]) >= 0) {
+      $mlo = (((abs((int)$this->filters['filter_duration'][1])) - 0) * 60) + 00;
+      $mhi = (((abs((int)$this->filters['filter_duration'][1])) + 0) * 60) + 59;
+    } else {
+      $mlo = 1;
+      $mhi = (((abs((int)$this->filters['filter_duration'][1])) + 0) * 60) + 00;
+    }
 
     return array(
       'tfil' => ($this->filters['filter_ltitle'][0] ? $like : ""),
