@@ -170,7 +170,7 @@ EOD;
 	  "id=\"list_filter_ltitle\" type=\"text\" onkeydown=\"if (event.keyCode == 13) { this.form.submit(); return false; }\" ".
 	  "onfocus=\"var temp_value=this.value; this.value=''; this.value=temp_value\" value=\"".
 	  ($this->filters['filter_ltitle'][0] ? $this->filters['filter_ltitle'][1] : "")."\">"),
-	  new Cell(array('title' => 'L&auml;nge in Minuten',
+	  new Cell(array('title' => 'L&auml;nge in Minuten&#13;&#10;(Negativer Wert f&uuml;r maximale L&auml;nge)',
 	    'class' => "list_filter"), "<input name=\"filter_duration\" class=\"list_filter\" id=\"list_filter_duration\" size=\"4\" type=\"text\" ".
 	    "value=\"".($this->filters['filter_duration'][0] ? $this->filters['filter_duration'][1] : "").
 	    "\" style=\"width: 94%; text-align: right;\">"),

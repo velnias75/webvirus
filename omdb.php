@@ -42,7 +42,10 @@ if(isset($_GET['cover-oid'])) {
     curl_setopt($ch, CURLOPT_PROXY, $proxy);
   }
 
+  $libxml_previous_state = libxml_use_internal_errors(true);
   $doc = DOMDocument::loadHTML(curl_exec($ch));
+  libxml_clear_errors();
+  libxml_use_internal_errors($libxml_previous_state);
   curl_close($ch);
 
   $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));

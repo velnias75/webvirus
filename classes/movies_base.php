@@ -244,8 +244,8 @@ EOD;
     $fids = $this->filters['filter_ID'][0] ? str_replace(",", " OR `m`.`ID` = ", $this->filters['filter_ID'][2]) : "";
 
     if(((int)$this->filters['filter_duration'][1]) >= 0) {
-      $mlo = (((abs((int)$this->filters['filter_duration'][1])) - 0) * 60) + 00;
-      $mhi = (((abs((int)$this->filters['filter_duration'][1])) + 0) * 60) + 59;
+      $mlo = ((((int)$this->filters['filter_duration'][1]) - 0) * 60) + 00;
+      $mhi = ((((int)$this->filters['filter_duration'][1]) + 0) * 60) + 59;
     } else {
       $mlo = 1;
       $mhi = (((abs((int)$this->filters['filter_duration'][1])) + 0) * 60) + 00;
