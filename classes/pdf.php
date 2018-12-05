@@ -21,6 +21,8 @@
 require 'pdfbase.php';
 require 'movies_base.php';
 
+define("MAX_TITLE_LENGTH", 105);
+
 final class PDF extends MoviesBase {
 
   private $pdf;
@@ -50,6 +52,24 @@ final class PDF extends MoviesBase {
     $this->pdf->pdf()->Cell($wx['disc_w'], $pt, "DVD", 0, 1, "L");
 
     $this->pdf->pdf()->Ln();
+  }
+
+  private function makeTitle($title) {
+
+    $t = iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $title);
+    if((preg_match('/^(\?( |\?)+)? \x96 (.*)|(.*[^\x96]*) \x96 \?( |\?)+([^\?]*)$/', $t, $m) === 1)) {
+      $t = strlen($m[3]) ? $m[3] : ($m[4].(strlen($m[6]) ? " ".$m[6] : ""));
+    }
+
+    if(preg_match('/(^[ ]+\x96 (.*))|(.*)\x96[^\x96]* ( [\(\[].*)?$/', $t, $m)) {
+      $t = count($m) == 4 ? $m[3] : (count($m) == 3 ? $m[2] : $m[3].$m[4]);
+    }
+
+    if(strlen($t) > MAX_TITLE_LENGTH) {
+      return substr($t, 0, MAX_TITLE_LENGTH)."...";
+    }
+
+    return $t;
   }
 
   public function render() {
@@ -82,23 +102,23 @@ final class PDF extends MoviesBase {
 
 	$this->pdf->pdf()->SetFont('Hack', '', $fs);
 	array_push($id, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $this->makeLZID($row['ID'])));
-	array_push($id_w, $this->pdf->pdf()->GetStringWidth($id[$i]));
+	array_push($id_w, $this->pdf->pdf()->GetStringWidth(array_values(array_slice($id, -1))[0]));
 
 	$this->pdf->pdf()->SetFont('Arial', 'B', $fs);
-	array_push($ltitle, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $row['ltitle']));
-	array_push($ltitle_w, $this->pdf->pdf()->GetStringWidth($ltitle[$i]));
+	array_push($ltitle, $this->makeTitle($row['ltitle']));
+	array_push($ltitle_w, $this->pdf->pdf()->GetStringWidth(array_values(array_slice($ltitle, -1))[0]));
 
 	$this->pdf->pdf()->SetFont('Courier', '', $fs);
 	array_push($duration, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $row['duration']));
-	array_push($duration_w, $this->pdf->pdf()->GetStringWidth($duration[$i]));
+	array_push($duration_w, $this->pdf->pdf()->GetStringWidth(array_values(array_slice($duration, -1))[0]));
 
 	$this->pdf->pdf()->SetFont('Hack', 'I', $fs);
 	array_push($lingos, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $row['lingos']));
-	array_push($lingos_w, $this->pdf->pdf()->GetStringWidth($lingos[$i]));
+	array_push($lingos_w, $this->pdf->pdf()->GetStringWidth(array_values(array_slice($lingos, -1))[0]));
 
 	$this->pdf->pdf()->SetFont('Arial', '', $fs);
 	array_push($disc, iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $row['disc']));
-	array_push($disc_w, $this->pdf->pdf()->GetStringWidth($disc[$i]));
+	array_push($disc_w, $this->pdf->pdf()->GetStringWidth(array_values(array_slice($disc, -1))[0]));
 
 	array_push($cat, $row['category']);
 

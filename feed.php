@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -124,7 +124,7 @@ while($rssdata = $result->fetch_assoc()) {
     $data = $xml->createElement('category', $rssdata['cat']);
     $item->appendChild($data);
 
-    $data = $xml->createElement('link', getLink()."/?filter_disc=".$rssdata['did']);
+    $data = $xml->createElement('link', getLink()."/disc/".$rssdata['did']);
     $item->appendChild($data);
 
     $data = $xml->createElement('pubDate', gmdate("D, j M Y H:i:s ", $rssdata['created']).'GMT');

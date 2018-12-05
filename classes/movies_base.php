@@ -153,7 +153,7 @@ EOD;
     return $this->filtered;
   }
 
-  protected final function latest() {
+  public final function latest() {
     return $this->latest;
   }
 

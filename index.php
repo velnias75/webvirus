@@ -59,7 +59,7 @@
 	}
       ?><table class="cat_nav downloads" border="0" width="100%">
 	<tr><th class="cat_nav">Downloads</th></tr>
-	<tr><td nowrap><a class="pdflink" href="pdf.php<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
+	<tr><td nowrap><a class="pdflink" href="filmliste-<?= str_replace(".", "-", $movies->latest()) ?>.pdf<?= $movies->fullQueryString() ?>" target="_blank">Filmliste als PDF-Datei</a></td></tr>
       </table>
       <?= (new Form(new UserBox(isset($_SESSION['ui']) ? $_SESSION['ui'] : null, $movies)))->render(); ?>
       <?php
