@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -21,6 +21,14 @@
   require 'classes/movies.php';
 
   session_start();
+
+  if(empty($_GET)) {
+    if(isset($_COOKIE['query_mem'])) {
+      header("Location: ".$_SERVER['PATH_INFO']."?".$_COOKIE['query_mem'], FALSE);
+    }
+  } else {
+    setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + 604800);
+  }
 
   if(isset($_COOKIE['wvpltok'])) {
     MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->

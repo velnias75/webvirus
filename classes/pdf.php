@@ -57,6 +57,7 @@ final class PDF extends MoviesBase {
   private function makeTitle($title) {
 
     $t = iconv('UTF-8', 'windows-1252//TRANSLIT//IGNORE', $title);
+
     if((preg_match('/^(\?( |\?)+)? \x96 (.*)|(.*[^\x96]*) \x96 \?( |\?)+([^\?]*)$/', $t, $m) === 1)) {
       $t = strlen($m[3]) ? $m[3] : ($m[4].(strlen($m[6]) ? " ".$m[6] : ""));
     }
@@ -173,7 +174,7 @@ final class PDF extends MoviesBase {
       for($j = 0; $j < $i; $j++) {
 
         $this->pdf->pdf()->SetTextColor(0, 0, 0);
-        $this->pdf->pdf()->SetFont('Hack', '', $fs);
+        $this->pdf->pdf()->SetFont('Hack', '', $fs - 0.1);
 	$this->pdf->pdf()->Cell($wx['id_w'], $pt, $id[$j], 'TB', 0, "R");
 
 	if($this->category() == -1) {
