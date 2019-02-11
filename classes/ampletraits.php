@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2018-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -43,7 +43,7 @@ trait AmpleTraits {
       }
 
       //$ret .= "<script>".$rating." ".$frac." #".dechex($r).dechex($g)."0080</script>";
-      $ret .= "<script>document.getElementById('".$hid.$mid."').style.background='#".dechex($r).dechex($g)."0080';</script>";
+      $ret .= "<script>document.getElementById('".$hid.$mid."').style.backgroundColor='#".dechex($r).dechex($g)."0080';</script>";
     }
 
     return $ret;

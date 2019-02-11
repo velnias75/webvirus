@@ -27,7 +27,7 @@
       header("Location: ".$_SERVER['PATH_INFO']."?".$_COOKIE['query_mem'], FALSE);
     }
   } else {
-    setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + 604800);
+    setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + (5 * 365 * 24 * 60 * 60));
   }
 
   if(isset($_COOKIE['wvpltok'])) {

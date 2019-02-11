@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -27,10 +27,30 @@
   require 'classes/latest_disc.php';
 
   if(MoviesBase::isMobile()) echo "<div id=\"standard\">";
+
+  final class OverallAvgRating {
+
+    use AmpleTraits;
+
+    private $overallAvgRating;
+
+    function __construct() {
+      $this->overallAvgRating = MySQLBase::instance()->getOverallAvgRating();
+    }
+
+    public function getOverallAvgRating() {
+      return $this->ample($this->overallAvgRating, -1, "idx_oa",
+	floor((255.0 * ($this->overallAvgRating - (int)$this->overallAvgRating)) + 0.5));
+    }
+  }
+
+  $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
+
 ?>
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="middle" align="center" colspan="3">
-    <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>">Heikos Schrott- &amp; Rentnerfilme</a></h1>
+    <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>" style="white-space: nowrap;">
+      <?= $overallAvgRating; ?>Heikos Schrott- &amp; Rentnerfilme</a></h1>
     <h3><span class="red_text">&#9995;</span>&nbsp;Die&nbsp;Webvirenversion&nbsp;<span class="red_text">&#9995;</span></h3>
     <?php
     if(MoviesBase::isMobile()) {

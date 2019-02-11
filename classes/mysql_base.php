@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -199,6 +199,15 @@ final class MySQLBase {
 	die;
       }
     }
+  }
+
+  public function getOverallAvgRating() {
+
+    $result = $this->mysqli->query("SELECT AVG(rating) AS avg_rating FROM user_ratings");
+    $row = $result->fetch_assoc();
+    $result->free_result();
+
+    return $row['avg_rating'];
   }
 
   private function createPLSet($uid) {
