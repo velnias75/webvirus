@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2018-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -52,8 +52,7 @@ final class Stats extends Table {
 	  new Cell(array('align' => 'right', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
 	    htmlentities($row['stat'], ENT_SUBSTITUTE, "utf-8").":&nbsp;"),
 	  new Cell(array('align' => ($row['ord'] != 3 ? 'center' : 'left'), 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    $row['ord'] != 3 ? $row['duration'] : ($this->ample($row['duration'], $row['category'], "ample_stat",
-	      floor((255.0 * ($row['duration'] - (int)$row['duration'])) + 0.5))."&nbsp;(".
+	    $row['ord'] != 3 ? $row['duration'] : ($this->ample($row['duration'], $row['category'], "ample_stat", true)."&nbsp;(".
 		number_format(round((float)$row['duration'], 2), 2, '.', '').")&nbsp;")),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
 	    htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),

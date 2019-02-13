@@ -39,8 +39,7 @@
     }
 
     public function getOverallAvgRating() {
-      return $this->ample($this->overallAvgRating, -1, "idx_oa",
-	floor((255.0 * ($this->overallAvgRating - (int)$this->overallAvgRating)) + 0.5));
+      return $this->ample($this->overallAvgRating, -1, "idx_oa", true);
     }
   }
 

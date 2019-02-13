@@ -20,7 +20,7 @@
 
 trait AmpleTraits {
 
-  private function ample($rating, $mid, $hid = "ample_mid", $frac = null) {
+  private function ample($rating, $mid, $hid = "ample_mid", $isFrac = false) {
 
     $ret = "";
 
@@ -31,18 +31,18 @@ trait AmpleTraits {
       case  2: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_green\">&nbsp;</div>"; break;
     }
 
-    if(!((int)$rating == -1 || is_null($frac))) {
+    if(!((int)$rating == -1 || !$isFrac)) {
 
       $r = 255;
       $g = 255;
+      $f = floor((255.0 * ($rating - (int)$rating)) + 0.5);
 
       if((double)$rating < 1.0) { // yellow towards red
-	$g -= $frac;
+	$g -= $f;
       } else if((double)$rating > 1.0) { // yellow towards green
-	$r -= $frac;
+	$r -= $f;
       }
 
-      //$ret .= "<script>".$rating." ".$frac." #".dechex($r).dechex($g)."0080</script>";
       $ret .= "<script>document.getElementById('".$hid.$mid."').style.backgroundColor='#".dechex($r).dechex($g)."0080';</script>";
     }
 
