@@ -23,12 +23,24 @@ trait AmpleTraits {
   private function ample($rating, $mid, $hid = "ample_mid", $isFrac = false) {
 
     $ret = "";
+    $tit = "";
+
+    if(!((int)$rating == -1 || !$isFrac)) {
+      $tit .= " title=\"Durchschnittliche Bewertung: ".number_format($rating, 2)."\"";
+    } else {
+      switch((int)(floor((double)$rating + 0.5))) {
+	case -1: $tit .= " title=\"keine Bewertung\""; break;
+	case  0: $tit .= " title=\"schlecht\""; break;
+	case  1: $tit .= " title=\"okay\""; break;
+	case  2: $tit .= " title=\"gut\""; break;
+      }
+    }
 
     switch((int)(floor((double)$rating + 0.5))) {
-      case -1: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_off\">&nbsp;</div>"; break;
-      case  0: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_red\">&nbsp;</div>"; break;
-      case  1: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_yellow\">&nbsp;</div>"; break;
-      case  2: $ret .= "<div id=\"".$hid.$mid."\" class=\"ample_green\">&nbsp;</div>"; break;
+      case -1: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_off\">&nbsp;</div>"; break;
+      case  0: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_red\">&nbsp;</div>"; break;
+      case  1: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_yellow\">&nbsp;</div>"; break;
+      case  2: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_green\">&nbsp;</div>"; break;
     }
 
     if(!((int)$rating == -1 || !$isFrac)) {
