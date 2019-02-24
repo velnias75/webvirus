@@ -24,11 +24,12 @@ trait AmpleTraits {
 
     $ret = "";
     $tit = "";
+    $rat = (int)(floor((double)$rating + 0.5));
 
     if(!((int)$rating == -1 || !$isFrac)) {
       $tit .= " title=\"Durchschnittliche Bewertung: ".number_format($rating, 2)."\"";
     } else {
-      switch((int)(floor((double)$rating + 0.5))) {
+      switch($rat) {
 	case -1: $tit .= " title=\"keine Bewertung\""; break;
 	case  0: $tit .= " title=\"schlecht\""; break;
 	case  1: $tit .= " title=\"okay\""; break;
@@ -36,7 +37,7 @@ trait AmpleTraits {
       }
     }
 
-    switch((int)(floor((double)$rating + 0.5))) {
+    switch($rat) {
       case -1: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_off\">&nbsp;</div>"; break;
       case  0: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_red\">&nbsp;</div>"; break;
       case  1: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_yellow\">&nbsp;</div>"; break;

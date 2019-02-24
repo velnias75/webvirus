@@ -59,6 +59,12 @@
 <meta http-equiv="pragma" content="no-cache">
 <meta name="description" content="Filmsammlung eines von der modernen Psychiatrie als v&ouml;llig schwachsinnig diagnostizierten PC-konsums&uuml;chtigen (Informatiker)">
 <meta name="keywords" content="MP4, MKV, Filmliste, Spielfilme, Dokumentationen, Dokus, Konzerte, L&uuml;genmedien (&Ouml;R-TV)">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Velnias75">
+<meta name="og:title" content="Heikos Schrott- &amp; Rentnerfilme">
+<meta property="og:description" content="Hirnlose Ansammlung an Schrott- &amp; Rentnerfilmen bar jeglichen Niveaus">
+<meta property="og:image" content="https://rangun.de/db/img/favicon.png">
+<meta property="twitter:image:alt" content="RTL2 bietet hochwertigere Inhalte!">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
 <link rel="stylesheet" href="css/master.php?t=<?= time(); ?>" title="Hirnloser Stil" type="text/css" media="screen">
 <link href="css/print.css?t=<?= time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
