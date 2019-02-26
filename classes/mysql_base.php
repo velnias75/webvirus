@@ -201,12 +201,20 @@ final class MySQLBase {
     }
   }
 
-  public function getOMDBId() {
+  public function getOMDBId($disc = null) {
 
     $result = $this->mysqli->query("SELECT omdb_id FROM disc LEFT JOIN movies ON movies.disc = disc.ID AND omdb_id IS NOT NULL ".
-      "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id GROUP BY movies.ID ORDER BY movies.disc DESC , ".
-      "AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
+      "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id".
+	(is_null($disc) ? "" : " WHERE disc.ID = ".$disc).
+      " GROUP BY movies.ID ORDER BY movies.disc DESC , AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
+
     $row = $result->fetch_assoc();
+
+    if(empty($row['omdb_id'])) {
+      $result->free_result();
+      throw new UnexpectedValueException();
+    }
+
     $result->free_result();
 
     return $row['omdb_id'];

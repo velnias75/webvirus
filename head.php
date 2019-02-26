@@ -47,6 +47,12 @@
   } catch(Exception $e) {
     echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
   }
+
+  try {
+    $og_image = MySQLBase::instance()->getOMDBId($_GET['filter_disc']);
+  } catch(UnexpectedValueException $e) {
+    $og_image = MySQLBase::instance()->getOMDBId();
+  }
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -63,7 +69,7 @@
 <meta name="twitter:site" content="@Velnias75">
 <meta name="og:title" content="Heikos Schrott- &amp; Rentnerfilme">
 <meta property="og:description" content="Hirnlose Ansammlung an Schrott- &amp; Rentnerfilmen bar jeglichen Niveaus">
-<meta property="og:image" content="https://rangun.de/db/omdb.php?cover-oid=<?= MySQLBase::instance()->getOMDBId(); ?>">
+<meta property="og:image" content="https://rangun.de/db/omdb.php?cover-oid=<?= $og_image ?>">
 <meta property="twitter:image:alt" content="RTL2 bietet hochwertigere Inhalte!">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
 <link rel="stylesheet" href="css/master.php?t=<?= time(); ?>" title="Hirnloser Stil" type="text/css" media="screen">
