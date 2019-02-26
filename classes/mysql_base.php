@@ -201,6 +201,17 @@ final class MySQLBase {
     }
   }
 
+  public function getOMDBId() {
+
+    $result = $this->mysqli->query("SELECT omdb_id FROM disc LEFT JOIN movies ON movies.disc = disc.ID AND omdb_id IS NOT NULL ".
+      "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id GROUP BY movies.ID ORDER BY movies.disc DESC , ".
+      "AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
+    $row = $result->fetch_assoc();
+    $result->free_result();
+
+    return $row['omdb_id'];
+  }
+
   public function getOverallAvgRating() {
 
     $result = $this->mysqli->query("SELECT AVG(rating) AS avg_rating FROM user_ratings");
