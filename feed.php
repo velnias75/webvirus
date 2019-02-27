@@ -25,7 +25,6 @@ function getLink() {
 }
 
 header("Content-Type: application/rss+xml");
-// header("Content-Type: text/plain");
 
 $xml = new DOMDocument('1.0', 'utf-8');
 $xml->formatOutput = true;
@@ -95,7 +94,8 @@ $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`na
   "LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
   "LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` ".
   "LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
-  "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC LIMIT 20");
+  "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC".
+  (empty($_GET['n']) ? " LIMIT 20" : ($_GET['n'] == -1 ? "" : " LIMIT ".$_GET['n'])));
 
 $lm = false;
 
