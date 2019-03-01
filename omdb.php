@@ -29,8 +29,10 @@ if(isset($_GET['cover-oid'])) {
 
   $headers = [];
   $proxy = MySQLBase::instance()->proxy();
+  $ref_url = parse_url($_SERVER['HTTP_REFERER']);
+  $req_url = parse_url((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")."://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 
-  (new Tracker())->track("OMDB cover request for ".$_GET['cover-oid']." {".$_SERVER['HTTP_USER_AGENT']."}");
+  if($ref_url['host'] != $req_url['host']) (new Tracker())->track("OMDB cover request for ".$_GET['cover-oid']." {".$_SERVER['HTTP_USER_AGENT']."}");
 
   $ch = curl_init("https://www.omdb.org/movie/".$_GET['cover-oid']);
   curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
