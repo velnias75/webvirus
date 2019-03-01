@@ -20,8 +20,20 @@
 
 final class Tracker {
 
+  private $login = null;
+
+  function __construct() {
+
+    session_start();
+
+    if(isset($_SESSION['ui'])) {
+      $this->login = $_SESSION['ui']['login'];
+    }
+
+  }
+
   public function track($action_name) {
-    
+
     $ip = "";
 
     if(!empty($_SERVER["HTTP_CLIENT_IP"])) {
@@ -43,7 +55,7 @@ final class Tracker {
 
     $ch = curl_init("https:/rangun.de/piwik/matomo.php?idsite=2&rec=1&bots=1&apiv=1&action_name=".urlencode($action_name).
     "&send_image=0&url=".(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]".
-    "&rand=".openssl_random_pseudo_bytes(4));
+    "&rand=".urlencode(openssl_random_pseudo_bytes(4)).(is_null($this->login) ? "" : "&uid=".urlencode($this->login)));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER,  true);
     curl_setopt($ch, CURLOPT_BINARYTRANSFER,  true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,  false);
