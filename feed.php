@@ -19,10 +19,13 @@
  */
 
 require 'classes/mysql_base.php';
+require 'classes/tracker.php';
 
 function getLink() {
   return MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI']);
 }
+
+(new Tracker())->track("FEED request by {".$_SERVER['HTTP_USER_AGENT']."}");
 
 header("Content-Type: application/rss+xml");
 

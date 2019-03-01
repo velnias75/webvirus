@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -19,6 +19,9 @@
  */
 
 require 'classes/pdf.php';
+require 'classes/tracker.php';
+
+(new Tracker())->track("PDF generation request by {".$_SERVER['HTTP_USER_AGENT']."}");
 
 try {
   (new PDF(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",

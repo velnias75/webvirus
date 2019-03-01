@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -19,6 +19,7 @@
  */
 
 require 'classes/mysql_base.php';
+require 'classes/tracker.php';
 
 if(!isset($_GET['cover-oid'])) {
   session_start();
@@ -29,13 +30,15 @@ if(isset($_GET['cover-oid'])) {
   $headers = [];
   $proxy = MySQLBase::instance()->proxy();
 
+  (new Tracker())->track("OMDB cover request for ".$_GET['cover-oid']." {".$_SERVER['HTTP_USER_AGENT']."}");
+
   $ch = curl_init("https://www.omdb.org/movie/".$_GET['cover-oid']);
   curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language: de-DE,en;q=0.5"));
+  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language: de-DE,en;q=0.5", "X-Forwarded-For: ".$ip));
 
   if(!is_null($proxy)) {
     curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
@@ -54,6 +57,7 @@ if(isset($_GET['cover-oid'])) {
   curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("X-Forwarded-For: ".$ip));
   //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
 
   if(!is_null($proxy)) {
