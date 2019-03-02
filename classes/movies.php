@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -100,8 +100,8 @@ EOD;
 	  urlencode($_SERVER['QUERY_STRING'])."\">" : ($isSummary ? "<a href=\"#openModal_stats\">" : "")).
 	  (!$isSummary ? $this->ample($rating, $id) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn && !$isSummary ? "</a>" : "").
-	  ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".(is_null($omdb_id) ? "" : "<center><img src=\"".self::$spinner."\" ".
-	  "data-src=\"omdb.php?cover-oid=".$omdb_id.(!$isTop250 ? "" : "&amp;top250=true")."\"></center><br>").
+	  ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".(is_null($omdb_id) ? "" : "<center><img itemprop=\"image\" src=\""
+	  .self::$spinner."\" "."data-src=\"omdb.php?cover-oid=".$omdb_id.(!$isTop250 ? "" : "&amp;top250=true")."\"></center><br>").
 	  (!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
 	new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
