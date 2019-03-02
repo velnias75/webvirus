@@ -25,9 +25,9 @@ final class Tracker {
 
   function __construct() {
 
-    session_start();
+    if(session_status() == PHP_SESSION_NONE) session_start();
 
-    require '../db_cred.php';
+    require __DIR__.'/../db_cred.php';
 
     if(isset($_SESSION['ui'])) {
       $this->login = $_SESSION['ui']['login'];
@@ -58,9 +58,13 @@ final class Tracker {
       }
     }
 
-    $ch = curl_init("https:/rangun.de/piwik/matomo.php?idsite=".$this->siteid."&rec=1&bots=1&apiv=1&action_name=".urlencode($action_name).
-      "&send_image=0&url=".(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]".
-      "&rand=".urlencode(openssl_random_pseudo_bytes(4)).(is_null($this->login) ? "" : "&uid=".urlencode($this->login)));
+    $rq = "https:/rangun.de/piwik/matomo.php?idsite=".$this->siteid."&rec=1&bots=1&apiv=1&action_name=".urlencode($action_name).
+      "&send_image=0&url=".urlencode((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]").
+      "&rand=".urlencode(openssl_random_pseudo_bytes(4)).(is_null($this->login) ? "" : "&uid=".urlencode($this->login));
+
+    //error_log("{".$rq."}");
+
+    $ch = curl_init($rq);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER,  true);
     curl_setopt($ch, CURLOPT_BINARYTRANSFER,  true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,  false);

@@ -40,7 +40,7 @@ if(isset($_GET['cover-oid'])) {
   curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language: de-DE,en;q=0.5", "X-Forwarded-For: ".$ip));
+  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language: de-DE,en;q=0.5"));
 
   if(!is_null($proxy)) {
     curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
@@ -59,7 +59,6 @@ if(isset($_GET['cover-oid'])) {
   curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
   curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("X-Forwarded-For: ".$ip));
   //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
 
   if(!is_null($proxy)) {

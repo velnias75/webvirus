@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -19,6 +19,7 @@
  */
 
 require 'classes/mysql_base.php';
+// require 'classes/tracker.php';
 
 session_start();
 
@@ -27,6 +28,7 @@ if(isset($_POST['btn']) && isset($_POST['btn']['login']) &&
   MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->login($_POST['login'], $_POST['pass']),
     isset($_POST['pl']));
   $_SESSION['authd'] = true;
+//   (new Tracker())->track("LOGIN of ".$_POST['login']);
 }
 
 if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
@@ -37,6 +39,8 @@ if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
   } else if(isset($_POST['btn']['chg'])) {
     MySQLBase::instance()->chg_pass($_SESSION['ui']['id'], $_POST['pass_chg']);
   } else if(isset($_POST['btn']['logout'])) {
+
+//     (new Tracker())->track("LOGOUT of ".$_SESSION['ui']['login']);
 
     unset($_SESSION['error']);
     unset($_SESSION['ui']);

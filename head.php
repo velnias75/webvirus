@@ -48,11 +48,18 @@
     echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
   }
 
-  try {
-    $og_image = MySQLBase::instance()->getOMDBId($_GET['filter_disc']);
-  } catch(UnexpectedValueException $e) {
+  if(isset($_GET['filter_disc'])) {
+
+    try {
+      $og_image = MySQLBase::instance()->getOMDBId($_GET['filter_disc']);
+    } catch(UnexpectedValueException $e) {
+      $og_image = MySQLBase::instance()->getOMDBId();
+    }
+
+  } else {
     $og_image = MySQLBase::instance()->getOMDBId();
   }
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
