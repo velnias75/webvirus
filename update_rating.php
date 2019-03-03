@@ -18,14 +18,15 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-  require 'classes/mysql_base.php';
-  require 'classes/tracker.php';
+require 'classes/mysql_base.php';
+require 'classes/tracker.php';
 
-  session_start();
+session_start();
 
-  if(isset($_SESSION['ui']) && !isset($_SESSION['ui']['error']) && isset($_GET['uid']) && isset($_GET['mid']) && isset($_GET['rating'])) {
-    MySQLBase::instance()->update_rating($_GET['uid'], $_GET['mid'], $_GET['rating']);
-    (new Tracker())->track("UPDATE RATING request for movie #".$_GET['mid']." to ".$_GET['rating']." by {".$_SERVER['HTTP_USER_AGENT']."}");
-  }
+if(isset($_SESSION['ui']) && !isset($_SESSION['ui']['error']) && isset($_GET['uid']) && isset($_GET['mid']) && isset($_GET['rating'])) {
+  MySQLBase::instance()->update_rating($_GET['uid'], $_GET['mid'], $_GET['rating']);
+  (new Tracker())->track("UPDATE RATING request for movie #".$_GET['mid']." to ".$_GET['rating']." by {".$_SERVER['HTTP_USER_AGENT']."}");
+}
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

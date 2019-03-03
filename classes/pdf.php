@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -163,71 +163,71 @@ final class PDF extends MoviesBase {
 	'duration_w' => max($duration_w) + 5,
 	'lingos_w' => max($lingos_w) + $of + 5,
 	'disc_w' => max($disc_w)
-      );
+	);
 
-      $pt = ceil($fs * 0.3528) + 1;
-      $rw = floor(($this->pdf->pdf()->GetPageHeight() - 27)/$pt) - 4;
-      $cr = 0;
+	$pt = ceil($fs * 0.3528) + 1;
+	$rw = floor(($this->pdf->pdf()->GetPageHeight() - 27)/$pt) - 4;
+	$cr = 0;
 
-      $this->makeDescLine($wx, $pt, $fs);
+	$this->makeDescLine($wx, $pt, $fs);
 
-      for($j = 0; $j < $i; $j++) {
+	for($j = 0; $j < $i; $j++) {
 
-        $this->pdf->pdf()->SetTextColor(0, 0, 0);
-        $this->pdf->pdf()->SetFont('Hack', '', $fs - 0.1);
-	$this->pdf->pdf()->Cell($wx['id_w'], $pt, $id[$j], 'TB', 0, "R");
+	  $this->pdf->pdf()->SetTextColor(0, 0, 0);
+	  $this->pdf->pdf()->SetFont('Hack', '', $fs - 0.1);
+	  $this->pdf->pdf()->Cell($wx['id_w'], $pt, $id[$j], 'TB', 0, "R");
 
-	if($this->category() == -1) {
-	  if($cat[$j] == 2) {
-	    $this->pdf->pdf()->SetTextColor(102, 51, 159);
-	  } else if($cat[$j] == 3) {
-	    $this->pdf->pdf()->SetTextColor(37, 49, 0);
-	  } else if($cat[$j] == 4) {
-	    $this->pdf->pdf()->SetTextColor(81, 0, 0);
+	  if($this->category() == -1) {
+	    if($cat[$j] == 2) {
+	      $this->pdf->pdf()->SetTextColor(102, 51, 159);
+	    } else if($cat[$j] == 3) {
+	      $this->pdf->pdf()->SetTextColor(37, 49, 0);
+	    } else if($cat[$j] == 4) {
+	      $this->pdf->pdf()->SetTextColor(81, 0, 0);
+	    }
+	  }
+
+	  $this->pdf->pdf()->SetFont('Arial', 'B', $fs);
+	  $this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, $ltitle[$j], 'TB', 0, "L");
+	  $this->pdf->pdf()->SetFont('Courier', '', $fs);
+	  $this->pdf->pdf()->Cell($wx['duration_w'], $pt, $duration[$j], 'TB', 0, "R");
+	  $this->pdf->pdf()->SetFont('Hack', 'I', $fs);
+	  $this->pdf->pdf()->Cell($wx['lingos_w'], $pt, $lingos[$j], 'TB', 0, "L");
+	  $this->pdf->pdf()->SetFont('Arial', '', $fs);
+	  $this->pdf->pdf()->Cell($wx['disc_w'], $pt, $disc[$j], 'TB', 1, "L");
+
+	  $cr++;
+
+	  if($cr >= $rw) {
+	    $this->makeDescLine($wx, $pt, $fs);
+	    $cr = 0;
 	  }
 	}
 
-	$this->pdf->pdf()->SetFont('Arial', 'B', $fs);
-	$this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, $ltitle[$j], 'TB', 0, "L");
-	$this->pdf->pdf()->SetFont('Courier', '', $fs);
-	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $duration[$j], 'TB', 0, "R");
-	$this->pdf->pdf()->SetFont('Hack', 'I', $fs);
-	$this->pdf->pdf()->Cell($wx['lingos_w'], $pt, $lingos[$j], 'TB', 0, "L");
-	$this->pdf->pdf()->SetFont('Arial', '', $fs);
-	$this->pdf->pdf()->Cell($wx['disc_w'], $pt, $disc[$j], 'TB', 1, "L");
+	$this->pdf->pdf()->SetTextColor(0, 0, 0);
 
-	$cr++;
+	$total_res = $this->mySQLTotalQuery();
 
-	if($cr >= $rw) {
-	  $this->makeDescLine($wx, $pt, $fs);
-	  $cr = 0;
+	if($total_res) $total = $total_res->fetch_assoc();
+
+	if($total_res && $total) {
+
+	  $this->pdf->pdf()->Ln();
+	  $this->pdf->pdf()->SetFont('Hack', '', $fs);
+	  $this->pdf->pdf()->Cell($wx['id_w'], $pt, $result->num_rows, 0, 0, "R");
+	  $this->pdf->pdf()->SetFont('Arial', '', $fs);
+	  $this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), 0, 0, "L");
+	  $this->pdf->pdf()->SetFont('Courier', '', $fs);
+	  $this->pdf->pdf()->Cell($wx['duration_w'], $pt, $this->secondsToDHMS($total['tot_dur']), 0, 0, "R");
+	  $this->pdf->pdf()->SetFont('Hack', 'I', $fs);
+	  $this->pdf->pdf()->Cell($wx['lingos_w'], $pt, "", 0, 0, "L");
+	  $this->pdf->pdf()->SetFont('Arial', '', $fs);
+	  $this->pdf->pdf()->Cell($wx['disc_w'], $pt, "", 0, 1, "L");
+
+	  $total_res->free_result();
 	}
-      }
 
-      $this->pdf->pdf()->SetTextColor(0, 0, 0);
-
-      $total_res = $this->mySQLTotalQuery();
-
-      if($total_res) $total = $total_res->fetch_assoc();
-
-      if($total_res && $total) {
-
-	$this->pdf->pdf()->Ln();
-        $this->pdf->pdf()->SetFont('Hack', '', $fs);
-	$this->pdf->pdf()->Cell($wx['id_w'], $pt, $result->num_rows, 0, 0, "R");
-	$this->pdf->pdf()->SetFont('Arial', '', $fs);
-	$this->pdf->pdf()->Cell($wx['ltitle_w'], $pt, ($result->num_rows != 1 ? "Videos insgesamt" : "Video"), 0, 0, "L");
-	$this->pdf->pdf()->SetFont('Courier', '', $fs);
-	$this->pdf->pdf()->Cell($wx['duration_w'], $pt, $this->secondsToDHMS($total['tot_dur']), 0, 0, "R");
-	$this->pdf->pdf()->SetFont('Hack', 'I', $fs);
-	$this->pdf->pdf()->Cell($wx['lingos_w'], $pt, "", 0, 0, "L");
-	$this->pdf->pdf()->SetFont('Arial', '', $fs);
-	$this->pdf->pdf()->Cell($wx['disc_w'], $pt, "", 0, 1, "L");
-
-	$total_res->free_result();
-      }
-
-      $result->free_result();
+	$result->free_result();
     }
 
     $this->pdf->pdf()->Output('I', "filmliste-".$this->pdf->latest().".pdf", true);
@@ -235,4 +235,5 @@ final class PDF extends MoviesBase {
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

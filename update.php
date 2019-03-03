@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -41,7 +41,7 @@ if(MySQLBase::instance()->update_allowed()) {
       if(substr(trim($line), -1, 1) == ';') {
 
 	MySQLBase::instance()->con()->query($templine) or print('Error performing query \'<strong>'.
-	  $templine.'\': '.MySQLBase::instance()->con()->error.'</strong>');
+	$templine.'\': '.MySQLBase::instance()->con()->error.'</strong>');
 	$templine = '';
       }
     }
@@ -52,33 +52,33 @@ if(MySQLBase::instance()->update_allowed()) {
       'oauth_access_token_secret' => $_SESSION['ui']['oauth_access_token_secret'],
       'consumer_key' => $_SESSION['ui']['consumer_key'],
       'consumer_secret' => $_SESSION['ui']['consumer_secret']
-    );
+      );
 
     try {
       $twitter = new TwitterAPIExchange($settings);
       $twitter->buildOauth("https://api.twitter.com/1.1/statuses/update.json", "POST")
-	->setPostfields(array('status' => 'Neue hirnlose Schrott- & Rentnerfilme wurden soeben auf https://rangun.de/db/index.php hinzugefügt!'))
-	->performRequest();
+      ->setPostfields(array('status' => 'Neue hirnlose Schrott- & Rentnerfilme wurden soeben auf https://rangun.de/db/index.php hinzugefügt!'))
+      ->performRequest();
     } catch(Exception $e) {
       echo '<pre>Twitter-API-Exception: ',  $e->getMessage(), "</pre>\n";
     }
 
     // Reddit (seems not to work from webhoster STRATO)
     /*
-    $ch = curl_init("https://www.reddit.com/api/v1/access_token");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: rangun.de: v1.0 (by /u/Velnias75)"));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_USERNAME, curl_escape($ch, "aaa:bbb"));
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=password&username=uuu&password=ppp");
-    $ansa = json_decode(curl_exec($ch), true);
-    curl_close($ch);
-
-    if(!isset($ansa['error'])) {
-      echo "<pre>Reddit access_token: ".$ansa['access_token']."</pre>\n";
-    } else {
-      echo "<pre>Reddit-API-Exception: ".$ansa['message']." (".$ansa['error'].")</pre>\n";
-    } */
+      *    $ch = curl_init("https://www.reddit.com/api/v1/access_token");
+      *    curl_setopt($ch, CURLOPT_HTTPHEADER, array("User-Agent: rangun.de: v1.0 (by /u/Velnias75)"));
+      *    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      *    curl_setopt($ch, CURLOPT_USERNAME, curl_escape($ch, "aaa:bbb"));
+      *    curl_setopt($ch, CURLOPT_POST, true);
+      *    curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=password&username=uuu&password=ppp");
+      *    $ansa = json_decode(curl_exec($ch), true);
+      *    curl_close($ch);
+      *
+      *    if(!isset($ansa['error'])) {
+      *      echo "<pre>Reddit access_token: ".$ansa['access_token']."</pre>\n";
+  } else {
+    echo "<pre>Reddit-API-Exception: ".$ansa['message']." (".$ansa['error'].")</pre>\n";
+  } */
 
   } else if(!(isset($_SESSION['ui']) && $_SESSION['ui']['admin'])) {
     echo "<pre>Nur Administratoren d&uuml;rfen ein Datenupdate durchf&uuml;hren!</pre>\n";
@@ -88,4 +88,5 @@ if(MySQLBase::instance()->update_allowed()) {
 
 header("Location: ".dirname($_SERVER['REQUEST_URI'])."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

@@ -23,38 +23,38 @@ require 'classes/mysql_base.php';
 
 session_start();
 
-if(isset($_POST['btn']) && isset($_POST['btn']['login']) &&
-  isset($_POST['login']) && isset($_POST['pass'])) {
-  MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->login($_POST['login'], $_POST['pass']),
+if(isset($_POST['btn']) && isset($_POST['btn']['login']) && isset($_POST['login']) && isset($_POST['pass'])) {
+    MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->login($_POST['login'], $_POST['pass']),
     isset($_POST['pl']));
-  $_SESSION['authd'] = true;
-//   (new Tracker())->track("LOGIN of ".$_POST['login']);
-}
+    $_SESSION['authd'] = true;
+    //   (new Tracker())->track("LOGIN of ".$_POST['login']);
+  }
 
 if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
 
   if(isset($_POST['btn']['create']) && $_SESSION['ui']['admin'] && isset($_POST['display']) &&
     isset($_POST['login_new']) && isset($_POST['pass_new'])) {
-    MySQLBase::instance()->new_user($_POST['display'], $_POST['login_new'], $_POST['pass_new']);
-  } else if(isset($_POST['btn']['chg'])) {
-    MySQLBase::instance()->chg_pass($_SESSION['ui']['id'], $_POST['pass_chg']);
-  } else if(isset($_POST['btn']['logout'])) {
+      MySQLBase::instance()->new_user($_POST['display'], $_POST['login_new'], $_POST['pass_new']);
+    } else if(isset($_POST['btn']['chg'])) {
+      MySQLBase::instance()->chg_pass($_SESSION['ui']['id'], $_POST['pass_chg']);
+    } else if(isset($_POST['btn']['logout'])) {
 
-//     (new Tracker())->track("LOGOUT of ".$_SESSION['ui']['login']);
+      //     (new Tracker())->track("LOGOUT of ".$_SESSION['ui']['login']);
 
-    unset($_SESSION['error']);
-    unset($_SESSION['ui']);
-    unset($_SESSION['authd']);
+      unset($_SESSION['error']);
+      unset($_SESSION['ui']);
+      unset($_SESSION['authd']);
 
-    if(isset($_COOKIE['wvpltok'])) {
-      MySQLBase::instance()->deletePLSet(substr($_COOKIE['wvpltok'], 32));
-      setcookie('wvpltok', '', time() - 3600, dirname($_SERVER['REQUEST_URI'])."/");
+      if(isset($_COOKIE['wvpltok'])) {
+	MySQLBase::instance()->deletePLSet(substr($_COOKIE['wvpltok'], 32));
+	setcookie('wvpltok', '', time() - 3600, dirname($_SERVER['REQUEST_URI'])."/");
+      }
+
+      session_write_close();
     }
-
-    session_write_close();
-  }
 }
 
 header("Location: ".dirname($_SERVER['REQUEST_URI'])."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

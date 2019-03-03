@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -49,13 +49,13 @@ final class CatChoice extends CatNavTable {
   public function render() {
 
     $html = "<ul class=\"cat_nav\"><li class=\"cat_0".($this->movies->category() == -1 ? " cat_nav_active" : "")."\">".
-      ($this->movies->category() != -1 ? "<a class=\"cat_nav\" href=\"".$this->movies->catQueryString(-1)."\">" : "").
-      "Alle Videos".($this->movies->category() != -1 ? "</a>" : "")."</li>";
+    ($this->movies->category() != -1 ? "<a class=\"cat_nav\" href=\"".$this->movies->catQueryString(-1)."\">" : "").
+    "Alle Videos".($this->movies->category() != -1 ? "</a>" : "")."</li>";
 
     while($row = $this->result->fetch_assoc()) {
       $html .= "<li class=\"cat_".$row['id'].($this->movies->category() == $row['id'] ? " cat_nav_active" : "")."\">".
-	($this->movies->category() != $row['id'] ? "<a class=\"cat_nav\" href=\"".$this->movies->catQueryString($row['id'])."\">" : "").
-	htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8").($this->movies->category() != $row['id'] ? "</a>" : "")."</li>";
+      ($this->movies->category() != $row['id'] ? "<a class=\"cat_nav\" href=\"".$this->movies->catQueryString($row['id'])."\">" : "").
+      htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8").($this->movies->category() != $row['id'] ? "</a>" : "")."</li>";
     }
 
     $this->addRow(new Row(array(), array(new Cell(array('align' => "left"), $html))));
@@ -65,4 +65,5 @@ final class CatChoice extends CatNavTable {
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

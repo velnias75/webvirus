@@ -59,8 +59,8 @@ final class Tracker {
     }
 
     $rq = "https:/rangun.de/piwik/matomo.php?idsite=".$this->siteid."&rec=1&bots=1&apiv=1&action_name=".urlencode($action_name).
-      "&send_image=0&url=".urlencode((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]").
-      "&rand=".urlencode(openssl_random_pseudo_bytes(4)).(is_null($this->login) ? "" : "&uid=".urlencode($this->login));
+    "&send_image=0&url=".urlencode((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]").
+    "&rand=".urlencode(openssl_random_pseudo_bytes(4)).(is_null($this->login) ? "" : "&uid=".urlencode($this->login));
 
     //error_log("{".$rq."}");
 
@@ -76,4 +76,5 @@ final class Tracker {
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -41,58 +41,58 @@ final class Pagination extends Table {
       $tits[min($prev + $psize, $rows - 1)]."\"" : "")." class=\"page_nr\" href=\"".
       $q."&amp;from=".$prev."&amp;to=".($prev + $psize)."\">&#10525;</a>"));
 
-    $ncell = new Cell($lratt, "&#8230;");
+      $ncell = new Cell($lratt, "&#8230;");
 
-    $fill_l = false;
-    $fill_r = false;
+      $fill_l = false;
+      $fill_r = false;
 
-    $curr_m = ceil($limit_from/($psize + 1));
+      $curr_m = ceil($limit_from/($psize + 1));
 
-    if($curr_m <= 36) {
-      $curr_l = 0;
-      $curr_r = 38;
-    } else if($curr_m >= (($pages - 1) - 36)) {
-      $curr_l = ($pages - 1) - 38;
-      $curr_r = ($pages - 1);
-    } else {
-      $curr_l = $curr_m - 18;
-      $curr_r = $curr_m + 18;
-    }
-
-    for($i = 0; $i < $pages; $i++) {
-
-      $from  = $i * ($psize + 1);
-      $activ = $limit_to == -1 || !(abs($limit_from) >= $from && abs($limit_to) <= ($from + $psize));
-
-      if($pages <= 40 || ($i == 0 || $i == ($pages - 1) || ($i > $curr_l && $i < $curr_r))) {
-
-	$patt = array('width' => min(2, floor(100/($pages + 4)))."%",
-	'title' => $tits[$from]." &#8594;&#13;&#10;".$tits[min($from + $psize, $rows - 1)]);
-
-	if($activ) {
-	  $patt['class'] = "page_nr";
-	} else {
-	  $patt['class'] = "page_nr page_active ";
-	}
-
-	$cells[] = new Cell($patt, ($activ ? "<a class=\"page_nr\" href=\"".$q."&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").
-	($i + 1).($activ ? "</a>" : ""));
-
-      } else if(!$fill_l && $i <= $curr_l) {
-	$cells[] = $ncell;
-	$fill_l  = true;
-      } else if(!$fill_r && $i >= $curr_r) {
-	$cells[] = $ncell;
-	$fill_r  = true;
+      if($curr_m <= 36) {
+	$curr_l = 0;
+	$curr_r = 38;
+      } else if($curr_m >= (($pages - 1) - 36)) {
+	$curr_l = ($pages - 1) - 38;
+	$curr_r = ($pages - 1);
+      } else {
+	$curr_l = $curr_m - 18;
+	$curr_r = $curr_m + 18;
       }
-    }
 
-    $cells[] = new Cell($lratt,
-    "<a ".(count($tits) ? "title=\"".$tits[$next]." &#8594;&#13;&#10;".$tits[min($next + $psize, $rows - 1)].
-    "\"" : "")." class=\"page_nr\" href=\"".$q."&amp;from=".$next."&amp;to=".($next + $psize)."\">&#10526;</a>");
-    $cells[] = $this->createAllPage($rows, $tits, $limit_from, $limit_to, $q);
+      for($i = 0; $i < $pages; $i++) {
 
-    $this->addRow(new Row(array('align' => "center"), $cells));
+	$from  = $i * ($psize + 1);
+	$activ = $limit_to == -1 || !(abs($limit_from) >= $from && abs($limit_to) <= ($from + $psize));
+
+	if($pages <= 40 || ($i == 0 || $i == ($pages - 1) || ($i > $curr_l && $i < $curr_r))) {
+
+	  $patt = array('width' => min(2, floor(100/($pages + 4)))."%",
+	  'title' => $tits[$from]." &#8594;&#13;&#10;".$tits[min($from + $psize, $rows - 1)]);
+
+	  if($activ) {
+	    $patt['class'] = "page_nr";
+	  } else {
+	    $patt['class'] = "page_nr page_active ";
+	  }
+
+	  $cells[] = new Cell($patt, ($activ ? "<a class=\"page_nr\" href=\"".$q."&amp;from=".$from."&amp;to=".($from + $psize)."\">" : "").
+	  ($i + 1).($activ ? "</a>" : ""));
+
+	} else if(!$fill_l && $i <= $curr_l) {
+	  $cells[] = $ncell;
+	  $fill_l  = true;
+	} else if(!$fill_r && $i >= $curr_r) {
+	  $cells[] = $ncell;
+	  $fill_r  = true;
+	}
+      }
+
+      $cells[] = new Cell($lratt,
+      "<a ".(count($tits) ? "title=\"".$tits[$next]." &#8594;&#13;&#10;".$tits[min($next + $psize, $rows - 1)].
+      "\"" : "")." class=\"page_nr\" href=\"".$q."&amp;from=".$next."&amp;to=".($next + $psize)."\">&#10526;</a>");
+      $cells[] = $this->createAllPage($rows, $tits, $limit_from, $limit_to, $q);
+
+      $this->addRow(new Row(array('align' => "center"), $cells));
   }
 
   private function createAllPage($rows, $tits, $limit_from, $limit_to, $q) {
@@ -107,4 +107,5 @@ final class Pagination extends Table {
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2018-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -24,4 +24,5 @@ header("Content-type: application/xml");
 
 echo (new Movies())->mySQLRowsXML();
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

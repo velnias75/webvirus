@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -106,26 +106,26 @@ EOD;
     $this->category   = $cat;
 
     $this->filters['filter_ID'] = array(isset($_GET['filter_ID']) && !empty($_GET['filter_ID']),
-      isset($_GET['filter_ID']) ? $_GET['filter_ID'] : 0,
-      isset($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : 0);
+    isset($_GET['filter_ID']) ? $_GET['filter_ID'] : 0,
+    isset($_GET['filter_ID']) ? urldecode($_GET['filter_ID']) : 0);
     $this->filters['filter_ltitle'] = array(isset($_GET['filter_ltitle']) && !empty($_GET['filter_ltitle']),
-      isset($_GET['filter_ltitle']) ? $_GET['filter_ltitle'] : "",
-      isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "");
+    isset($_GET['filter_ltitle']) ? $_GET['filter_ltitle'] : "",
+    isset($_GET['filter_ltitle']) ? urldecode($_GET['filter_ltitle']) : "");
     $this->filters['filter_duration'] = array(isset($_GET['filter_duration']) && !empty($_GET['filter_duration']),
-      isset($_GET['filter_duration']) ? $_GET['filter_duration'] : "",
-      isset($_GET['filter_duration']) ? urldecode($_GET['filter_duration']) : "");
+    isset($_GET['filter_duration']) ? $_GET['filter_duration'] : "",
+    isset($_GET['filter_duration']) ? urldecode($_GET['filter_duration']) : "");
     $this->filters['filter_lingo'] = array(isset($_GET['filter_lingo']) && !empty($_GET['filter_lingo']),
-      isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "",
-      isset($_GET['filter_lingo']) ? urldecode($_GET['filter_lingo']) : "");
+    isset($_GET['filter_lingo']) ? $_GET['filter_lingo'] : "",
+    isset($_GET['filter_lingo']) ? urldecode($_GET['filter_lingo']) : "");
     $this->filters['filter_lingo_not'] = array(isset($_GET['filter_lingo_not']) && $_GET['filter_lingo_not'] == "on",
-      isset($_GET['filter_lingo_not']) ? $_GET['filter_lingo_not'] : "",
-      isset($_GET['filter_lingo_not']) ? urldecode($_GET['filter_lingo_not']) : "");
+    isset($_GET['filter_lingo_not']) ? $_GET['filter_lingo_not'] : "",
+    isset($_GET['filter_lingo_not']) ? urldecode($_GET['filter_lingo_not']) : "");
     $this->filters['filter_disc'] = array(isset($_GET['filter_disc']) && is_numeric($_GET['filter_disc']) && $_GET['filter_disc'] != -1,
-      isset($_GET['filter_disc']) ? $_GET['filter_disc'] : -1,
-      isset($_GET['filter_disc']) ? urldecode($_GET['filter_disc']) : -1);
+    isset($_GET['filter_disc']) ? $_GET['filter_disc'] : -1,
+    isset($_GET['filter_disc']) ? urldecode($_GET['filter_disc']) : -1);
 
     $latest_res = $this->con->query("SELECT `id`, `name`, DATE_FORMAT(`created`, '%d.%m.%Y') AS `df` ".
-      "FROM `disc` ORDER BY `created` DESC LIMIT 1");
+    "FROM `disc` ORDER BY `created` DESC LIMIT 1");
     $this->latest = $latest_res->fetch_assoc()['df'];
     $latest_res->free_result();
 
@@ -228,18 +228,18 @@ EOD;
 
   protected final function createQueryString($cat, $order, $filter, $limits, $qm = true, $ft = true) {
     return ($qm ? "?" : "").(urlencode($cat) ? "&amp;cat=".urlencode($this->category) : "").
-      ($order   ? "&amp;order_by=".urlencode($this->order()) : "").
-      ($filter  ? $this->filters($ft) : "").
-      ($limits  ? "&amp;from=".urlencode($this->limit_from)."&amp;to=".urlencode($this->limit_to) : "");
+    ($order   ? "&amp;order_by=".urlencode($this->order()) : "").
+    ($filter  ? $this->filters($ft) : "").
+    ($limits  ? "&amp;from=".urlencode($this->limit_from)."&amp;to=".urlencode($this->limit_to) : "");
   }
 
   private function filterSQLArray($q = "") {
 
     $like = ($this->filters['filter_ltitle'][0] && (($this->filters['filter_ltitle'][2][0] == '/' &&
-      substr($this->filters['filter_ltitle'][2], -1)) == '/') ? " REGEXP '".
-      substr($this->con->real_escape_string(substr($this->filters['filter_ltitle'][2], 1)), 0, -1)."' " :
-      " LIKE ".($this->filters['filter_ltitle'][0] ? " CONCAT('%', '".
-      $this->con->real_escape_string($this->filters['filter_ltitle'][2])."', '%')" : "'%'"));
+    substr($this->filters['filter_ltitle'][2], -1)) == '/') ? " REGEXP '".
+    substr($this->con->real_escape_string(substr($this->filters['filter_ltitle'][2], 1)), 0, -1)."' " :
+    " LIKE ".($this->filters['filter_ltitle'][0] ? " CONCAT('%', '".
+    $this->con->real_escape_string($this->filters['filter_ltitle'][2])."', '%')" : "'%'"));
 
     $fids = $this->filters['filter_ID'][0] ? str_replace(",", " OR `m`.`ID` = ", $this->filters['filter_ID'][2]) : "";
 
@@ -257,10 +257,10 @@ EOD;
       'ifil' => ($this->filters['filter_ID'][0] ? " AND (`m`.`ID` = ".$fids.")" : ""),
       'dfil' => ($this->filters['filter_disc'][0] ? " AND `m`.`disc` = ".$this->filters['filter_disc'][1] : ""),
       'lfil' => ($this->filters['filter_lingo'][0] ? " AND '".$this->con->real_escape_string($this->filters['filter_lingo'][2])."' ".
-	($this->filters['filter_lingo_not'][0] ? "NOT " : "").
-	"IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : ""),
+      ($this->filters['filter_lingo_not'][0] ? "NOT " : "").
+      "IN (SELECT `movie_languages`.`lang_id` FROM `movie_languages` WHERE `movie_languages`.`movie_id` = `m`.`id`)" : ""),
       'q' => $q
-    );
+      );
   }
 
   private function getBuiltQuery($q = "", $filtered_ids = false) {
@@ -279,36 +279,36 @@ EOD;
     $ef = empty($fi['tfil'].$fi['mfil'].$fi['dfil'].$fi['lfil']);
 
     $q = $sid ? MoviesBase::IDSEARCH_STRING.$m[1] : ($top ? MoviesBase::TPSEARCH_STRING :
-      ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING :
-      ($urn ? MoviesBase::RNSEARCH_STRING : ($urg ? MoviesBase::RGSEARCH_STRING : ($uro ? MoviesBase::ROSEARCH_STRING :
-      ($urb ? MoviesBase::RBSEARCH_STRING : $q))))))));
+    ($flop ? MoviesBase::FPSEARCH_STRING : ($omu ? MoviesBase::OUSEARCH_STRING : ($oou ? MoviesBase::OOSEARCH_STRING :
+    ($urn ? MoviesBase::RNSEARCH_STRING : ($urg ? MoviesBase::RGSEARCH_STRING : ($uro ? MoviesBase::ROSEARCH_STRING :
+    ($urb ? MoviesBase::RBSEARCH_STRING : $q))))))));
 
     if(substr($q, 0, 4) == MoviesBase::IDSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null)." AND `m`.`ID` ".(((int)substr($q, 4)) <= 0 ? " = 1" : " = ".substr($q, 4));
     } else if(substr($q, 0, 4) == MoviesBase::TPSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." AND top250 IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+      $fi['mfil']." AND top250 IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::FPSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." AND top250 IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+      $fi['mfil']." AND top250 IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::OUSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." AND omu IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+      $fi['mfil']." AND omu IS true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::OOSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." AND omu IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
+      $fi['mfil']." AND omu IS NOT true GROUP BY `m`.`ID`  ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::RNSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." GROUP BY `m`.`ID` HAVING `user_rating` IS NULL ORDER BY ".$this->order;
+      $fi['mfil']." GROUP BY `m`.`ID` HAVING `user_rating` IS NULL ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::RGSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 2, `avg_rating` = 2) ORDER BY ".$this->order;
+      $fi['mfil']." GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 2, `avg_rating` = 2) ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::ROSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 1, `avg_rating` = 1) ORDER BY ".$this->order;
+      $fi['mfil']." GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 1, `avg_rating` = 1) ORDER BY ".$this->order;
     } else if(substr($q, 0, 4) == MoviesBase::RBSEARCH_STRING) {
       return $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	$fi['mfil']." GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 0, avg_rating = 0) ORDER BY ".$this->order;
+      $fi['mfil']." GROUP BY `m`.`ID` HAVING IF(`user_rating` IS NOT NULL, `user_rating` = 0, avg_rating = 0) ORDER BY ".$this->order;
     } else {
 
       //$fi = $this->filterSQLArray($q);
@@ -317,19 +317,19 @@ EOD;
       if($this->filters['filter_ID'][0]) {
 
 	$bq = (!$ef ? "(".
-	  $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	  $fi['mfil'].$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	  (empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q'].
-	  ") UNION (" : "").
-	  $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null)./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
-	  $fi['ifil']." GROUP BY `m`.`ID` ".($filtered_ids ? " HAVING `ltitle` ".$fi['tfil'].$fi['q'] : "").
-	  (!$ef ? ")" : "")." ORDER BY ".$this->order;
+	$this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
+	$fi['mfil'].$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q'].
+	") UNION (" : "").
+	$this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null)./*($this->category == -1 ? "" : " AND `category` = ".$this->category).*/
+	$fi['ifil']." GROUP BY `m`.`ID` ".($filtered_ids ? " HAVING `ltitle` ".$fi['tfil'].$fi['q'] : "").
+	(!$ef ? ")" : "")." ORDER BY ".$this->order;
 
       } else {
 
 	$bq = $this->dvdChoice(isset($_SESSION['ui']) ? $_SESSION['ui']['id'] : null).($this->category == -1 ? "" : " AND `category` = ".$this->category).
-	  $fi['mfil'].$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
-	  (empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']." ORDER BY ".$this->order;
+	$fi['mfil'].$fi['dfil'].$fi['lfil']." GROUP BY `m`.`ID` ".
+	(empty($fi['tfil']) ? "" : "HAVING `ltitle` ".$fi['tfil']).$fi['q']." ORDER BY ".$this->order;
       }
 
       return $bq;
@@ -352,15 +352,15 @@ EOD;
 
     while($row = $result->fetch_assoc()) {
       $jrows[] = array('id' => (integer)$row['ID'],
-		       'title' => $row['ltitle'],
-		       'duration' => $row['duration'],
-		       'dur_sec' => (integer)$row['dur_sec'],
-		       'languages' => $row['lingos'],
-		       'disc' => $row['disc'],
-		       'category' => (integer)$row['category'],
-		       'filename' => $row['filename'],
-		       'omu' => (boolean)$row['omu'],
-		       'top250' => (boolean)$row['top250']);
+      'title' => $row['ltitle'],
+      'duration' => $row['duration'],
+      'dur_sec' => (integer)$row['dur_sec'],
+      'languages' => $row['lingos'],
+      'disc' => $row['disc'],
+      'category' => (integer)$row['category'],
+      'filename' => $row['filename'],
+      'omu' => (boolean)$row['omu'],
+      'top250' => (boolean)$row['top250']);
     }
 
     return json_encode($jrows);
@@ -424,9 +424,9 @@ EOD;
 
   static public final function isMobile() {
     return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ||
-      preg_match("/iPhone/", $_SERVER['HTTP_USER_AGENT']) ||
-      preg_match("/BlackBerry/", $_SERVER['HTTP_USER_AGENT']) ||
-      preg_match("/Windows Phone/", $_SERVER['HTTP_USER_AGENT']);
+    preg_match("/iPhone/", $_SERVER['HTTP_USER_AGENT']) ||
+    preg_match("/BlackBerry/", $_SERVER['HTTP_USER_AGENT']) ||
+    preg_match("/Windows Phone/", $_SERVER['HTTP_USER_AGENT']);
   }
 
   static public final function pageSize() {
@@ -440,4 +440,5 @@ EOD;
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

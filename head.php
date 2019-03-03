@@ -1,4 +1,5 @@
 <?php
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 /*
  * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
@@ -18,47 +19,47 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-  require 'classes/movies.php';
+require 'classes/movies.php';
 
-  session_start();
+session_start();
 
-  if(empty($_GET)) {
-    if(isset($_COOKIE['query_mem'])) {
-      header("Location: ".$_SERVER['PATH_INFO']."?".$_COOKIE['query_mem'], FALSE);
-    }
-  } else {
-    setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + (5 * 365 * 24 * 60 * 60));
+if(empty($_GET)) {
+  if(isset($_COOKIE['query_mem'])) {
+    header("Location: ".$_SERVER['PATH_INFO']."?".$_COOKIE['query_mem'], FALSE);
   }
+} else {
+  setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + (5 * 365 * 24 * 60 * 60));
+}
 
-  if(isset($_COOKIE['wvpltok'])) {
-    MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->
-    plogin(substr($_COOKIE['wvpltok'], 32, 8), substr($_COOKIE['wvpltok'], 0, 32)),
-    isset($_SESSION['ui']) && $_SESSION['ui']['auto_login']);
-  }
+if(isset($_COOKIE['wvpltok'])) {
+  MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->
+  plogin(substr($_COOKIE['wvpltok'], 32, 8), substr($_COOKIE['wvpltok'], 0, 32)),
+  isset($_SESSION['ui']) && $_SESSION['ui']['auto_login']);
+}
 
-  $GLOBALS['dblastvisit'] = isset($_COOKIE["dblastvisit"]) ? $_COOKIE["dblastvisit"] : null;
+$GLOBALS['dblastvisit'] = isset($_COOKIE["dblastvisit"]) ? $_COOKIE["dblastvisit"] : null;
 
-  setcookie("dblastvisit", time(), time()+60*60*24*365);
+setcookie("dblastvisit", time(), time()+60*60*24*365);
+
+try {
+  $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
+  isset($_GET['from']) ? $_GET['from'] : 0,
+  isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
+} catch(Exception $e) {
+  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
+}
+
+if(isset($_GET['filter_disc'])) {
 
   try {
-    $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
-      isset($_GET['from']) ? $_GET['from'] : 0,
-      isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
-  } catch(Exception $e) {
-    echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
-  }
-
-  if(isset($_GET['filter_disc'])) {
-
-    try {
-      $og_image = MySQLBase::instance()->getOMDBId($_GET['filter_disc']);
-    } catch(UnexpectedValueException $e) {
-      $og_image = MySQLBase::instance()->getOMDBId();
-    }
-
-  } else {
+    $og_image = MySQLBase::instance()->getOMDBId($_GET['filter_disc']);
+  } catch(UnexpectedValueException $e) {
     $og_image = MySQLBase::instance()->getOMDBId();
   }
+
+} else {
+  $og_image = MySQLBase::instance()->getOMDBId();
+}
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

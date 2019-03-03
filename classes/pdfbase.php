@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -63,8 +63,8 @@ final class PDFBase extends FPDF {
     $this->SetY(-15);
     $this->SetFont('Arial', 'I', 6);
     $this->Cell(0, 10, "Dokument erstellt ".strftime("am %d.%m.%Y um %H:%M:%S")." via http://".$_SERVER['SERVER_NAME'].
-      dirname($_SERVER['REQUEST_URI'])."/", "T", 0, "L", false,
-      "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+    dirname($_SERVER['REQUEST_URI'])."/", "T", 0, "L", false,
+    "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
     $this->SetFont('Courier', '', 10);
     $this->SetX($lm);
     $this->Cell(0, 10, 'Seite '.$this->PageNo(), "T", 0, "C");
@@ -84,4 +84,5 @@ final class PDFBase extends FPDF {
   }
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

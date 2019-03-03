@@ -92,63 +92,64 @@ $channel->appendChild($head);
 
 $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`name` AS `name`, UNIX_TIMESTAMP(`d`.`created`) AS `created`, `m`.`ID` AS `ID`, ".
 "MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`, `m`.`omu`) AS `title`, `c`.`name` as `cat`, `m`.`omdb_id`AS `oid`, ".
-  "SEC_TO_TIME(m.duration) AS `duration`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ".
-  "ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos` FROM `movies` AS `m` ".
-  "LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
-  "LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` ".
-  "LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
-  "WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC".
-  (empty($_GET['n']) ? " LIMIT 20" : ($_GET['n'] == -1 ? "" : " LIMIT ".$_GET['n'])));
+"SEC_TO_TIME(m.duration) AS `duration`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ".
+"ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos` FROM `movies` AS `m` ".
+"LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
+"LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` ".
+"LEFT JOIN `movie_languages` ON `m`.`ID` = `movie_languages`.`movie_id` LEFT JOIN `languages` ON `movie_languages`.`lang_id` = `languages`.`id` ".
+"WHERE `d`.`created` IS NOT NULL GROUP BY `m`.`ID` ORDER BY `d`.`created` DESC , MAKE_MOVIE_SORTKEY(`title`, `m`.`skey`) ASC".
+(empty($_GET['n']) ? " LIMIT 20" : ($_GET['n'] == -1 ? "" : " LIMIT ".$_GET['n'])));
 
 $lm = false;
 
 while($rssdata = $result->fetch_assoc()) {
 
-    if(!$lm) {
-      $lm = true;
-      header("Last-Modified: ".date(DATE_RFC2822, $rssdata['created']));
-    }
+  if(!$lm) {
+    $lm = true;
+    header("Last-Modified: ".date(DATE_RFC2822, $rssdata['created']));
+  }
 
-    $item = $xml->createElement('item');
-    $channel->appendChild($item);
+  $item = $xml->createElement('item');
+  $channel->appendChild($item);
 
-    $data = $xml->createElement('title', str_replace("&", "&amp;", $rssdata['title']));
-    $item->appendChild($data);
+  $data = $xml->createElement('title', str_replace("&", "&amp;", $rssdata['title']));
+  $item->appendChild($data);
 
-    $cdata = $xml->createCDATASection("<table border=\"0\"><tr>".
-      (!empty($rssdata['oid']) ? "<td width=\"*\">".
-	"<img src=\"".getLink()."/omdb.php?cover-oid=".$rssdata['oid']."\" alt=\"Cover f&uuml;r &quot;".$rssdata['title']."&quot;\">".
-	"</td>" : "").
-      "<td valign=\"top\"".(!empty($rssdata['oid']) ? "" : " colspan=\"2\"")."><dl>".
-      "<dt><b>Nr</b></dt><dd>".$rssdata['ID']."</dd>".
-      "<dt><b>Titel</b></dt><dd>".str_replace("&", "&amp;", $rssdata['title'])."</dd>".
-      "<dt><b>L&auml;nge</b></dt><dd>".$rssdata['duration']."</dd>".
-      "<dt><b>Sprachen(n)</b></dt><dd>".$rssdata['lingos']."</dd>".
-      "<dt><b>DVD</b></dt><dd>".$rssdata['name']."</dd>".
-      "</dl></td></tr>");
-    $data = $xml->createElement('description');
-    $data->appendChild($cdata);
-    $item->appendChild($data);
+  $cdata = $xml->createCDATASection("<table border=\"0\"><tr>".
+  (!empty($rssdata['oid']) ? "<td width=\"*\">".
+  "<img src=\"".getLink()."/omdb.php?cover-oid=".$rssdata['oid']."\" alt=\"Cover f&uuml;r &quot;".$rssdata['title']."&quot;\">".
+  "</td>" : "").
+  "<td valign=\"top\"".(!empty($rssdata['oid']) ? "" : " colspan=\"2\"")."><dl>".
+  "<dt><b>Nr</b></dt><dd>".$rssdata['ID']."</dd>".
+  "<dt><b>Titel</b></dt><dd>".str_replace("&", "&amp;", $rssdata['title'])."</dd>".
+  "<dt><b>L&auml;nge</b></dt><dd>".$rssdata['duration']."</dd>".
+  "<dt><b>Sprachen(n)</b></dt><dd>".$rssdata['lingos']."</dd>".
+  "<dt><b>DVD</b></dt><dd>".$rssdata['name']."</dd>".
+  "</dl></td></tr>");
+  $data = $xml->createElement('description');
+  $data->appendChild($cdata);
+  $item->appendChild($data);
 
-    $data = $xml->createElement('category', $rssdata['cat']);
-    $item->appendChild($data);
+  $data = $xml->createElement('category', $rssdata['cat']);
+  $item->appendChild($data);
 
-    $data = $xml->createElement('author', $rssdata['name']);
-    $item->appendChild($data);
+  $data = $xml->createElement('author', $rssdata['name']);
+  $item->appendChild($data);
 
-    $data = $xml->createElement('link', getLink()."/disc/".$rssdata['did']);
-    $item->appendChild($data);
+  $data = $xml->createElement('link', getLink()."/disc/".$rssdata['did']);
+  $item->appendChild($data);
 
-    $data = $xml->createElement('pubDate', gmdate("D, j M Y H:i:s ", $rssdata['created']).'GMT');
-    $item->appendChild($data);
+  $data = $xml->createElement('pubDate', gmdate("D, j M Y H:i:s ", $rssdata['created']).'GMT');
+  $item->appendChild($data);
 
-    $data = $xml->createElement('guid', getLink()."/?filter_ID=".$rssdata['ID']);
-    $data->setAttribute("isPermaLink", "true");
-    $item->appendChild($data);
+  $data = $xml->createElement('guid', getLink()."/?filter_ID=".$rssdata['ID']);
+  $data->setAttribute("isPermaLink", "true");
+  $item->appendChild($data);
 }
 
 $result->free_result();
 
 echo $xml->saveXML();
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

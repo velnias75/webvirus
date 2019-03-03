@@ -18,32 +18,32 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-  require 'head.php';
-  require 'classes/stats.php';
-  require 'classes/userbox.php';
-  require 'classes/form/form.php';
-  require 'classes/dataupdate.php';
-  require 'classes/cat_choice.php';
-  require 'classes/latest_disc.php';
+require 'head.php';
+require 'classes/stats.php';
+require 'classes/userbox.php';
+require 'classes/form/form.php';
+require 'classes/dataupdate.php';
+require 'classes/cat_choice.php';
+require 'classes/latest_disc.php';
 
-  if(MoviesBase::isMobile()) echo "<div id=\"standard\">";
+if(MoviesBase::isMobile()) echo "<div id=\"standard\">";
 
-  final class OverallAvgRating {
+final class OverallAvgRating {
 
-    use AmpleTraits;
+  use AmpleTraits;
 
-    private $overallAvgRating;
+  private $overallAvgRating;
 
-    function __construct() {
-      $this->overallAvgRating = MySQLBase::instance()->getOverallAvgRating();
-    }
-
-    public function getOverallAvgRating() {
-      return $this->ample($this->overallAvgRating, -1, "idx_oa", true);
-    }
+  function __construct() {
+    $this->overallAvgRating = MySQLBase::instance()->getOverallAvgRating();
   }
 
-  $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
+  public function getOverallAvgRating() {
+    return $this->ample($this->overallAvgRating, -1, "idx_oa", true);
+  }
+}
+
+$overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
 
 ?>
 <table id="layout" border="0" width="100%">
@@ -53,20 +53,21 @@
     <h3><span class="red_text">&#9995;</span>&nbsp;Die&nbsp;Webvirenversion&nbsp;<span class="red_text">&#9995;</span></h3>
     <?php
     if(MoviesBase::isMobile()) {
-	$from = isset($_GET['from']) ? $_GET['from'] : 0;
-	$dist = (isset($_GET['from']) && isset($_GET['to'])) ? abs($_GET['to'] - $from) : MoviesBase::MOBILE_PAGESIZE;
-	$sel  = array(($dist >=  0 && $dist < 10) ? "selected" : "", ($dist >= 10 && $dist < 20) ? "selected" : "",
-		      ($dist >= 20 && $dist < 50) ? "selected" : "",  $dist >= 50 ? "selected" : "");
-	echo "<div id=\"mobile_pagesize\"><form><input type=\"hidden\" name=\"from\" value=\"".$from."\" />".
-	    (isset($_GET['order_by']) ? "<input type=\"hidden\" name=\"order_by\" value=\"".$_GET['order_by']."\" />" : "").
-	    (isset($_GET['cat']) ? "<input type=\"hidden\" name=\"cat\" value=\"".$_GET['cat']."\" />" : "").
-	    (isset($_GET['filter_ltitle']) ? "<input type=\"hidden\" name=\"filter_ltitle\" value=\"".$_GET['filter_ltitle']."\" />" : "").
-	    (isset($_GET['filter_disc']) ? "<input type=\"hidden\" name=\"filter_disc\" value=\"".$_GET['filter_disc']."\" />" : "").
-	    "<label>Filme pro Seite:&nbsp;<select name=\"to\" onchange=\"this.form.submit()\">".
-	    "<option value=\"".($from+ 9)."\" ".$sel[0].">10</option><option value=\"".($from+19)."\" ".$sel[1].">20</option>".
-	    "<option value=\"".($from+49)."\" ".$sel[2].">50</option><option value=\"".($from+99)."\" ".$sel[3].">100</option>".
-	    "</select></label></form></div>";
-      }
+      $from = isset($_GET['from']) ? $_GET['from'] : 0;
+      $dist = (isset($_GET['from']) && isset($_GET['to'])) ? abs($_GET['to'] - $from) : MoviesBase::MOBILE_PAGESIZE;
+      $sel  = array(($dist >=  0 && $dist < 10) ? "selected" : "", ($dist >= 10 && $dist < 20) ? "selected" : "",
+      ($dist >= 20 && $dist < 50) ? "selected" : "",  $dist >= 50 ? "selected" : "");
+
+      echo "<div id=\"mobile_pagesize\"><form><input type=\"hidden\" name=\"from\" value=\"".$from."\" />".
+	(isset($_GET['order_by']) ? "<input type=\"hidden\" name=\"order_by\" value=\"".$_GET['order_by']."\" />" : "").
+	(isset($_GET['cat']) ? "<input type=\"hidden\" name=\"cat\" value=\"".$_GET['cat']."\" />" : "").
+	(isset($_GET['filter_ltitle']) ? "<input type=\"hidden\" name=\"filter_ltitle\" value=\"".$_GET['filter_ltitle']."\" />" : "").
+	(isset($_GET['filter_disc']) ? "<input type=\"hidden\" name=\"filter_disc\" value=\"".$_GET['filter_disc']."\" />" : "").
+	"<label>Filme pro Seite:&nbsp;<select name=\"to\" onchange=\"this.form.submit()\">".
+	"<option value=\"".($from+ 9)."\" ".$sel[0].">10</option><option value=\"".($from+19)."\" ".$sel[1].">20</option>".
+	"<option value=\"".($from+49)."\" ".$sel[2].">50</option><option value=\"".($from+99)."\" ".$sel[3].">100</option>".
+	"</select></label></form></div>";
+    }
     ?>
   </td></tr>
   <tr><td id="layout_left" align="center" valign="top">
@@ -115,6 +116,8 @@
 <div id="openModal_stats" class="modalDialog"><div><a href="#close" title="Schlie&szlig;en" class="close">X</a>
 <b><u>Hirnlose Statistiken</u></b><?= (new Stats())->render(); ?></div></div>
 <?php
-  if(MoviesBase::isMobile()) echo "</div><div id=\"portrait\"><p>QUERFORMAT!</p></div>";
-  require 'foot.php';
+if(MoviesBase::isMobile()) echo "</div><div id=\"portrait\"><p>QUERFORMAT!</p></div>";
+require 'foot.php';
+
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

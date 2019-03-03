@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -42,7 +42,7 @@ final class UpdateSQL implements IFormable {
 
   public function render() {
     return  "<label class=\"fileContainer\"><input type=\"file\" name=\"dateiupload\">".
-	    "<input class=\"button\" type=\"submit\" name=\"btn[upload]\" accept=\"application/sql\"></label>";
+    "<input class=\"button\" type=\"submit\" name=\"btn[upload]\" accept=\"application/sql\"></label>";
   }
 
 }
@@ -54,9 +54,10 @@ final class DataUpdate extends CatNavTable implements IRenderable {
     $this->addRow(new Row(array(), array(new Cell(array(), new Form(new UpdateSQL())))));
   }
 
-//   public function render() {
-//     return parent::render();
-//   }
+  //   public function render() {
+  //     return parent::render();
+  //   }
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -50,20 +50,21 @@ abstract class FilterdropBase {
   public final function render($id, $checked = false) {
 
     $res = "<select class=\"input_filter\" name=\"".$this->filterName()."\" onchange=\"this.form.submit()\">".
-      "<option".($id == $this->noneValue() ? " selected" : "").
-      " value=\"".$this->noneValue()."\">alle</option>\n";
+    "<option".($id == $this->noneValue() ? " selected" : "").
+    " value=\"".$this->noneValue()."\">alle</option>\n";
 
     while($row = $this->result->fetch_assoc()) {
       $res .= "<option".($id == $row[$this->idField()] ? " selected" : "")." value=\"".
-	$row[$this->idField()]."\">".htmlentities($row[$this->nameField()], ENT_SUBSTITUTE, "utf-8")."</option>";
+      $row[$this->idField()]."\">".htmlentities($row[$this->nameField()], ENT_SUBSTITUTE, "utf-8")."</option>";
     }
 
     return $res."</select>".($this->showNot() ? "&nbsp;<label><input ".($id == $this->noneValue() ? "disabled" : "").
-      " value=\"on\" onchange=\"this.form.submit()\" name=\"".
-      $this->filterName()."_not\" ".($checked && $id != $this->noneValue() ? "checked" : "").
-      " type=\"checkbox\"><em>nicht</em></label>" : "")."\n";
+    " value=\"on\" onchange=\"this.form.submit()\" name=\"".
+    $this->filterName()."_not\" ".($checked && $id != $this->noneValue() ? "checked" : "").
+    " type=\"checkbox\"><em>nicht</em></label>" : "")."\n";
   }
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

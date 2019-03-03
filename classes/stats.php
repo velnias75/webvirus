@@ -50,19 +50,19 @@ final class Stats extends Table {
 	null,
 	array(
 	  new Cell(array('align' => 'right', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    htmlentities($row['stat'], ENT_SUBSTITUTE, "utf-8").":&nbsp;"),
+	  htmlentities($row['stat'], ENT_SUBSTITUTE, "utf-8").":&nbsp;"),
 	  new Cell(array('align' => ($row['ord'] != 3 ? 'center' : 'left'), 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    $row['ord'] != 3 ? $row['duration'] : ($this->ample($row['duration'], $row['category'], "ample_stat", true)."&nbsp;(".
-		number_format(round((float)$row['duration'], 2), 2, '.', '').")&nbsp;")),
+	  $row['ord'] != 3 ? $row['duration'] : ($this->ample($row['duration'], $row['category'], "ample_stat", true)."&nbsp;(".
+	  number_format(round((float)$row['duration'], 2), 2, '.', '').")&nbsp;")),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
+	  htmlentities($row['category'], ENT_SUBSTITUTE, "utf-8")."&nbsp;"),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    is_null($row['title']) ? null : "&nbsp;&ndash;&nbsp;"),
+	  is_null($row['title']) ? null : "&nbsp;&ndash;&nbsp;"),
 	  new Cell(array('align' => 'right', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    is_null($row['title']) ? null : htmlentities($row['mid'], ENT_SUBSTITUTE, "utf-8")),
+	  is_null($row['title']) ? null : htmlentities($row['mid'], ENT_SUBSTITUTE, "utf-8")),
 	  new Cell(array('align' => 'left', 'nowrap' => null, 'class' => $this->cid2class($row['cid'])),
-	    is_null($row['title']) ? null : "&nbsp;".htmlentities($row['title'], ENT_SUBSTITUTE, "utf-8")."&nbsp;")
-      )));
+	  is_null($row['title']) ? null : "&nbsp;".htmlentities($row['title'], ENT_SUBSTITUTE, "utf-8")."&nbsp;")
+	  )));
     }
 
     $stat_res->free_result();
@@ -72,4 +72,5 @@ final class Stats extends Table {
 
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

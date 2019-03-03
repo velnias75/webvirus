@@ -25,12 +25,12 @@ final class compressed_mysqli extends mysqli {
     parent::init();
 
     /*if (!parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 0')) {
-      die('Setting MYSQLI_INIT_COMMAND failed');
-    }*/
+     *      die('Setting MYSQLI_INIT_COMMAND failed');
+  }*/
 
     /* if (!parent::options(MYSQLI_OPT_CONNECT_TIMEOUT, 5)) {
-      die('Setting MYSQLI_OPT_CONNECT_TIMEOUT failed');
-    } */
+     *      die('Setting MYSQLI_OPT_CONNECT_TIMEOUT failed');
+  } */
 
     if(!parent::real_connect($host, $user, $pass, $db, 0, $socket, MYSQLI_CLIENT_COMPRESS)) {
       die('Connect Error (' . mysqli_connect_errno() . ') '.mysqli_connect_error());
@@ -87,7 +87,7 @@ final class MySQLBase {
 
   public function update_fid($id, $fid) {
     $this->mysqli->query("UPDATE users SET fid = ".
-      (empty($fid) ? "null" : "'".$this->mysqli->real_escape_string($fid)."'")." WHERE id=".$id);
+    (empty($fid) ? "null" : "'".$this->mysqli->real_escape_string($fid)."'")." WHERE id=".$id);
   }
 
   public function update_allowed() {
@@ -108,23 +108,23 @@ final class MySQLBase {
 
   public function chg_pass($id, $pass) {
     $this->mysqli->query("UPDATE users SET pass=HEX(AES_ENCRYPT('".
-      $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
-      $this->mysqli->real_escape_string($this->secret)."', 512)))) WHERE id=".$id);
+    $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
+    $this->mysqli->real_escape_string($this->secret)."', 512)))) WHERE id=".$id);
   }
 
   public function new_user($display, $login, $pass) {
 
     $this->mysqli->query("INSERT INTO users (login, pass, display_name) VALUES ('".
-      $this->mysqli->real_escape_string($login)."', HEX(AES_ENCRYPT('".
-      $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
-      $this->mysqli->real_escape_string($this->secret)."', 512)))), '".
-      $this->mysqli->real_escape_string($display)."')");
+    $this->mysqli->real_escape_string($login)."', HEX(AES_ENCRYPT('".
+    $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
+    $this->mysqli->real_escape_string($this->secret)."', 512)))), '".
+    $this->mysqli->real_escape_string($display)."')");
   }
 
   public function plogin($uid, $tok) {
 
     $sql = "SELECT id, login, pass FROM users LEFT JOIN users_plogins ON users_plogins.uid = users.id ".
-      "WHERE users_plogins.uid = ".hexdec($uid)." AND users_plogins.token = '".$tok."'";
+    "WHERE users_plogins.uid = ".hexdec($uid)." AND users_plogins.token = '".$tok."'";
 
     $result = $this->mysqli->query($sql);
 
@@ -141,39 +141,39 @@ final class MySQLBase {
   public function login($login, $pass, $auto = false) {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-      $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, last_login, style, fid, ".
-      "pagesize, oauth_access_token, oauth_access_token_secret, consumer_key, consumer_secret ".
-      "FROM users WHERE login = '".$login."' LIMIT 1");
+    $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, last_login, style, fid, ".
+    "pagesize, oauth_access_token, oauth_access_token_secret, consumer_key, consumer_secret ".
+    "FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
 
       $row = $result->fetch_assoc();
 
       $res = array(
-	  'id' => $row['id'],
-	  'login' => $row['login'],
-	  'epass' => $row['pass'],
-	  'cpass' => $row['cpass'],
-	  'display_name' => $row['display_name'],
-	  'admin' => boolval($row['admin']),
-	  'last_login' => $row['last_login'],
-	  'auto_login' => $auto,
-	  'style' => $row['style'],
-	  'fid' => $row['fid'],
-	  'pagesize' => $row['pagesize'],
-	  'oauth_access_token' => $row['oauth_access_token'],
-	  'oauth_access_token_secret' => $row['oauth_access_token_secret'],
-	  'consumer_key' => $row['consumer_key'],
-	  'consumer_secret' => $row['consumer_secret']
+	'id' => $row['id'],
+	'login' => $row['login'],
+	'epass' => $row['pass'],
+	'cpass' => $row['cpass'],
+	'display_name' => $row['display_name'],
+	'admin' => boolval($row['admin']),
+	'last_login' => $row['last_login'],
+	'auto_login' => $auto,
+	'style' => $row['style'],
+	'fid' => $row['fid'],
+	'pagesize' => $row['pagesize'],
+	'oauth_access_token' => $row['oauth_access_token'],
+	'oauth_access_token_secret' => $row['oauth_access_token_secret'],
+	'consumer_key' => $row['consumer_key'],
+	'consumer_secret' => $row['consumer_secret']
 	);
 
-      $result->free_result();
+	$result->free_result();
 
-      if(($res['cpass'] == $pass || ($auto && $res['epass'] == $pass))) {
-	$this->mysqli->query("UPDATE users SET last_login=CURRENT_TIMESTAMP WHERE id=".$res['id']);
-      }
+	if(($res['cpass'] == $pass || ($auto && $res['epass'] == $pass))) {
+	  $this->mysqli->query("UPDATE users SET last_login=CURRENT_TIMESTAMP WHERE id=".$res['id']);
+	}
 
-      return ($res['cpass'] == $pass || ($auto && $res['epass'] == $pass)) ? $res : "Falsches Passwort";
+	return ($res['cpass'] == $pass || ($auto && $res['epass'] == $pass)) ? $res : "Falsches Passwort";
 
     } else {
       return "Benutzer nicht gefunden";
@@ -204,9 +204,9 @@ final class MySQLBase {
   public function getOMDBId($disc = null) {
 
     $result = $this->mysqli->query("SELECT omdb_id FROM disc LEFT JOIN movies ON movies.disc = disc.ID AND omdb_id IS NOT NULL ".
-      "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id".
-	(is_null($disc) ? "" : " WHERE disc.ID = ".$disc).
-      " GROUP BY movies.ID ORDER BY movies.disc DESC , AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
+    "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id".
+    (is_null($disc) ? "" : " WHERE disc.ID = ".$disc).
+    " GROUP BY movies.ID ORDER BY movies.disc DESC , AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
 
     $row = $result->fetch_assoc();
 
@@ -249,4 +249,5 @@ final class MySQLBase {
   }
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

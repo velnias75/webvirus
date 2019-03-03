@@ -67,23 +67,23 @@ if(isset($_GET['cover-oid'])) {
   }
 
   curl_setopt($ch, CURLOPT_HEADERFUNCTION,
-    function($curl, $header) use (&$headers) {
+  function($curl, $header) use (&$headers) {
 
-      $len = strlen($header);
-      $header = explode(':', $header, 2);
+    $len = strlen($header);
+    $header = explode(':', $header, 2);
 
-      if(count($header) < 2) return $len;
+    if(count($header) < 2) return $len;
 
-      $name = strtolower(trim($header[0]));
+    $name = strtolower(trim($header[0]));
 
-      if(!array_key_exists($name, $headers)) {
-	$headers[$name] = [trim($header[1])];
-      } else {
-	$headers[$name][] = trim($header[1]);
-      }
-
-      return $len;
+    if(!array_key_exists($name, $headers)) {
+      $headers[$name] = [trim($header[1])];
+    } else {
+      $headers[$name][] = trim($header[1]);
     }
+
+    return $len;
+  }
   );
 
   $pic = curl_exec($ch);
@@ -144,4 +144,5 @@ if(isset($_GET['cover-oid'])) {
   header("Location: ".MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/");
 }
 
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>
