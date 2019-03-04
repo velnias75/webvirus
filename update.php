@@ -57,7 +57,7 @@ if(MySQLBase::instance()->update_allowed()) {
     try {
       $twitter = new TwitterAPIExchange($settings);
       $twitter->buildOauth("https://api.twitter.com/1.1/statuses/update.json", "POST")
-      ->setPostfields(array('status' => 'Neue hirnlose Schrott- & Rentnerfilme wurden soeben auf https://rangun.de/db/index.php hinzugefügt!'))
+      ->setPostfields(array('status' => 'Neue hirnlose Schrott- & Rentnerfilme wurden soeben auf https://rangun.de/db/index.php hinzugefügt! #film'))
       ->performRequest();
     } catch(Exception $e) {
       echo '<pre>Twitter-API-Exception: ',  $e->getMessage(), "</pre>\n";
