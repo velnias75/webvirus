@@ -58,7 +58,7 @@ final class MySQLBase {
 
     $this->mysqli->set_charset('utf8');
 
-    $this->proxy  = $proxy;
+    $this->proxy  = isset($proxy) ? $proxy : null;
     $this->secret = $secret;
     $this->upload = !isset($update) || $update == true;
     $this->secure = isset($secure) || $secure == true;

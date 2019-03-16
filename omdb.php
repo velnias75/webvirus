@@ -21,6 +21,15 @@
 require 'classes/mysql_base.php';
 require 'classes/tracker.php';
 
+function noCoverPic() {
+    $filename = "img/nocover.png";
+    $handle = fopen($filename, "rb");
+    $p = fread($handle, filesize($filename));
+    fclose($handle);
+
+    return $p;
+}
+
 if(!isset($_GET['cover-oid'])) {
   session_start();
 }
@@ -29,8 +38,13 @@ if(isset($_GET['cover-oid'])) {
 
   $headers = [];
   $proxy = MySQLBase::instance()->proxy();
-  $ref_url = parse_url($_SERVER['HTTP_REFERER']);
-  $req_url = parse_url((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")."://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+  if(isset($_SERVER['HTTP_REFERER'])) {
+    $ref_url = parse_url($_SERVER['HTTP_REFERER']);
+    $req_url = parse_url((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")."://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+  } else {
+    $ref_url = null;
+    $req_url = null;
+  }
 
   if($ref_url['host'] != $req_url['host']) (new Tracker())->track("OMDB cover request for ".$_GET['cover-oid']." {".$_SERVER['HTTP_USER_AGENT']."}");
 
@@ -49,6 +63,9 @@ if(isset($_GET['cover-oid'])) {
 
   $libxml_previous_state = libxml_use_internal_errors(true);
   $doc = DOMDocument::loadHTML(curl_exec($ch));
+
+  if(curl_errno($ch)) error_log("Curl error (loading omdb movie page): ".curl_error($ch));
+
   libxml_clear_errors();
   libxml_use_internal_errors($libxml_previous_state);
   curl_close($ch);
@@ -87,13 +104,17 @@ if(isset($_GET['cover-oid'])) {
   );
 
   $pic = curl_exec($ch);
+
+  if(curl_errno($ch)) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
+
   curl_close($ch);
 
   if(md5($pic) == "106f2c74718ffe31354f44a40cc2f4a8") {
-    $filename = "img/nocover.png";
-    $handle = fopen($filename, "rb");
-    $pic = fread($handle, filesize($filename));
-    fclose($handle);
+    //$filename = "img/nocover.png";
+    //$handle = fopen($filename, "rb");
+    //$pic = fread($handle, filesize($filename));
+    //fclose($handle);
+    $pic = noCoverPic();
     $headers['content-type'][0] = "image/png";
   }
 
@@ -107,6 +128,8 @@ if(isset($_GET['cover-oid'])) {
   } else {
 
     $im = imagecreatefromstring($pic);
+
+    if ($im === false) $im = imagecreatefromstring(noCoverPic());
 
     $stamp = imagecreatetruecolor(110, 30);
     imagefilledrectangle($stamp, 0, 0, 109, 29, 0xFF0000);
@@ -127,7 +150,11 @@ if(isset($_GET['cover-oid'])) {
 
     header("Content-Type: image/png");
 
-    imagepng($im);
+    ob_start();
+    imagepng($im, NULL, 9,  PNG_ALL_FILTERS);
+    header("Content-Length: ".ob_get_length());
+    ob_end_flush();
+
     imagedestroy($im);
   }
 

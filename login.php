@@ -54,7 +54,9 @@ if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
     }
 }
 
-header("Location: ".dirname($_SERVER['REQUEST_URI'])."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
+$dname = dirname($_SERVER['REQUEST_URI']);
+
+header("Location: ".($dname != "/" ? $dname : "")."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>
