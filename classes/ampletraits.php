@@ -20,14 +20,17 @@
 
 trait AmpleTraits {
 
-  private function ample($rating, $mid, $hid = "ample_mid", $isFrac = false) {
+  private function ample($rating, $mid, $hid = "ample_mid", $isFrac = false, $overallAvgRating = false) {
 
     $ret = "";
     $tit = "";
     $rat = (int)(floor((double)$rating + 0.5));
 
-    if(!((int)$rating == -1 || !$isFrac)) {
+    if($overallAvgRating) {
+
       $tit .= " title=\"Durchschnittliche Bewertung: ".number_format($rating, 2)."\"";
+      if(empty($rating)) $rating = 0;
+
     } else {
       switch($rat) {
 	case -1: $tit .= " title=\"keine Bewertung\""; break;
@@ -44,7 +47,7 @@ trait AmpleTraits {
       case  2: $ret .= "<div".$tit." id=\"".$hid.$mid."\" class=\"ample_green\">&nbsp;</div>"; break;
     }
 
-    if(!((int)$rating == -1 || !$isFrac)) {
+    if(!((int)$rating == -1 || !$isFrac)) { 
 
       $r = 255;
       $g = 255;
@@ -56,7 +59,9 @@ trait AmpleTraits {
 	$r -= $f;
       }
 
-      $ret .= "<script>document.getElementById('".$hid.$mid."').style.backgroundColor='#".dechex($r).dechex($g)."0080';</script>";
+      if($rating != 0 && ($rating != (int)$rating)) {
+        $ret .= "<script>document.getElementById('".$hid.$mid."').style.backgroundColor='#".dechex($r).dechex($g)."0080';</script>";
+      }
     }
 
     return $ret;
