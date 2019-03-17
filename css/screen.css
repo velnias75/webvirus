@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -663,3 +663,21 @@ td.page_nr.page_active {
   margin-right: 0.25em;
   border-radius: 100%;
 }
+
+.cover_top_div {
+  position: fixed;
+  width: var(--layout-lr-width);
+  z-index:0;
+}
+
+.cover_top {
+  height: var(--top-height);
+  box-shadow: 2px 2px 4px #000000;
+}
+
+@media screen and (max-width: 1281px) {
+  .cover_top {
+    display: none;
+  }
+}
+

@@ -48,6 +48,11 @@ $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
 ?>
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="middle" align="center" colspan="3">
+    <?php
+      if(!(empty($og_image) || MoviesBase::isMobile())) {
+        echo "<div class=\"cover_top_div\"><img class=\"cover_top\" src=\"omdb.php?cover-oid=".$og_image."\"></div>";
+      }
+    ?>
     <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>" style="white-space: nowrap;">
       <?= $overallAvgRating; ?>Heikos Schrott- &amp; Rentnerfilme</a></h1>
     <h3><span class="red_text">&#9995;</span>&nbsp;Die&nbsp;Webvirenversion&nbsp;<span class="red_text">&#9995;</span></h3>
