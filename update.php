@@ -86,7 +86,7 @@ if(MySQLBase::instance()->update_allowed()) {
 
 }
 
-header("Location: ".dirname($_SERVER['REQUEST_URI'])."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
+header("Location: ".MySQLBase::getRequestURI()."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

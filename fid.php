@@ -18,6 +18,8 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require 'classes/mysql_base.php';
+
 session_start();
 
 if(isset($_SESSION['ui']) && !isset($_SESSION['error'])) {
@@ -26,10 +28,10 @@ if(isset($_SESSION['ui']) && !isset($_SESSION['error'])) {
   $q .= (isset($_GET['order_by']) ? "&order_by=".$_GET['order_by'] : "");
 
   session_write_close();
-  header("Location: ".dirname($_SERVER['REQUEST_URI'])."/?".(empty($_SESSION['ui']['fid']) ? "" : $q));
+  header("Location: ".MySQLBase::getRequestURI()."/?".(empty($_SESSION['ui']['fid']) ? "" : $q));
 
 } else {
-  header("Location: ".dirname($_SERVER['REQUEST_URI'])."/");
+  header("Location: ".MySQLBase::getRequestURI()."/");
 }
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;

@@ -63,7 +63,7 @@ final class PDFBase extends FPDF {
     $this->SetY(-15);
     $this->SetFont('Arial', 'I', 6);
     $this->Cell(0, 10, "Dokument erstellt ".strftime("am %d.%m.%Y um %H:%M:%S")." via http://".$_SERVER['SERVER_NAME'].
-    dirname($_SERVER['REQUEST_URI'])."/", "T", 0, "L", false,
+      MySQLBase::getRequestURI()."/", "T", 0, "L", false,
     "http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
     $this->SetFont('Courier', '', 10);
     $this->SetX($lm);

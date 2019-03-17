@@ -191,14 +191,19 @@ final class MySQLBase {
       $_SESSION['ui'] = $ui;
 
       if($update) {
-	setcookie('wvpltok', MySQLBase::instance()->updatePLSet($ui['id']), time()+60*60*24*365, dirname($_SERVER['REQUEST_URI'])."/");
+	setcookie('wvpltok', MySQLBase::instance()->updatePLSet($ui['id']), time()+60*60*24*365, MySQLBase::getRequestURI()."/");
       }
 
       if(!empty($ui['fid']) && !$ui['auto_login']) {
-	header("Location: ".dirname($_SERVER['REQUEST_URI'])."/fid.php");
+	header("Location: ".$this->getRequestURI()."/fid.php");
 	die;
       }
     }
+  }
+
+  public static function getRequestURI() {
+    $dname = dirname($_SERVER['REQUEST_URI']);
+    return ($dname != "/" ? $dname : "");
   }
 
   public function getOMDBId($disc = null) {

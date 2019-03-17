@@ -166,9 +166,9 @@ if(isset($_GET['cover-oid'])) {
 } else if(isset($_GET['id']) && isset($_SESSION['ui'])) {
   header("Location: https://www.omdb.org/movie/".$_GET['id']);
 } else if(isset($_GET['q'])) {
-  header("Location: ".MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/?".urldecode($_GET['q']));
+  header("Location: ".MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].MySQLBase::getRequestURI()."/?".urldecode($_GET['q']));
 } else {
-  header("Location: ".MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].dirname($_SERVER['REQUEST_URI'])."/");
+  header("Location: ".MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].MySQLBase::getRequestURI()."/");
 }
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;

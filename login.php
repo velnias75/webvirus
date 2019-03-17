@@ -47,16 +47,14 @@ if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
 
       if(isset($_COOKIE['wvpltok'])) {
 	MySQLBase::instance()->deletePLSet(substr($_COOKIE['wvpltok'], 32));
-	setcookie('wvpltok', '', time() - 3600, dirname($_SERVER['REQUEST_URI'])."/");
+	setcookie('wvpltok', '', time() - 3600, MySQLBase::getRequestURI()."/");
       }
 
       session_write_close();
     }
 }
 
-$dname = dirname($_SERVER['REQUEST_URI']);
-
-header("Location: ".($dname != "/" ? $dname : "")."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
+header("Location: ".MySQLBase::getRequestURI()."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

@@ -39,7 +39,7 @@ final class OverallAvgRating {
   }
 
   public function getOverallAvgRating() {
-    return $this->ample($this->overallAvgRating, -1, "idx_oa", true);
+    return $this->ample($this->overallAvgRating, -1, "idx_ova", true, true);
   }
 }
 
