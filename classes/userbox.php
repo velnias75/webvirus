@@ -45,13 +45,13 @@ final class UserBox extends CatNavTable implements IFormable {
 
   public function hidden() {
 
-    if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) {
+    //if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) { die;
       return array(
 	'q' => urlencode($_SERVER['QUERY_STRING'])
 	);
-    } else {
+    /*} else {
       return array();
-    }
+    }*/
   }
 
   public function method() {
@@ -93,9 +93,9 @@ final class UserBox extends CatNavTable implements IFormable {
       "<a id=\"remember_button\" class=\"button\" title=\"Setzt ALLE Filter zur&uuml;ck\" href=\"".
       $this->m->noFilterQueryString()."\">Alle Filter l&ouml;schen</a>"))));
       $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
-      "<a id=\"remember_button\" class=\"button\" ".
-      "title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
-      (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a>"))));
+        "<a id=\"remember_button\" class=\"button\" ".
+        "title=\"Merkt sich das aktuelle Ergebnis im Nr-Filter und setzt die anderen Filter zur&uuml;ck\" href=\"fid.php?".
+          (isset($_GET['order_by']) ? "order_by=".$_GET['order_by'] : "")."\">Resultat merken</a>"))));
 
       if(isset($_SESSION['authd']) && $_SESSION['authd']) {
 
@@ -119,6 +119,12 @@ final class UserBox extends CatNavTable implements IFormable {
 	$this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS,
 	"<input class=\"button\" type=\"submit\" name=\"btn[create]\" value=\"Anlegen\">"))));
       }
+    }
+
+    if(isset($_GET['err'])) {
+      $this->addRow(new Row(array(), array(new Cell(UserBox::$ALIGN_NOWRAP_ATTRS, "<hr>"))));
+      $this->addRow(new Row(array(), array(new Cell(array(),
+        "<span class=\"red_text\">".htmlentities($_GET['err'], ENT_SUBSTITUTE, "utf-8")."</span>"))));
     }
 
     return parent::render();

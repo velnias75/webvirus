@@ -19,7 +19,6 @@
  */
 
 require 'classes/mysql_base.php';
-// require 'classes/tracker.php';
 
 session_start();
 
@@ -27,19 +26,28 @@ if(isset($_POST['btn']) && isset($_POST['btn']['login']) && isset($_POST['login'
     MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->login($_POST['login'], $_POST['pass']),
     isset($_POST['pl']));
     $_SESSION['authd'] = true;
-    //   (new Tracker())->track("LOGIN of ".$_POST['login']);
   }
 
 if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
 
   if(isset($_POST['btn']['create']) && $_SESSION['ui']['admin'] && isset($_POST['display']) &&
     isset($_POST['login_new']) && isset($_POST['pass_new'])) {
-      MySQLBase::instance()->new_user($_POST['display'], $_POST['login_new'], $_POST['pass_new']);
+      try {
+	MySQLBase::instance()->new_user($_POST['display'], $_POST['login_new'], $_POST['pass_new']);
+      } catch(ErrorException $e) {
+        $err = "Benutzer \"".$_POST['display']."\" (".$_POST['login_new'].") konnte nicht angelegt werden.";
+	error_log($e->getMessage());
+      }
     } else if(isset($_POST['btn']['chg'])) {
-      MySQLBase::instance()->chg_pass($_SESSION['ui']['id'], $_POST['pass_chg']);
+      try {
+        MySQLBase::instance()->chg_pass($_SESSION['ui']['id'], $_POST['pass_chg']);
+      } catch(ErrorException $e) {
+        $err = "Passwort konnte nicht geändert werden.";
+	error_log($e->getMessage());
+      }
     } else if(isset($_POST['btn']['logout'])) {
 
-      //     (new Tracker())->track("LOGOUT of ".$_SESSION['ui']['login']);
+      $err = "Benutzer \"".$_SESSION['ui']['display_name']."\" ist nun ausgeloggt.";
 
       unset($_SESSION['error']);
       unset($_SESSION['ui']);
@@ -54,7 +62,10 @@ if(isset($_POST['btn']) && isset($_SESSION['ui'])) {
     }
 }
 
-header("Location: ".MySQLBase::getRequestURI()."/".(isset($_POST['q']) ? "?".urldecode($_POST['q']) : ""), true, 302);
+$header = "Location: ".MySQLBase::getRequestURI()."/".(!empty($err) ? "?err=".urlencode($err) : "").
+  (isset($_POST['q']) && (!isset($_POST['btn']['logout'])) ? (!empty($err) ? "&" : "?").urldecode($_POST['q']) : "");
+
+header($header, true, 302);
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

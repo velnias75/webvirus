@@ -107,18 +107,20 @@ final class MySQLBase {
   }
 
   public function chg_pass($id, $pass) {
-    $this->mysqli->query("UPDATE users SET pass=HEX(AES_ENCRYPT('".
-    $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
-    $this->mysqli->real_escape_string($this->secret)."', 512)))) WHERE id=".$id);
+    if(!$this->mysqli->query("UPDATE users SET pass=HEX(AES_ENCRYPT('".
+      $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
+      $this->mysqli->real_escape_string($this->secret)."', 512)))) WHERE id=".$id)) {
+        throw new ErrorException($this->mysqli->error);
+    }
   }
 
   public function new_user($display, $login, $pass) {
 
-    $this->mysqli->query("INSERT INTO users (login, pass, display_name) VALUES ('".
-    $this->mysqli->real_escape_string($login)."', HEX(AES_ENCRYPT('".
-    $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
-    $this->mysqli->real_escape_string($this->secret)."', 512)))), '".
-    $this->mysqli->real_escape_string($display)."')");
+    if(!$this->mysqli->query("INSERT INTO users (login, pass, display_name) VALUES ('".
+      $this->mysqli->real_escape_string($login)."', HEX(AES_ENCRYPT('".
+      $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
+      $this->mysqli->real_escape_string($this->secret)."', 512)))), '".
+      $this->mysqli->real_escape_string($display)."')")) throw new ErrorException($this->mysqli->error);
   }
 
   public function plogin($uid, $tok) {
