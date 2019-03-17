@@ -47,7 +47,7 @@ final class UserBox extends CatNavTable implements IFormable {
 
     //if(!is_null($this->ui) && !isset($_SESSION['error']) && $this->ui['admin'] && MySQLBase::instance()->update_allowed()) { die;
       return array(
-	'q' => urlencode($_SERVER['QUERY_STRING'])
+	'q' => urlencode(preg_replace('/err=[^\\\\&\\\\?]*/', "", $_SERVER['QUERY_STRING']))
 	);
     /*} else {
       return array();
