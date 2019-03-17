@@ -64,11 +64,11 @@ final class LatestDisc extends CatNavTable {
     $newdvd = (($GLOBALS['dblastvisit'] != null && $GLOBALS['dblastvisit'] < $this->created) ||
     (isset($_COOKIE["dbnewdvd"]) && $_COOKIE["dbnewdvd"])) ? array("<font color=\"red\">", "</font>".
     (isset($_SESSION['display_ldnot']) && $_SESSION['display_ldnot'] ? "<script>".
-    "Notification.requestPermission().then(function(result) {".
-    "if(result == 'granted') {".
-    "var notification = new Notification('Heikos Schrott- & Rentnerfilme', { body: 'Es gibt eine neue DVD: ".$row['name']."', icon: 'img/favicon.ico' });".
-    "window.setTimeout(notification.close.bind(notification), 10000);".
-    "}});</script>" : "")) : array("", "");
+      "Notification.requestPermission().then(function(result) {".
+      "if(result == 'granted') {".
+        "var notification = new Notification('Heikos Schrott- & Rentnerfilme', { body: 'Es gibt eine neue DVD: ".$row['name']."', icon: 'img/favicon.ico' });".
+        "window.setTimeout(notification.close.bind(notification), 10000);".
+      "}});</script>" : "")) : array("", "");
 
     if(isset($_COOKIE["dbnewdvd"]) && $_COOKIE["dbnewdvd"]) $_SESSION['display_ldnot'] = false;
 
@@ -76,10 +76,16 @@ final class LatestDisc extends CatNavTable {
       setcookie("dbnewdvd", true, time()+60*60*24);
     }
 
-    $this->addRow(new Row(array(), array(new Cell(array('align' => "left", 'nowrap' => null),
-    "<ul class=\"cat_nav\"><li>".$newdvd[0]."<a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
-    htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").
-    ")".$newdvd[1]."</li></ul>"))));
+    if($this->result->num_rows) {
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "left", 'nowrap' => null),
+        "<ul class=\"cat_nav\"><li>".$newdvd[0]."<a class=\"cat_nav\" href=\"".$this->movies->discQueryString($row['id'])."\">".
+        htmlentities($row['name'], ENT_SUBSTITUTE, "utf-8")."</a>&nbsp;(".htmlentities($row['df'], ENT_SUBSTITUTE, "utf-8").
+        ")".$newdvd[1]."</li></ul>"))));
+    } else {
+      $this->addRow(new Row(array(), array(new Cell(array('align' => "left", 'nowrap' => null),
+        "<ul><li>Es gibt noch keine DVDs<br/>in dieser Datenbank.</li></ul>"))));
+    }
+
     if($GLOBALS['dblastvisit'] != null ) $this->addRow(new Row(array(), array(new Cell(array('align' => "center", 'nowrap' => null),
       "<small><b>Mein letzter Besuch:&nbsp;".strftime("%d.%m.%Y", $GLOBALS['dblastvisit'])."</b></small>"))));
 
