@@ -23,18 +23,20 @@ require 'classes/movies.php';
 
 session_start();
 
-if(empty($_GET)) {
-  if(isset($_COOKIE['query_mem'])) {
-    header("Location: ".$_SERVER['PATH_INFO']."?".$_COOKIE['query_mem'], FALSE);
-  }
-} else {
-  setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + (5 * 365 * 24 * 60 * 60));
-}
-
 if(isset($_COOKIE['wvpltok'])) {
   MySQLBase::instance()->setLoggedInSession(MySQLBase::instance()->
   plogin(substr($_COOKIE['wvpltok'], 32, 8), substr($_COOKIE['wvpltok'], 0, 32)),
   isset($_SESSION['ui']) && $_SESSION['ui']['auto_login']);
+}
+
+if(isset($_SESSION['ui'])) {
+  if(empty($_GET)) {
+    if(isset($_COOKIE['query_mem'])) {
+      header("Location: ".$_SERVER['PATH_INFO']."?".$_COOKIE['query_mem'], FALSE);
+    }
+  } else {
+    setcookie("query_mem", $_SERVER['QUERY_STRING'], time() + (5 * 365 * 24 * 60 * 60));
+  }
 }
 
 $GLOBALS['dblastvisit'] = isset($_COOKIE["dblastvisit"]) ? $_COOKIE["dblastvisit"] : null;
@@ -54,11 +56,19 @@ if(isset($_GET['filter_disc'])) {
   try {
     $og_image = MySQLBase::instance()->getOMDBId($_GET['filter_disc']);
   } catch(UnexpectedValueException $e) {
-    $og_image = MySQLBase::instance()->getOMDBId();
+    try {
+      $og_image = MySQLBase::instance()->getOMDBId();
+    } catch(UnexpectedValueException $e) {
+      $og_image = null;
+    }
   }
 
 } else {
-  $og_image = MySQLBase::instance()->getOMDBId();
+  try {
+    $og_image = MySQLBase::instance()->getOMDBId();
+  } catch(UnexpectedValueException $e) {
+    $og_image = null;
+  }
 }
 
 ?>
@@ -77,8 +87,12 @@ if(isset($_GET['filter_disc'])) {
 <meta name="twitter:site" content="@Velnias75">
 <meta name="og:title" content="Heikos Schrott- &amp; Rentnerfilme">
 <meta property="og:description" content="Hirnlose Ansammlung an Schrott- &amp; Rentnerfilmen bar jeglichen Niveaus">
-<meta property="og:image" content="https://rangun.de/db/omdb.php?cover-oid=<?= $og_image ?>">
-<meta property="twitter:image:alt" content="RTL2 bietet hochwertigere Inhalte!">
+<?php 
+  if(!empty($og_image)) {
+    echo "<meta property=\"og:image\" content=\"https://rangun.de/db/omdb.php?cover-oid=".$og_image."\">";
+    echo "<meta property=\"twitter:image:alt\" content=\"RTL2 bietet hochwertigere Inhalte!\">";
+  }
+?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
 <link rel="stylesheet" href="css/master.php?t=<?= time(); ?>" title="Hirnloser Stil" type="text/css" media="screen">
 <link href="css/print.css?t=<?= time(); ?>" rel="alternate stylesheet" title="Druckversion" type="text/css" media="screen">
