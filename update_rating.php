@@ -18,10 +18,10 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+session_start();
+
 require 'classes/mysql_base.php';
 require 'classes/tracker.php';
-
-session_start();
 
 if(isset($_SESSION['ui']) && !isset($_SESSION['ui']['error']) && isset($_GET['uid']) && isset($_GET['mid']) && isset($_GET['rating'])) {
   MySQLBase::instance()->update_rating($_GET['uid'], $_GET['mid'], $_GET['rating']);
