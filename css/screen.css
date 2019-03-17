@@ -665,7 +665,7 @@ td.page_nr.page_active {
 }
 
 .cover_top_div {
-  position: fixed;
+  position: absolute;
   width: var(--layout-lr-width);
   z-index:0;
 }
