@@ -46,6 +46,9 @@ final class MySQLBase {
   private $update = false;
   private $secure = false;
 
+  private $server = null;
+  private $db = null;
+
   private function __construct() {
 
     require 'db_cred.php';
@@ -62,6 +65,8 @@ final class MySQLBase {
     $this->secret = $secret;
     $this->upload = !isset($update) || $update == true;
     $this->secure = isset($secure) || $secure == true;
+    $this->server = $server;
+    $this->db = $db;
   }
 
   function __destruct() {
@@ -83,6 +88,14 @@ final class MySQLBase {
 
   public function proxy() {
     return $this->proxy;
+  }
+
+  public function server() {
+    return $this->server;
+  }
+
+  public function db() {
+    return $this->db;
   }
 
   public function update_fid($id, $fid) {
@@ -211,20 +224,25 @@ final class MySQLBase {
   public function getOMDBId($disc = null) {
 
     $result = $this->mysqli->query("SELECT omdb_id FROM disc LEFT JOIN movies ON movies.disc = disc.ID AND omdb_id IS NOT NULL ".
-    "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id".
-    (is_null($disc) ? "" : " WHERE disc.ID = ".$disc).
-    " GROUP BY movies.ID ORDER BY movies.disc DESC , AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
+      "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id".
+      (is_null($disc) ? "" : " WHERE disc.ID = ".$disc).
+      " GROUP BY movies.ID ORDER BY movies.disc DESC , AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
 
-    $row = $result->fetch_assoc();
+    if($result || $result->num_rows) {
+      $row = $result->fetch_assoc();
 
-    if(empty($row['omdb_id'])) {
+      if(empty($row['omdb_id'])) {
+        $result->free_result();
+        throw new UnexpectedValueException();
+      }
+
       $result->free_result();
-      throw new UnexpectedValueException();
-    }
 
-    $result->free_result();
+      return $row['omdb_id'];
 
-    return $row['omdb_id'];
+    } else error_log($this->mysqli->error);
+
+    throw new UnexpectedValueException();
   }
 
   public function getOverallAvgRating() {
