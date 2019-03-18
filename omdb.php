@@ -158,9 +158,9 @@ if(isset($_GET['cover-oid'])) {
     imagedestroy($im);
   }
 
-} else if(isset($_GET['mid']) && isset($_GET['oid']) && isset($_GET['url']) && isset($_SESSION['ui'])) {
+} else if(isset($_GET['mid']) && isset($_GET['oid']) && isset($_SESSION['ui'])) {
   if($_SESSION['ui']['admin']) MySQLBase::instance()->update_omdb_id($_GET['mid'], $_GET['oid']);
-  header("Location: ".urldecode($_GET['url']));
+  if(isset($_GET['url'])) header("Location: ".urldecode($_GET['url']));
 } else if(isset($_GET['search']) && isset($_SESSION['ui'])) {
   header("Location: http://www.omdb.org/search/movies/?search[text]=".$_GET['search']);
 } else if(isset($_GET['id']) && isset($_SESSION['ui'])) {

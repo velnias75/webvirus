@@ -25,14 +25,16 @@ final class UserActions {
   use AmpleTraits;
 
   private $rating = -1;
-  private $avg = -1;
-  private $ui = null;
-  private $id = -1;
+  private $omdb   = null;
+  private $avg    = -1;
+  private $ui     = null;
+  private $id     = -1;
 
-  function __construct($ui, $id, $rating, $avg) {
+  function __construct($ui, $id, $rating, $avg, $omdb) {
     $this->ui     = $ui;
     $this->id     = $id;
     $this->avg    = is_null($avg) ? -1 : $avg;
+    $this->omdb   = $omdb;
     $this->rating = $rating;
   }
 
@@ -66,19 +68,33 @@ final class UserActions {
 
     return "<center><br /><b>Hirnlose Bewertung:</b><table>".
     ($this->avg != -1 ? "<tr><td align=\"center\"><small>(".$this->ample($this->avg, $this->id, "ua_ample_mid")."durchschn. Bewertung)</small></td></tr>" : "").
-    "<tr><td><input id=\"ampleoff_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0]." disabled>".
-    "<label for=\"ampleoff_".$this->id."\"><div class=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
-    "<tr><td><input id=\"amplegreen_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1]." disabled>".
-    "<label for=\"amplegreen_".$this->id."\"><div class=\"ample_green\">&nbsp;</div>gut</label></td></tr>".
-    "<tr><td><input id=\"ampleyellow_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2]." disabled>".
-    "<label for=\"ampleyellow_".$this->id."\"><div class=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
-    "<tr><td><input id=\"amplered_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3]." disabled>".
-    "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
-    "<tr><td>&nbsp;</td></tr>".
-    "<tr><td align=\"center\"><a class=\"button\" href=\"#close\" onclick=\"enableUserActions(".$this->id.", false)\">Fertig</a></td></tr>".
-    "</table></center><script>".$this->script()."</script>";
+      "<tr><td><input id=\"ampleoff_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"-1\" ".$rcheck[0]." disabled>".
+      "<label for=\"ampleoff_".$this->id."\"><div class=\"ample_off\">&nbsp;</div>unbewertet/ungesehen</label></td></tr>".
+      "<tr><td><input id=\"amplegreen_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"2\" ".$rcheck[1]." disabled>".
+      "<label for=\"amplegreen_".$this->id."\"><div class=\"ample_green\">&nbsp;</div>gut</label></td></tr>".
+      "<tr><td><input id=\"ampleyellow_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"1\" ".$rcheck[2]." disabled>".
+      "<label for=\"ampleyellow_".$this->id."\"><div class=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
+      "<tr><td><input id=\"amplered_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3]." disabled>".
+      "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
+      ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".
+        "<tr><td>OMDB-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
+        "oninput=\"document.getElementById('id_ua_cover_".$this->id."').setAttribute('src', 'omdb.php?cover-oid='+event.target.value); ".
+        "var oReq_".$this->id." = new XMLHttpRequest(); ".
+        "oReq_".$this->id.".addEventListener('loadend', function(e) { ".
+          "if(oReq_".$this->id.".status != 200) {".
+            "alert('Aktualisierung der OMDB-Id fehlgeschlagen.\\nGrund: ' + oReq_".$this->id.".status + ' ' + oReq_".$this->id.".statusText);".
+          "}".
+        "event.target.disabled=false; }); event.target.disabled=true;".
+	"oReq_".$this->id.".open('GET', 'omdb.php?mid=".$this->id."&oid='+event.target.value+'');".
+	"oReq_".$this->id.".send();".
+        "\"".(!empty($this->omdb) ? "value=\"".$this->omdb."\"" : "")."></td></tr>".
+        "<tr><td>&nbsp;</td></tr><tr><td><center><img id=\"id_ua_cover_".$this->id."\" class=\"ua_cover\" src=\"".
+        (empty($this->omdb) ? "img/nocover.png" : "omdb.php?cover-oid=".$this->omdb)."\"></center></td></tr>" : "").
+      "<tr><td>&nbsp;</td></tr>".
+      "<tr><td align=\"center\"><a class=\"button\" href=\"#close\" onclick=\"enableUserActions(".$this->id.", false)\">Fertig</a></td></tr>".
+      "</table></center><script>".$this->script()."</script>";
   }
 }
 
-// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: true; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>

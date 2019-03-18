@@ -672,7 +672,12 @@ td.page_nr.page_active {
 
 .cover_top {
   height: var(--top-height);
-  box-shadow: 2px 2px 4px #000000;
+  box-shadow: 4px 4px 4px #0009;
+}
+
+.ua_cover {
+  box-shadow: 2px 2px black;
+  width: 50%;
 }
 
 @media screen and (max-width: 1281px) {
