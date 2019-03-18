@@ -23,12 +23,19 @@ sql_insert() {
   DURAT=`echo "$MINFO" | cut -f2 -d\|`;
   BNAME=`basename "$1"`;
   printf "'%q'|%q|'%q'" "$TITLE" "$DURAT" "$BNAME" | gawk -F\| '{ printf "INSERT INTO movies (title,duration,filename,disc) VALUES(%s,%d,%s,@lid);\n", $1, $2/1000, $3; }';
+  AUDIO=`mediainfo --Language=raw --Inform="Audio;%Language/String3%" "$1" | sed 's/deu/ger/'`; 
+  if [ -n "$AUDIO" ]; then 
+    echo "SELECT LAST_INSERT_ID() INTO @alid;"
+    echo $AUDIO | gawk '{ for(i=1; i<length; i+=3) printf "INSERT INTO movie_languages (movie_id,lang_id) VALUES (@alid,\x27%s\x27);\n", substr($0,i,3); };'
+  fi
 }
 
 export -f sql_insert
 
 printf -v DISC "%q" "$1"
 
+echo "START TRANSACTION;"
 echo "INSERT INTO disc (name,vdvd,regular) VALUES('$DISC',0,1);"
-echo "SELECT @lid := LAST_INSERT_ID();"
-find -L "$2" -type f -execdir /bin/bash -c 'sql_insert "$1"' bash {} \;
+echo "SELECT LAST_INSERT_ID() INTO @lid;"
+find -L "$2" -name '*.mp4' -type f -execdir /bin/bash -c 'sql_insert "$1"' bash {} \;
+echo "COMMIT;"
