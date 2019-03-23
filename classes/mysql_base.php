@@ -68,7 +68,7 @@ final class MySQLBase {
     $this->proxy  = isset($proxy) ? $proxy : null;
     $this->secret = $secret;
     $this->upload = !isset($update) || $update == true;
-    $this->secure = isset($secure) || $secure == true;
+    $this->secure = isset($secure) ? $secure : false;
     $this->server = $server;
     $this->db = $db;
   }

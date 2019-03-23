@@ -70,46 +70,48 @@ if(isset($_GET['cover-oid'])) {
   libxml_use_internal_errors($libxml_previous_state);
   curl_close($ch);
 
-  $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
-  curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-  //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
+  if(!empty($doc->getElementById("left_image"))) {
+    $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
+    curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
 
-  if(!is_null($proxy)) {
-    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-    curl_setopt($ch, CURLOPT_PROXY, $proxy);
-  }
-
-  curl_setopt($ch, CURLOPT_HEADERFUNCTION,
-  function($curl, $header) use (&$headers) {
-
-    $len = strlen($header);
-    $header = explode(':', $header, 2);
-
-    if(count($header) < 2) return $len;
-
-    $name = strtolower(trim($header[0]));
-
-    if(!array_key_exists($name, $headers)) {
-      $headers[$name] = [trim($header[1])];
-    } else {
-      $headers[$name][] = trim($header[1]);
+    if(!is_null($proxy)) {
+      curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+      curl_setopt($ch, CURLOPT_PROXY, $proxy);
     }
 
-    return $len;
-  }
-  );
+    curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+    function($curl, $header) use (&$headers) {
 
-  $pic = curl_exec($ch);
+      $len = strlen($header);
+      $header = explode(':', $header, 2);
 
-  if(curl_errno($ch)) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
+      if(count($header) < 2) return $len;
 
-  curl_close($ch);
+      $name = strtolower(trim($header[0]));
 
-  if(md5($pic) == "106f2c74718ffe31354f44a40cc2f4a8") {
+      if(!array_key_exists($name, $headers)) {
+        $headers[$name] = [trim($header[1])];
+      } else {
+        $headers[$name][] = trim($header[1]);
+      }
+
+      return $len;
+    }
+    );
+
+    $pic = curl_exec($ch);
+
+    if(curl_errno($ch)) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
+
+    curl_close($ch);
+  } else $pic = null;
+
+  if(is_null($pic) || md5($pic) == "106f2c74718ffe31354f44a40cc2f4a8") {
     //$filename = "img/nocover.png";
     //$handle = fopen($filename, "rb");
     //$pic = fread($handle, filesize($filename));
