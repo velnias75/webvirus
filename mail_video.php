@@ -43,10 +43,10 @@ $mail = <<<'EOD'
     </style>
   </head>
   <body style="font-family:sans-serif;background-color:#eeeeee;">
-    <p>Guten Morgen,<br /><br />in einer hirnlosen Aktion habe ich &ndash; %RNAME% &ndash;,<br />unter Anwendung meiner schwachsinnigen Erkenntnisse meiner %RAND%-jährigen Dissertation in Informatik,<br />die <a href="%URL%/index.php">DB</a> angewiesen, Dir folgenden Film per eMail zu senden:</p>
+    <p>Guten Morgen,<br /><br />in einer hirnlosen Aktion habe ich &ndash; %RNAME% &ndash;,<br />unter Anwendung meiner schwachsinnigen Erkenntnisse meiner %RAND%-jährigen Dissertation in Informatik,<br />die <a href="%URL%/index.php">DB</a> angewiesen, Dir folgenden Schrott- bzw. Rentnerfilm per eMail zu senden:</p>
     <table border="0">
       <tr><td>
-        <img style="box-shadow:3px 3px 3px #c06ee4;" alt="Cover von &quot;Film&quot;" src="data:image/png;base64,%IMAGE%" />
+        <img style="box-shadow:3px 3px 3px #c06ee4;" alt="Cover von &quot;Schrott- bzw. Rentnerfilm&quot;" src="data:image/png;base64,%IMAGE%" />
       </td>
       <td style="vertical-align:top;padding-left:10px;padding-top:10px;">
         <dl style="line-height:1.4em;">
