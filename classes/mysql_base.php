@@ -160,7 +160,7 @@ final class MySQLBase {
   public function login($login, $pass, $auto = false) {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-    $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, last_login, style, fid, ".
+    $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, email, last_login, style, fid, ".
     "pagesize, oauth_access_token, oauth_access_token_secret, consumer_key, consumer_secret ".
     "FROM users WHERE login = '".$login."' LIMIT 1");
 
@@ -175,6 +175,7 @@ final class MySQLBase {
 	'cpass' => $row['cpass'],
 	'display_name' => $row['display_name'],
 	'admin' => boolval($row['admin']),
+        'email' => $row['email'],
 	'last_login' => $row['last_login'],
 	'auto_login' => $auto,
 	'style' => $row['style'],

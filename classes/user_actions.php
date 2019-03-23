@@ -76,7 +76,7 @@ final class UserActions {
         "<label for=\"ampleyellow_".$this->id."\"><div class=\"ample_yellow\">&nbsp;</div>okay</label></td></tr>".
       "<tr><td><input id=\"amplered_".$this->id."\" type=\"radio\" name=\"ample_".$this->id."\" value=\"0\" ".$rcheck[3]." disabled>".
         "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
-      "<tr><td>&nbsp;</td></tr>".
+      (empty($this->ui['email']) ? "" : "<tr><td>&nbsp;</td></tr>".
       "<tr><td><label for=\"ua_mailto_".$this->id."\">Video als eMail versenden:</label><br />".
         "<span style=\"width:100%;\"><input id=\"ua_mailto_".$this->id."\" type=\"text\" name=\"ua_mailto_".$this->id."\" disabled>".
         "<a class=\"button\" onclick=\"".
@@ -87,7 +87,7 @@ final class UserActions {
             "}});".
             "oReq_mail_".$this->id.".open('GET', 'mail_video.php?mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+'');".
             "oReq_mail_".$this->id.".send();".
-        "\">Absenden</a></span></td></tr>".
+        "\">Absenden</a></span></td></tr>").
       ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".
         "<tr><td>OMDB-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
         "oninput=\"document.getElementById('id_ua_cover_".$this->id."').setAttribute('src', 'omdb.php?cover-oid='+event.target.value); ".
