@@ -81,7 +81,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-$pic = base64_encode(curl_exec($ch));
+$pic = chunk_split(base64_encode(curl_exec($ch)));
 curl_close($ch);
 
 $mail = preg_replace('/%RATING%/', !is_null($rows['avg_rating']) ? $r->getRating($rows['avg_rating']) : "unbewertet", $mail);
@@ -96,13 +96,14 @@ $mail = preg_replace('/%DISC%/', htmlentities($rows['disc']), $mail);
 $mail = preg_replace('/%LINGOS%/', htmlentities($rows['lingos']), $mail);
 $mail = preg_replace('/%RAND%/', mt_rand(5, 30), $mail);
 
-$header = "From: Heikos Schrott- & Rentnerfilme <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
+$header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
   "" : ("Bcc: ".$_SESSION['ui']['email']."\n".
-  "Reply-To: ".$_SESSION['ui']['display_name']." <".$_SESSION['ui']['email'].">\n")).
+  "Reply-To: =?utf-8?B?".base64_encode($_SESSION['ui']['display_name'])."?= <".$_SESSION['ui']['email'].">\n")).
   "Organization: Informatiker-Sucht-Hilfe\n".
   "X-Mailer: hirnloser-db-webvirus-mailer 1.0\n".
+  "MIME-Version: 1.0\n".
   "Content-Type: text/html; charset=utf-8"; 
 
-mail($_GET['mailto'], "Schrott- bzw. Rentnerfilm: #".$rows['mid']." - ".$rows['title'], $mail, $header);
+mail($_GET['mailto'], "=?utf-8?B?".base64_encode("\xF0\x9F\x98\x92 Schrott- bzw. Rentnerfilm: #".$rows['mid']." - ".$rows['title'])."?=", $mail, $header);
 
 ?>
