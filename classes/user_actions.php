@@ -42,7 +42,8 @@ final class UserActions {
     return "function enableUserActions(id, enabled) {".
              "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
-             "$('input[name=ua_mailto_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); $(this).val(localStorage.lastEMail); });".
+             "$('input[name=ua_mailto_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); ".
+             self::loadLastEMail()." $(this).val(localStorage.getItem('lastUsedEMail'));});".
              "return false;".
            "}\n";
   }
@@ -68,9 +69,24 @@ final class UserActions {
     "}";
   }
 
-  private function saveLastEMail($id) {
+  private static function loadLastEMail() {
     return "if(typeof(Storage) !== 'undefined') {".
-      "localStorage.setItem('lastEMail', document.getElementById('ua_mailto_".$id."').value);".
+      "var eMails = new Set(JSON.parse(localStorage.getItem('usedEMails')));".
+      "var opts = '';".
+      "for(let item of eMails) {".
+        "opts += '<option value=\"'+item+'\" />';".
+      "}".
+      "document.getElementById('ua_mail_list_'+id).innerHTML = opts;".
+    "} ";
+  }
+
+  private function saveLastEMail($id) {
+    return "if(typeof(Storage) !== 'undefined') {". 
+      "var eMails = new Set(JSON.parse(localStorage.getItem('usedEMails')));".
+      "var lMail = document.getElementById('ua_mailto_".$id."').value;". 
+      "eMails.add(lMail);".
+      "localStorage.setItem('usedEMails', JSON.stringify(Array.from(eMails)));".
+      "localStorage.setItem('lastUsedEMail', lMail);".
     "} ";
   }
 
@@ -94,12 +110,14 @@ final class UserActions {
       (empty($this->ui['email']) ? "" : "<tr><td>&nbsp;</td></tr>".
       "<tr><td><label for=\"ua_mailto_".$this->id."\">Video als eMail versenden:</label><br />".
         "<span style=\"width:100%;display:inline-flex;\"><input id=\"ua_mailto_".$this->id."\" type=\"email\" multiple=\"true\" name=\"ua_mailto_".
-        $this->id."\" disabled><a class=\"button\" onclick=\"".
+        $this->id."\" list=\"ua_mail_list_".$this->id."\" disabled>".
+        "<datalist id=\"ua_mail_list_".$this->id."\"></datalist>".
+        "<a class=\"button\" onclick=\"".
           "var oReq_mail_".$this->id." = new XMLHttpRequest(); ".
           "oReq_mail_".$this->id.".addEventListener('loadend', function(e) { ".
             "if(oReq_mail_".$this->id.".status != 200) {".
               "alert('Versenden der eMail ist fehlgeschlagen.\\nGrund: ' + oReq_mail_".$this->id.".status + ' ' + oReq_mail_".$this->id.".statusText);".
-            "} ".$this->saveLastEmail($this->id)." });".
+            "} else { ".$this->saveLastEmail($this->id)." }});".
             "oReq_mail_".$this->id.".open('GET', 'mail_video.php?mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+'');".
             "oReq_mail_".$this->id.".send();".
         "\">Absenden</a></span></td></tr>").
