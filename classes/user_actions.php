@@ -38,6 +38,15 @@ final class UserActions {
     $this->rating = $rating;
   }
 
+  public static function enableUserActions() {
+    return "function enableUserActions(id, enabled) {".
+             "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+             "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+             "$('input[name=ua_mailto_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+             "return false;".
+           "}\n";
+  }
+
   private function script() {
     return "var rad_".$this->id." = document.movies.ample_".$this->id.";".
     "var prev_".$this->id." = null;".
@@ -99,7 +108,7 @@ final class UserActions {
         "event.target.disabled=false; }); event.target.disabled=true;".
 	"oReq_omdb_".$this->id.".open('GET', 'omdb.php?mid=".$this->id."&oid='+event.target.value+'');".
 	"oReq_omdb_".$this->id.".send();".
-        "\"".(!empty($this->omdb) ? "value=\"".$this->omdb."\"" : "")."></td></tr>".
+        "\"".(!empty($this->omdb) ? " value=\"".$this->omdb."\"" : "")."></td></tr>".
         "<tr><td>&nbsp;</td></tr><tr><td><center><img id=\"id_ua_cover_".$this->id."\" class=\"ua_cover\" src=\"".
         (empty($this->omdb) ? "img/nocover.png" : "omdb.php?cover-oid=".$this->omdb)."\"></center></td></tr>" : "").
       "<tr><td>&nbsp;</td></tr>".

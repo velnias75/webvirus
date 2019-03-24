@@ -72,7 +72,7 @@ if(isset($_GET['filter_disc'])) {
 }
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -109,12 +109,7 @@ var titles = new Bloodhound({
     }
 });
 
-function enableUserActions(id, enabled) {
-  $('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });
-  $('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });
-  $('input[name=ua_mailto_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });
-  return false;
-}
+<?= UserActions::enableUserActions(); ?>
 
 $(document).ready(function() {
   $('#list_filter_ltitle').typeahead({
