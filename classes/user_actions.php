@@ -78,12 +78,12 @@ final class UserActions {
         "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
       (empty($this->ui['email']) ? "" : "<tr><td>&nbsp;</td></tr>".
       "<tr><td><label for=\"ua_mailto_".$this->id."\">Video als eMail versenden:</label><br />".
-        "<span style=\"width:100%;\"><input id=\"ua_mailto_".$this->id."\" type=\"text\" name=\"ua_mailto_".$this->id."\" disabled>".
+        "<span style=\"width:100%;display:inline-flex;\"><input id=\"ua_mailto_".$this->id."\" type=\"email\" multiple=\"true\" name=\"ua_mailto_".$this->id."\" disabled>".
         "<a class=\"button\" onclick=\"".
           "var oReq_mail_".$this->id." = new XMLHttpRequest(); ".
           "oReq_mail_".$this->id.".addEventListener('loadend', function(e) { ".
             "if(oReq_mail_".$this->id.".status != 200) {".
-              "alert('Versenden der eMail ist fehlgeschlagen.\\nGrund: ' + oReq_".$this->id.".status + ' ' + oReq_mail_".$this->id.".statusText);".
+              "alert('Versenden der eMail ist fehlgeschlagen.\\nGrund: ' + oReq_mail_".$this->id.".status + ' ' + oReq_mail_".$this->id.".statusText);".
             "}});".
             "oReq_mail_".$this->id.".open('GET', 'mail_video.php?mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+'');".
             "oReq_mail_".$this->id.".send();".

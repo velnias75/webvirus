@@ -46,7 +46,7 @@ $mail = <<<'EOD'
     <p>Guten Morgen,<br /><br />in einer hirnlosen Aktion habe ich &ndash; %RNAME% &ndash;,<br />unter Anwendung meiner schwachsinnigen Erkenntnisse meiner %RAND%-jährigen Dissertation in Informatik,<br />die <a href="%URL%/index.php">DB</a> angewiesen, Dir folgenden Schrott- bzw. Rentnerfilm per eMail zu senden:</p>
     <table border="0">
       <tr><td>
-        <img style="box-shadow:3px 3px 3px #c06ee4;" alt="Cover von Schrott- bzw. Rentnerfilm &quot;%TITLE%&quot;" src="data:image/png;base64,%IMAGE%" />
+        <img style="box-shadow:3px 3px 3px #c06ee4;" alt="Cover von Schrott- bzw. Rentnerfilm &quot;%TITLE%&quot;" src="%IMAGE%" />
       </td>
       <td style="vertical-align:top;padding-left:10px;padding-top:10px;">
         <dl style="line-height:1.4em;">
@@ -55,6 +55,7 @@ $mail = <<<'EOD'
           <dt><b>L&auml;nge</b></dt><dd>%DUR%</dd>
           <dt><b>Sprachen(n)</b></dt><dd>%LINGOS%</dd>
           <dt><b>DVD</b></dt><dd><a href="%URL%/disc/%DNR%">%DISC%</a></dd>
+          <dt><b>Kategorie</b></dt><dd>%CAT%</dd>
           <dt><b>Bewertung</b></dt><dd>%RATING%</dd>
         </dl>
       </td></tr>
@@ -64,37 +65,40 @@ $mail = <<<'EOD'
 </html>
 EOD;
 
+if(!isset($_SESSION['ui'])) {
+  http_response_code(401);
+  die;
+}
+
+if(empty($_SESSION['ui']['email'])) {
+  http_response_code(403);
+  die;
+}
+
 $r  = new Rating();
 
-$sql = "SELECT m.ID AS `mid`, d.id AS dnr, m.top250 AS top250 , MAKE_MOVIE_TITLE( `m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`, `m`.`omu` ) ".
-  "AS `title`, duration_string(m.duration) AS dur, IF( `l`.`name` IS NOT NULL, TRIM( GROUP_CONCAT( `l`.`name` ORDER BY `ml`.`lang_id` DESC SEPARATOR ', ' ) ), 'n. V.' ) ".
-  "AS `lingos`, d.name AS disc, AVG(ur.rating) AS avg_rating, m.omdb_id AS oid FROM movies AS m LEFT JOIN disc AS d ON m.disc = d.id LEFT JOIN user_ratings AS ur ".
-  "ON ur.movie_id = m.id LEFT JOIN movie_languages AS ml ON ml.movie_id = m.ID LEFT JOIN languages AS l ON l.id = ml.lang_id LEFT JOIN `episode_series` AS `es` ".
-  "ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` WHERE m.ID = ".$_GET['mid'];
+$sql = "SELECT m.ID AS `mid`, d.id AS dnr, m.top250 AS top250, c.name AS cat, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`,`s`.`name`, `es`.`episode`, ".
+  "`s`.`prepend`, `m`.`omu`) AS `title`, duration_string(m.duration) AS dur, IF(`l`.`name` IS NOT NULL, TRIM(GROUP_CONCAT( `l`.`name` ORDER BY `ml`.`lang_id` ".
+  "DESC SEPARATOR ', ')), 'n. V.') AS `lingos`, d.name AS disc, AVG(ur.rating) AS avg_rating,  m.omdb_id AS oid FROM movies AS m LEFT JOIN disc AS d ".
+  "ON m.disc = d.id LEFT JOIN user_ratings AS ur ON ur.movie_id = m.id LEFT JOIN movie_languages AS ml ON  ml.movie_id = m.ID LEFT JOIN languages AS l ".
+  "ON l.id = ml.lang_id LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
+  "LEFT JOIN categories AS c ON c.ID = m.category WHERE m.ID = ".$_GET['mid'];
 
 $result = MySQLBase::instance()->con()->query($sql);
 $rows   = $result->fetch_assoc();
 
-$ch = curl_init($r->getLink()."/omdb.php?cover-oid=".$rows['oid'].($rows['top250'] ? "&top250=true" : ""));
-curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus-mailer/1.0");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-$pic = chunk_split(base64_encode(curl_exec($ch)));
-curl_close($ch);
-
-$mail = preg_replace('/%RATING%/', !is_null($rows['avg_rating']) ? $r->getRating($rows['avg_rating']) : "unbewertet", $mail);
-$mail = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $mail);
-$mail = preg_replace('/%URL%/', $r->getLink(), $mail);
-$mail = preg_replace('/%IMAGE%/', $pic, $mail);
-$mail = preg_replace('/%MID%/', $rows['mid'], $mail);
-$mail = preg_replace('/%TITLE%/', htmlentities($rows['title']), $mail);
-$mail = preg_replace('/%DUR%/', $rows['dur'], $mail);
-$mail = preg_replace('/%DNR%/', $rows['dnr'], $mail);
-$mail = preg_replace('/%DISC%/', htmlentities($rows['disc']), $mail);
-$mail = preg_replace('/%LINGOS%/', htmlentities($rows['lingos']), $mail);
-$mail = preg_replace('/%RAND%/', mt_rand(5, 30), $mail);
+$mail   = preg_replace('/%RATING%/', !is_null($rows['avg_rating']) ? $r->getRating($rows['avg_rating']) : "unbewertet", $mail);
+$mail   = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $mail);
+$mail   = preg_replace('/%URL%/', $r->getLink(), $mail);
+$mail   = preg_replace('/%IMAGE%/', $r->getLink()."/omdb.php?cover-oid=".$rows['oid'].($rows['top250'] ? "&top250=true" : ""), $mail);
+$mail   = preg_replace('/%MID%/', $rows['mid'], $mail);
+$mail   = preg_replace('/%TITLE%/', htmlentities($rows['title']), $mail);
+$mail   = preg_replace('/%DUR%/', $rows['dur'], $mail);
+$mail   = preg_replace('/%DNR%/', $rows['dnr'], $mail);
+$mail   = preg_replace('/%DISC%/', htmlentities($rows['disc']), $mail);
+$mail   = preg_replace('/%LINGOS%/', htmlentities($rows['lingos']), $mail);
+$mail   = preg_replace('/%RAND%/', mt_rand(5, 30), $mail);
+$mail   = preg_replace('/%CAT%/', htmlentities($rows['cat']), $mail);
 
 $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
   "" : ("Bcc: ".$_SESSION['ui']['email']."\n".
@@ -104,6 +108,9 @@ $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & R
   "MIME-Version: 1.0\n".
   "Content-Type: text/html; charset=utf-8"; 
 
-mail($_GET['mailto'], "=?utf-8?B?".base64_encode("\xF0\x9F\x98\x92 Schrott- bzw. Rentnerfilm: #".$rows['mid']." - ".$rows['title'])."?=", $mail, $header);
+if(!mail($_GET['mailto'], "=?utf-8?B?".base64_encode("\xF0\x9F\x98\x92 Schrott- bzw. Rentnerfilm: #".$rows['mid']." - ".$rows['title'])."?=", $mail, 
+  $header, "-f ".(empty($_SESSION['ui']['email']) ? "heiko@rangun.de" : $_SESSION['ui']['email']))) {
+    http_response_code(503);
+}
 
 ?>
