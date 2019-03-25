@@ -82,7 +82,7 @@ $sql = "SELECT m.ID AS `mid`, d.id AS dnr, m.top250 AS top250, c.name AS cat, MA
   "DESC SEPARATOR ', ')), 'n. V.') AS `lingos`, d.name AS disc, AVG(ur.rating) AS avg_rating,  m.omdb_id AS oid FROM movies AS m LEFT JOIN disc AS d ".
   "ON m.disc = d.id LEFT JOIN user_ratings AS ur ON ur.movie_id = m.id LEFT JOIN movie_languages AS ml ON  ml.movie_id = m.ID LEFT JOIN languages AS l ".
   "ON l.id = ml.lang_id LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
-  "LEFT JOIN categories AS c ON c.ID = m.category WHERE m.ID = ".$_GET['mid'];
+  "LEFT JOIN categories AS c ON c.ID = m.category WHERE m.ID = ".$_POST['mid'];
 
 $result = MySQLBase::instance()->con()->query($sql);
 $rows   = $result->fetch_assoc();
@@ -108,7 +108,7 @@ $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & R
   "MIME-Version: 1.0\n".
   "Content-Type: text/html; charset=utf-8"; 
 
-if(!mail($_GET['mailto'], "=?utf-8?B?".base64_encode("\xF0\x9F\x98\x92 Schrott- bzw. Rentnerfilm: #".$rows['mid']." - ".$rows['title'])."?=", $mail, 
+if(!mail($_POST['mailto'], "=?utf-8?B?".base64_encode("\xF0\x9F\x98\x92 Schrott- bzw. Rentnerfilm: #".$rows['mid']." - ".$rows['title'])."?=", $mail, 
   $header, "-f ".(empty($_SESSION['ui']['email']) ? "heiko@rangun.de" : $_SESSION['ui']['email']))) {
     http_response_code(503);
 }

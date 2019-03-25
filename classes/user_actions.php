@@ -113,13 +113,14 @@ final class UserActions {
         $this->id."\" list=\"ua_mail_list_".$this->id."\" disabled>".
         "<datalist id=\"ua_mail_list_".$this->id."\"></datalist>".
         "<a class=\"button\" onclick=\"".
-          "var oReq_mail_".$this->id." = new XMLHttpRequest(); ".
+          "var oReq_mail_".$this->id." = new XMLHttpRequest();".
           "oReq_mail_".$this->id.".addEventListener('loadend', function(e) { ".
             "if(oReq_mail_".$this->id.".status != 200) {".
               "alert('Versenden der eMail ist fehlgeschlagen.\\nGrund: ' + oReq_mail_".$this->id.".status + ' ' + oReq_mail_".$this->id.".statusText);".
             "} else { ".$this->saveLastEmail($this->id)." }});".
-            "oReq_mail_".$this->id.".open('GET', 'mail_video.php?mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+'');".
-            "oReq_mail_".$this->id.".send();".
+            "oReq_mail_".$this->id.".open('POST', 'mail_video.php', true);".
+            "oReq_mail_".$this->id.".setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');".
+            "oReq_mail_".$this->id.".send('mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+'');".
         "\">Absenden</a></span></td></tr>").
       ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".
         "<tr><td>OMDB-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
@@ -141,5 +142,5 @@ final class UserActions {
   }
 }
 
-// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: true; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>
