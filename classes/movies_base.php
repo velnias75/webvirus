@@ -145,6 +145,10 @@ EOD;
       $this->filters['filter_disc'][0]) $this->filtered = true;
   }
 
+  protected function __destruct() {
+    $this->con->query("DROP TABLE result_table");
+  }
+
   protected final function makeLZID($id) {
     return substr($this->lzs.$id, $this->lz);
   }
@@ -342,7 +346,8 @@ EOD;
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
     // echo "<pre>".$this->getBuiltQuery($q, $filtered_ids)."</pre>\n";
 
-    $r = $this->con->query($this->getBuiltQuery($q, $filtered_ids));
+    $r = $this->con->query("CREATE TEMPORARY TABLE IF NOT EXISTS result_table ENGINE=MYISAM AS (".$this->getBuiltQuery($q, $filtered_ids).")");
+    $r = $this->con->query("SELECT * FROM result_table");
 
     return $r && $r->num_rows ? $r : null;
   }
@@ -420,8 +425,7 @@ EOD;
   }
 
   protected final function mySQLTotalQuery($q = "") {
-    //return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
-    return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM (".$this->getBuiltQuery($q, false).") AS `choice`");
+      return $this->con->query("SELECT SUM( `dur_sec` ) AS `tot_dur` FROM result_table");
   }
 
   static public final function isMobile() {

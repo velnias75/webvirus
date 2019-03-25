@@ -41,7 +41,7 @@ final class UserActions {
   public static function enableUserActions() {
     return "function enableUserActions(id, enabled) {".
              "if(enabled) { document.getElementById('id_ua_cover_'+id).src=document.getElementById('id_ua_cover_'+id).getAttribute('data-src'); }".
-             "else {document.getElementById('id_ua_cover_'+id).src='img/nocover.jpg'; }".
+             "else {document.getElementById('id_ua_cover_'+id).src='img/nocover.png'; }".
              "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mail_msg_show_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
