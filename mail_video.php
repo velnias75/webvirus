@@ -101,7 +101,7 @@ $mail   = preg_replace('/%RAND%/', mt_rand(5, 30), $mail);
 $mail   = preg_replace('/%CAT%/', htmlentities($rows['cat']), $mail);
 
 $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
-  "" : ("Bcc: ".$_SESSION['ui']['email']."\n".
+  "" : ((filter_var($_POST['bcc'], FILTER_VALIDATE_BOOLEAN) ? "Bcc: ".$_SESSION['ui']['email']."\n" : "").
   "Reply-To: =?utf-8?B?".base64_encode($_SESSION['ui']['display_name'])."?= <".$_SESSION['ui']['email'].">\n")).
   "Organization: Informatiker-Sucht-Hilfe\n".
   "X-Mailer: hirnloser-db-webvirus-mailer 1.0\n".

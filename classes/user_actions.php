@@ -42,6 +42,7 @@ final class UserActions {
     return "function enableUserActions(id, enabled) {".
              "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+             "$('input[name=ua_mail_bcc_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mailto_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); ".
              self::loadLastEMail()." $(this).val(localStorage.getItem('lastUsedEMail'));});".
              "return false;".
@@ -109,8 +110,10 @@ final class UserActions {
         "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
       (empty($this->ui['email']) ? "" : "<tr><td>&nbsp;</td></tr>".
       "<tr><td><label for=\"ua_mailto_".$this->id."\">Video als eMail versenden:</label><br />".
-        "<span style=\"width:100%;display:inline-flex;\"><input id=\"ua_mailto_".$this->id."\" type=\"email\" multiple=\"true\" name=\"ua_mailto_".
-        $this->id."\" list=\"ua_mail_list_".$this->id."\" disabled>".
+        "<div><input name=\"ua_mail_bcc_".$this->id."\" id=\"ua_mail_bcc_".$this->id."\" type=\"checkbox\" disabled>".
+        "<label for=\"ua_mail_bcc_".$this->id."\">Kopie an mich senden</label></div>".
+        "<span style=\"width:100%;display:inline-flex;\">".
+        "<input id=\"ua_mailto_".$this->id."\" type=\"email\" multiple=\"true\" name=\"ua_mailto_".$this->id."\" list=\"ua_mail_list_".$this->id."\" disabled>".
         "<datalist id=\"ua_mail_list_".$this->id."\"></datalist>".
         "<a class=\"button\" onclick=\"".
           "var oReq_mail_".$this->id." = new XMLHttpRequest();".
@@ -120,7 +123,8 @@ final class UserActions {
             "} else { ".$this->saveLastEmail($this->id)." }});".
             "oReq_mail_".$this->id.".open('POST', 'mail_video.php', true);".
             "oReq_mail_".$this->id.".setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');".
-            "oReq_mail_".$this->id.".send('mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+'');".
+            "oReq_mail_".$this->id.".send('mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+".
+              "'&bcc='+document.getElementById('ua_mail_bcc_".$this->id."').checked+'');".
         "\">Absenden</a></span></td></tr>").
       ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".
         "<tr><td>OMDB-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
