@@ -40,6 +40,8 @@ final class UserActions {
 
   public static function enableUserActions() {
     return "function enableUserActions(id, enabled) {".
+             "if(enabled) { document.getElementById('id_ua_cover_'+id).src=document.getElementById('id_ua_cover_'+id).getAttribute('data-src'); }".
+             "else {document.getElementById('id_ua_cover_'+id).src='img/nocover.jpg'; }".
              "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mail_msg_show_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
@@ -147,7 +149,7 @@ final class UserActions {
 	"oReq_omdb_".$this->id.".open('GET', 'omdb.php?mid=".$this->id."&oid='+event.target.value+'');".
 	"oReq_omdb_".$this->id.".send();".
         "\"".(!empty($this->omdb) ? " value=\"".$this->omdb."\"" : "")."></td></tr>".
-        "<tr><td>&nbsp;</td></tr><tr><td><center><img id=\"id_ua_cover_".$this->id."\" class=\"ua_cover\" src=\"".
+        "<tr><td>&nbsp;</td></tr><tr><td><center><img id=\"id_ua_cover_".$this->id."\" class=\"ua_cover\" src=\"img/nocover.png\" data-src=\"".
         (empty($this->omdb) ? "img/nocover.png" : "omdb.php?cover-oid=".$this->omdb)."\"></center></td></tr>" : "").
       "<tr><td>&nbsp;</td></tr>".
       "<tr><td align=\"center\"><a class=\"button\" href=\"#close\" onclick=\"enableUserActions(".$this->id.", false)\">Fertig</a></td></tr>".
