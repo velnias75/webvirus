@@ -42,6 +42,8 @@ final class UserActions {
     return "function enableUserActions(id, enabled) {".
              "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+             "$('input[name=ua_mail_msg_show_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+             "$('textarea[name=ua_mail_msg_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mail_bcc_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mailto_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); ".
              self::loadLastEMail()." $(this).val(localStorage.getItem('lastUsedEMail'));});".
@@ -110,7 +112,14 @@ final class UserActions {
         "<label for=\"amplered_".$this->id."\"><div class=\"ample_red\">&nbsp;</div>schrecklich</label></td></tr>".
       (empty($this->ui['email']) ? "" : "<tr><td>&nbsp;</td></tr>".
       "<tr><td><label for=\"ua_mailto_".$this->id."\">Video als eMail versenden:</label><br />".
-        "<div><input name=\"ua_mail_bcc_".$this->id."\" id=\"ua_mail_bcc_".$this->id."\" type=\"checkbox\" disabled>".
+        "<div style=\"display:inline-grid;width:100%\">".
+        "<div><input name=\"ua_mail_msg_show_".$this->id."\" id=\"ua_mail_msg_show_".$this->id."\" type=\"checkbox\" disabled ".
+        "onchange=\"if(event.target.checked) { document.getElementById('ua_mail_msg_".$this->id.
+        "').style='display:inline-grid;' } else { document.getElementById('ua_mail_msg_".$this->id."').style='display:none;'; ".
+        "document.getElementById('ua_mail_msg_".$this->id."').value=''; }\">".
+        "<label for=\"ua_mail_msg_show_".$this->id."\">eigene Nachricht an Empf&auml;nger</label></div>".
+        "<textarea id=\"ua_mail_msg_".$this->id."\" name=\"ua_mail_msg_".$this->id."\" autofocus=\"true\" cols=\"20\" rows=\"5\" style=\"display:none;\" disabled />".
+	"</textarea></div><div><input name=\"ua_mail_bcc_".$this->id."\" id=\"ua_mail_bcc_".$this->id."\" type=\"checkbox\" disabled>".
         "<label for=\"ua_mail_bcc_".$this->id."\">Kopie an mich senden</label></div>".
         "<span style=\"width:100%;display:inline-flex;\">".
         "<input id=\"ua_mailto_".$this->id."\" type=\"email\" multiple=\"true\" name=\"ua_mailto_".$this->id."\" list=\"ua_mail_list_".$this->id."\" disabled>".
@@ -123,7 +132,7 @@ final class UserActions {
             "} else { ".$this->saveLastEmail($this->id)." }});".
             "oReq_mail_".$this->id.".open('POST', 'mail_video.php', true);".
             "oReq_mail_".$this->id.".setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');".
-            "oReq_mail_".$this->id.".send('mid=".$this->id."&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+".
+            "oReq_mail_".$this->id.".send('mid=".$this->id."&msg='+document.getElementById('ua_mail_msg_".$this->id."').value+'&mailto='+encodeURI(document.getElementById('ua_mailto_".$this->id."').value)+".
               "'&bcc='+document.getElementById('ua_mail_bcc_".$this->id."').checked+'');".
         "\">Absenden</a></span></td></tr>").
       ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".

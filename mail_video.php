@@ -35,6 +35,10 @@ final class Rating {
   }
 }
 
+$msg  = <<<'EOD'
+Guten Morgen,<br /><br />in einer hirnlosen Aktion habe ich &ndash; %RNAME% &ndash;,<br />unter Anwendung meiner schwachsinnigen Erkenntnisse meiner %RAND%-jährigen Dissertation in Informatik,<br />die <a href="%URL%/index.php">DB</a> angewiesen, Dir folgenden Schrott- bzw. Rentnerfilm per eMail zu senden:
+EOD;
+
 $mail = <<<'EOD'
 <html>
   <head>
@@ -43,7 +47,7 @@ $mail = <<<'EOD'
     </style>
   </head>
   <body style="font-family:sans-serif;background-color:#eeeeee;">
-    <p>Guten Morgen,<br /><br />in einer hirnlosen Aktion habe ich &ndash; %RNAME% &ndash;,<br />unter Anwendung meiner schwachsinnigen Erkenntnisse meiner %RAND%-jährigen Dissertation in Informatik,<br />die <a href="%URL%/index.php">DB</a> angewiesen, Dir folgenden Schrott- bzw. Rentnerfilm per eMail zu senden:</p>
+    <p>%MESSAGE%</p>
     <table border="0">
       <tr><td>
         <img style="box-shadow:3px 3px 3px #c06ee4;" alt="Cover von Schrott- bzw. Rentnerfilm &quot;%TITLE%&quot;" src="%IMAGE%" />
@@ -60,7 +64,7 @@ $mail = <<<'EOD'
         </dl>
       </td></tr>
     </table>
-    <p>Gr&uuml;sse</br>%RNAME%</p>
+    <p>Gr&uuml;sse<br />%RNAME%</p>
   </body>
 </html>
 EOD;
@@ -88,8 +92,10 @@ $result = MySQLBase::instance()->con()->query($sql);
 $rows   = $result->fetch_assoc();
 
 $mail   = preg_replace('/%RATING%/', !is_null($rows['avg_rating']) ? $r->getRating($rows['avg_rating']) : "unbewertet", $mail);
+$msg    = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $msg);
 $mail   = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $mail);
 $mail   = preg_replace('/%URL%/', $r->getLink(), $mail);
+$msg    = preg_replace('/%URL%/', $r->getLink(), $msg);
 $mail   = preg_replace('/%IMAGE%/', $r->getLink()."/omdb.php?cover-oid=".$rows['oid'].($rows['top250'] ? "&top250=true" : ""), $mail);
 $mail   = preg_replace('/%MID%/', $rows['mid'], $mail);
 $mail   = preg_replace('/%TITLE%/', htmlentities($rows['title']), $mail);
@@ -97,8 +103,9 @@ $mail   = preg_replace('/%DUR%/', $rows['dur'], $mail);
 $mail   = preg_replace('/%DNR%/', $rows['dnr'], $mail);
 $mail   = preg_replace('/%DISC%/', htmlentities($rows['disc']), $mail);
 $mail   = preg_replace('/%LINGOS%/', htmlentities($rows['lingos']), $mail);
-$mail   = preg_replace('/%RAND%/', mt_rand(5, 30), $mail);
+$msg    = preg_replace('/%RAND%/', mt_rand(5, 30), $msg);
 $mail   = preg_replace('/%CAT%/', htmlentities($rows['cat']), $mail);
+$mail   = preg_replace('/%MESSAGE%/', empty($_POST['msg']) ? $msg : nl2br($_POST['msg'])."<hr />", $mail);
 
 $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
   "" : ((filter_var($_POST['bcc'], FILTER_VALIDATE_BOOLEAN) ? "Bcc: ".$_SESSION['ui']['email']."\n" : "").
