@@ -19,6 +19,8 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+$pl_start = microtime(TRUE);
+
 require 'classes/movies.php';
 
 session_start();
@@ -99,6 +101,8 @@ if(isset($_GET['filter_disc'])) {
 <link rel="stylesheet" href="css/print.css?t=<?= time(); ?>" type="text/css" media="print">
 <script src="https://cdn.jsdelivr.net/g/jquery,typeahead.js" type="text/javascript"></script>
 <script type="text/javascript">
+var timerStart = Date.now();
+
 var titles = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.whitespace,
   queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -158,6 +162,11 @@ $(document).ready(function() {
     }
   });
 });
+
+$(window).on('load', (function() {
+  document.getElementById('performance').innerHTML=((Date.now()-timerStart)/1000) + " Sek.";
+
+}));
 </script>
 <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
 <link rel="alternate" title="Heikos Schrott- &amp; Rentnerfilme" type="application/rss+xml" href="feed.php">
