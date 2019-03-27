@@ -35,6 +35,8 @@ final class Rating {
   }
 }
 
+$urx = "/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/";
+
 $msg  = <<<'EOD'
 Guten Morgen,<br /><br />in einer hirnlosen Aktion habe ich &ndash; %RNAME% &ndash;,<br />unter Anwendung meiner schwachsinnigen Erkenntnisse meiner %RAND%-jährigen Dissertation in Informatik,<br />die <a href="%URL%/index.php">DB</a> angewiesen, Dir folgenden Schrott- bzw. Rentnerfilm per eMail zu senden:
 EOD;
@@ -105,7 +107,7 @@ $mail   = preg_replace('/%DISC%/', htmlentities($rows['disc']), $mail);
 $mail   = preg_replace('/%LINGOS%/', htmlentities($rows['lingos']), $mail);
 $msg    = preg_replace('/%RAND%/', mt_rand(5, 30), $msg);
 $mail   = preg_replace('/%CAT%/', htmlentities($rows['cat']), $mail);
-$mail   = preg_replace('/%MESSAGE%/', empty($_POST['msg']) ? $msg : nl2br($_POST['msg'])."<hr />", $mail);
+$mail   = preg_replace('/%MESSAGE%/', empty($_POST['msg']) ? $msg : nl2br(preg_replace($urx, "<a href=\"$0\">$0</a>", $_POST['msg']))."<hr />", $mail);
 
 $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
   "" : ((filter_var($_POST['bcc'], FILTER_VALIDATE_BOOLEAN) ? "Bcc: ".$_SESSION['ui']['email']."\n" : "").
