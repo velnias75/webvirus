@@ -52,7 +52,9 @@ $mail = <<<'EOD'
     <p>%MESSAGE%</p>
     <table border="0">
       <tr><td>
-        <img style="box-shadow:3px 3px 3px #c06ee4;" alt="Cover von Schrott- bzw. Rentnerfilm &quot;%TITLE%&quot;" src="%IMAGE%" />
+        <img style="box-shadow:3px 3px 3px #c06ee4;width:150px;" 
+          title="Plakat von Schrott- bzw. Rentnerfilm &quot;%TITLE%&quot;"
+          alt="Plakat von Schrott- bzw. Rentnerfilm &quot;%TITLE%&quot;" src="%IMAGE%" />
       </td>
       <td style="vertical-align:top;padding-left:10px;padding-top:10px;">
         <dl style="line-height:1.4em;">
