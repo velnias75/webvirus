@@ -125,7 +125,7 @@ $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
           }
         ?>
         &ndash;&nbsp;Seitenaufbau:</div>
-    <div style="display:inline-block;" id="performance"><?= number_format((microtime(TRUE) - $pl_start)/1000.0, 2); ?> Sek.</div>
+    <div style="display:inline-block;" id="performance"><?= number_format((microtime(TRUE) - $pl_start)/1000.0, 3); ?> Sek.</div>
     </small></div></td></tr>
 </table>
 <div id="openModal_stats" class="modalDialog"><div><a href="#close" title="Schlie&szlig;en" class="close">X</a>

@@ -145,7 +145,7 @@ EOD;
       $this->filters['filter_disc'][0]) $this->filtered = true;
   }
 
-  protected function __destruct() {
+  public function __destruct() {
     $this->con->query("DROP TABLE result_table");
   }
 

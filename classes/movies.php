@@ -37,6 +37,64 @@ final class Movies extends MoviesBase implements IFormable {
   private $par;
   private $loggedIn = false;
 
+  private static $tooltipJS = <<<'EOD'
+  $('.list.hasTooltip').mouseover(function(e) {
+
+    var base     = $(this);
+    var tooltipp = base.children("span");
+    var image    = tooltipp.find("img");
+    var abstract = tooltipp.find("p");
+
+    $('.hasTooltip span').removeAttr('style');
+
+    if(typeof image.attr('data-src') != 'undefined' && abstract.css('display') == 'none') {
+
+      var req = new XMLHttpRequest();
+      req.addEventListener('loadend', function(e) {
+        if(req.status == 200) {
+          abstract.removeAttr('style');
+          abstract.css('display', 'inline-block');
+          abstract.css('max-width', '250px');
+          abstract.css('white-space', 'normal');
+          abstract.css('font-variant', 'small-caps');
+          abstract.html(req.response);
+        }
+      });
+
+      req.open('GET', image.attr('data-src')+'&abstract=1');
+      req.send(false);
+    }
+
+    var __align = function(e) {
+      
+      var tooltip = base.children("span");
+      var tooltipTop = tooltip.offset().top;
+      var tooltipLeft = (base.offset().left + base.width()) - tooltip.width() - 20;
+      var tooltipBottom = tooltipTop + tooltip.outerHeight();
+      var viewportTop = $(window).scrollTop();
+      var viewportBottom = viewportTop + $(window).height();
+
+      tooltip.css({ left: tooltipLeft });
+
+      if(tooltipBottom > viewportBottom) {
+        tooltip.css({ top: (viewportBottom - tooltip.outerHeight() - 25) });
+      }
+    }
+
+    if(image.length) {
+
+      var tooltipLeft = (base.offset().left + base.width()) - tooltipp.width() - 20;
+      tooltipp.css({ left: tooltipLeft });
+
+      if(image.attr("src") != image.attr("data-src")) {
+        image.attr("src", image.attr("data-src")).on('load', __align);
+      } else { 
+        __align(e); 
+      }
+    }
+  });
+EOD;
+
   private static $spinner = <<<'EOD'
 data:image/gif;base64,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
 EOD;
@@ -102,7 +160,7 @@ $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null,
       ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".(is_null($omdb_id) ? "" : "<center><img itemprop=\"image\" src=\""
       .self::$spinner."\" "."data-src=\"omdb.php?cover-oid=".$omdb_id.(!$isTop250 ? "" : "&amp;top250=true")."\"></center><br>").
       (!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
-      htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</span>"))),
+      htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."<br /><center><p style=\"display:none;\">abstract</p><center></span>"))),
       new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
       ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").
       ($isSummary ? "" : "<div itemprop=\"duration\" content=\"".(new DateTime($duration))->format('\P\TG\Hi\Ms\S')."\"").($isSummary ? "" :">").
@@ -243,6 +301,10 @@ public final function render() {
     }
 
     return parent::render()."<input type=\"submit\" id=\"filter_submit\">";
+  }
+
+  public static function tooltipEvent() {
+    return self::$tooltipJS;
   }
 }
 

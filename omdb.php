@@ -70,7 +70,7 @@ if(isset($_GET['cover-oid'])) {
   libxml_use_internal_errors($libxml_previous_state);
   curl_close($ch);
 
-  if(!empty($doc->getElementById("left_image"))) {
+  if(!isset($_GET['abstract']) && !empty($doc->getElementById("left_image"))) {
     $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
     curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -78,6 +78,7 @@ if(isset($_GET['cover-oid'])) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language", "de,en-US;q=0.7,en;q=0.3"));
 
     if(!is_null($proxy)) {
       curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
@@ -111,11 +112,14 @@ if(isset($_GET['cover-oid'])) {
     curl_close($ch);
   } else $pic = null;
 
+  if(isset($_GET['abstract']) && !empty($doc->getElementById("abstract"))) {
+    $text = utf8_decode($doc->getElementById("abstract")->nodeValue);
+    header("Content-type: text/plain; charset=".strtolower(mb_detect_encoding($text,"UTF-8, ISO-8859-15, ISO-8859-1", true)));
+    echo $text;
+    exit;
+  } 
+
   if(is_null($pic) || md5($pic) == "106f2c74718ffe31354f44a40cc2f4a8") {
-    //$filename = "img/nocover.png";
-    //$handle = fopen($filename, "rb");
-    //$pic = fread($handle, filesize($filename));
-    //fclose($handle);
     $pic = noCoverPic();
     $headers['content-type'][0] = "image/png";
   }

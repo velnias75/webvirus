@@ -131,36 +131,7 @@ $(document).ready(function() {
 
   $('#list_filter_ltitle').focus();
 
-  $('.list.hasTooltip').mouseover(function(e) {
-
-    var base     = $(this);
-    var tooltipp = base.children("span");
-    var image    = tooltipp.find("img");
-
-    $('.hasTooltip span').removeAttr('style');
-
-    if(image.length) {
-
-      var tooltipLeft = (base.offset().left + base.width()) - tooltipp.width() - 20;
-      tooltipp.css({ left: tooltipLeft });
-
-      image.attr("src", image.attr("data-src")).on('load', function(e) {
-
-	var tooltip = base.children("span");
-	var tooltipTop = tooltip.offset().top;
-	var tooltipLeft = (base.offset().left + base.width()) - tooltip.width() - 20;
-	var tooltipBottom = tooltipTop + tooltip.outerHeight();
-	var viewportTop = $(window).scrollTop();
-	var viewportBottom = viewportTop + $(window).height();
-
-	tooltip.css({ left: tooltipLeft });
-
-	if(tooltipBottom > viewportBottom) {
-	  tooltip.css({ top: (viewportBottom - tooltip.outerHeight() - 25) });
-	}
-      });
-    }
-  });
+  <?= Movies::tooltipEvent(); ?>
 });
 
 $(window).on('load', (function() {
