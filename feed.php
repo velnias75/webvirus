@@ -19,6 +19,7 @@
  */
 
 require 'classes/mysql_base.php';
+require 'classes/omdb_base.php';
 require 'classes/tracker.php';
 
 function getLink() {
@@ -115,6 +116,8 @@ while($rssdata = $result->fetch_assoc()) {
   $data = $xml->createElement('title', str_replace("&", "&amp;", $rssdata['title']));
   $item->appendChild($data);
 
+  $abse = extractAbstract(fetchOMDBPage($rssdata['oid']));
+
   $cdata = $xml->createCDATASection("<table border=\"0\"><tr>".
   (!empty($rssdata['oid']) ? "<td width=\"*\">".
   "<img src=\"".getLink()."/omdb.php?cover-oid=".$rssdata['oid']."\" alt=\"Cover f&uuml;r &quot;".$rssdata['title']."&quot;\">".
@@ -125,6 +128,8 @@ while($rssdata = $result->fetch_assoc()) {
   "<dt><b>L&auml;nge</b></dt><dd>".$rssdata['duration']."</dd>".
   "<dt><b>Sprachen(n)</b></dt><dd>".$rssdata['lingos']."</dd>".
   "<dt><b>DVD</b></dt><dd>".$rssdata['name']."</dd>".
+  (!is_null($abse) ? "<dt><b>Kurzbeschreibung</b></dt><dd>".
+    htmlentities(mb_convert_encoding($abse['abstract'], "UTF-8", $abse['encoding']), ENT_SUBSTITUTE, "utf-8")."</dd>" : "").
   "</dl></td></tr>");
   $data = $xml->createElement('description');
   $data->appendChild($cdata);

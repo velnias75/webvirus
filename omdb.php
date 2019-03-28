@@ -19,6 +19,7 @@
  */
 
 require 'classes/mysql_base.php';
+require 'classes/omdb_base.php';
 require 'classes/tracker.php';
 
 function noCoverPic() {
@@ -48,27 +49,7 @@ if(isset($_GET['cover-oid'])) {
 
   if($ref_url['host'] != $req_url['host']) (new Tracker())->track("OMDB cover request for ".$_GET['cover-oid']." {".$_SERVER['HTTP_USER_AGENT']."}");
 
-  $ch = curl_init("https://www.omdb.org/movie/".$_GET['cover-oid']);
-  curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language: de-DE,en;q=0.5"));
-
-  if(!is_null($proxy)) {
-    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-    curl_setopt($ch, CURLOPT_PROXY, $proxy);
-  }
-
-  $libxml_previous_state = libxml_use_internal_errors(true);
-  $doc = DOMDocument::loadHTML(curl_exec($ch));
-
-  if(curl_errno($ch)) error_log("Curl error (loading omdb movie page): ".curl_error($ch));
-
-  libxml_clear_errors();
-  libxml_use_internal_errors($libxml_previous_state);
-  curl_close($ch);
+  $doc = fetchOMDBPage($_GET['cover-oid']);
 
   if(!isset($_GET['abstract']) && !empty($doc->getElementById("left_image"))) {
     $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
@@ -113,9 +94,16 @@ if(isset($_GET['cover-oid'])) {
   } else $pic = null;
 
   if(isset($_GET['abstract']) && !empty($doc->getElementById("abstract"))) {
-    $text = utf8_decode($doc->getElementById("abstract")->nodeValue);
-    header("Content-type: text/plain; charset=".strtolower(mb_detect_encoding($text,"UTF-8, ISO-8859-15, ISO-8859-1", true)));
-    echo $text;
+
+    $abs_enc = extractAbstract($doc);
+
+    if(!is_null($abs_enc)) {
+      header("Content-type: text/plain; charset=".$abs_enc['encoding']);
+      echo $abs_enc['abstract'];
+    } else {
+      http_response_code(503);
+    }
+
     exit;
   } 
 

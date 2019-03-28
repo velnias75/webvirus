@@ -20,6 +20,7 @@
 
 session_start();
 
+require 'classes/omdb_base.php';
 require 'classes/mysql_base.php';
 require 'classes/ampletraits.php';
 
@@ -67,7 +68,7 @@ $mail = <<<'EOD'
           <dt><b>Bewertung</b></dt><dd>%RATING%</dd>
         </dl>
       </td></tr>
-    </table>
+    </table><dl><dt><b>Kurzbeschreibung</b></dt><dd>%ABSTRACT%</dd></dl>
     <p>Gr&uuml;sse<br />%RNAME%</p>
   </body>
 </html>
@@ -95,6 +96,8 @@ $sql = "SELECT m.ID AS `mid`, d.id AS dnr, m.top250 AS top250, c.name AS cat, MA
 $result = MySQLBase::instance()->con()->query($sql);
 $rows   = $result->fetch_assoc();
 
+$abse   = extractAbstract(fetchOMDBPage($rows['oid']));
+
 $mail   = preg_replace('/%RATING%/', !is_null($rows['avg_rating']) ? $r->getRating($rows['avg_rating']) : "unbewertet", $mail);
 $msg    = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $msg);
 $mail   = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $mail);
@@ -110,6 +113,9 @@ $mail   = preg_replace('/%LINGOS%/', htmlentities($rows['lingos']), $mail);
 $msg    = preg_replace('/%RAND%/', mt_rand(5, 30), $msg);
 $mail   = preg_replace('/%CAT%/', htmlentities($rows['cat']), $mail);
 $mail   = preg_replace('/%MESSAGE%/', empty($_POST['msg']) ? $msg : nl2br(preg_replace($urx, "<a href=\"$0\">$0</a>", $_POST['msg']))."<hr />", $mail);
+$mail   = preg_replace('/%ABSTRACT%/', 
+            htmlentities(mb_convert_encoding(is_null($abse) ? "ist nicht verfügbar" : $abse['abstract'], "UTF-8", $abse['encoding']), ENT_SUBSTITUTE, "utf-8"),
+            $mail);
 
 $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
   "" : ((filter_var($_POST['bcc'], FILTER_VALIDATE_BOOLEAN) ? "Bcc: ".$_SESSION['ui']['email']."\n" : "").

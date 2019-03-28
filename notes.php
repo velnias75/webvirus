@@ -31,7 +31,7 @@ sein.</p>
 (diese werden dem Ergebnis hinzugef&uuml;gt), oder mit  regul&auml;ren
 Ausdr&uuml;cken im <em>Titel</em>, indem Sie den Suchbegriff mit
 <em>/REGEXP/</em> einschlie&szlig;en.
-(<a class="note_link" href="?filter_ID=425%2C812%2C813%2C548&amp;filter_ltitle=%2F[[%3A<%3A]]rot.*[[%3A>%3A]]|Blutrot|fasten%2F">Beispiel</a>)<br /><br />
+(<a class="note_link" href="?filter_ltitle=%2F[[%3A<%3A]]rot.*[[%3A>%3A]]|Blutrot|fasten%2F">Beispiel</a>)<br /><br />
 Mit <em>#FILMNUMMER</em> kann man schnell einen Film anhand der <b>FILMNUMMER</b> suchen.
 (<a class="note_link" href="?filter_ltitle=%232035">Beispiel</a>)</p>
 <p align="justify">Verpassen Sie keine neuen Filme:
