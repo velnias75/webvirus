@@ -346,7 +346,7 @@ EOD;
   protected final function mySQLRowsQuery($q = "", $filtered_ids = false) {
     // echo "<pre>".$this->getBuiltQuery($q, $filtered_ids)."</pre>\n";
 
-    $r = $this->con->query("CREATE TEMPORARY TABLE IF NOT EXISTS result_table ENGINE=MYISAM AS (".$this->getBuiltQuery($q, $filtered_ids).")");
+    $r = $this->con->query("CREATE TEMPORARY TABLE IF NOT EXISTS result_table (KEY (dur_sec)) ENGINE=MYISAM AS (".$this->getBuiltQuery($q, $filtered_ids).")");
     $r = $this->con->query("SELECT * FROM result_table");
 
     return $r && $r->num_rows ? $r : null;

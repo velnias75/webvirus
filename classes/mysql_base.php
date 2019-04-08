@@ -160,9 +160,9 @@ final class MySQLBase {
   public function login($login, $pass, $auto = false) {
 
     $result = $this->mysqli->query("SELECT id, login, pass, CAST(AES_DECRYPT(UNHEX(pass), UNHEX(SHA2('".
-    $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, email, last_login, style, fid, ".
-    "pagesize, oauth_access_token, oauth_access_token_secret, consumer_key, consumer_secret ".
-    "FROM users WHERE login = '".$login."' LIMIT 1");
+      $this->secret."', 512))) AS CHAR (50)) AS cpass, display_name, admin, email, last_login, style, fid, ".
+      "pagesize, oauth_access_token, oauth_access_token_secret, consumer_key, consumer_secret ".
+      "FROM users WHERE login = '".$login."' LIMIT 1");
 
     if($result->num_rows == 1) {
 
@@ -196,6 +196,7 @@ final class MySQLBase {
 	return ($res['cpass'] == $pass || ($auto && $res['epass'] == $pass)) ? $res : "Falsches Passwort";
 
     } else {
+      error_log($this->mysqli->error);
       return "Benutzer nicht gefunden";
     }
   }
@@ -279,5 +280,5 @@ final class MySQLBase {
   }
 }
 
-// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
+// indent-mode: cstyle; indent-width: 4; keep-extra-spaces: true; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 ?>
