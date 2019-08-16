@@ -23,7 +23,7 @@ sql_insert() {
   DURAT=`echo "$MINFO" | cut -f2 -d\|`;
   BNAME=`basename "$1"`;
   printf "'%q'|%q|'%q'" "$TITLE" "$DURAT" "$BNAME" | gawk -F\| '{ printf "INSERT INTO movies (title,duration,filename,disc) VALUES(%s,%d,%s,@lid);\n", $1, $2/1000, $3; }';
-  AUDIO=`mediainfo --Language=raw --Inform="Audio;%Language/String3%" "$1" | sed 's/deu/ger/' | sed 's/fas/per/'`;
+  AUDIO=`mediainfo --Language=raw --Inform="Audio;%Language/String3%" "$1" | sed 's/deu/ger/' | sed 's/fas/per/' | sed 's/chi/zho/'`;
   if [ -n "$AUDIO" ]; then
     echo "SELECT LAST_INSERT_ID() INTO @alid;"
     echo $AUDIO | gawk '{ for(i=1; i<length; i+=3) printf "INSERT INTO movie_languages (movie_id,lang_id) VALUES (@alid,\x27%s\x27);\n", substr($0,i,3); };'
