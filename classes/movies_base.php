@@ -367,7 +367,8 @@ EOD;
       'category' => (integer)$row['category'],
       'filename' => $row['filename'],
       'omu' => (boolean)$row['omu'],
-      'top250' => (boolean)$row['top250']);
+      'top250' => (boolean)$row['top250'],
+      'oid' => $row['omdb_id']);
     }
 
     return json_encode($jrows);
