@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -352,26 +352,33 @@ EOD;
     return $r && $r->num_rows ? $r : null;
   }
 
+  public final function mySQLRowsArray() {
+
+	$result = $this->mySQLRowsQuery();
+	$jrows = array();
+
+	if(!is_null($result)) {
+
+	  while($row = $result->fetch_assoc()) {
+		$jrows[] = array('id' => (integer)$row['ID'],
+		'title' => $row['ltitle'],
+		'duration' => $row['duration'],
+		'dur_sec' => (integer)$row['dur_sec'],
+		'languages' => $row['lingos'],
+		'disc' => $row['disc'],
+		'category' => (integer)$row['category'],
+		'filename' => $row['filename'],
+		'omu' => (boolean)$row['omu'],
+		'top250' => (boolean)$row['top250'],
+		'oid' => $row['omdb_id']);
+	  }
+	}
+
+	return $jrows;
+  }
+
   public final function mySQLRowsJSON() {
-
-    $result = $this->mySQLRowsQuery();
-    $jrows = array();
-
-    while($row = $result->fetch_assoc()) {
-      $jrows[] = array('id' => (integer)$row['ID'],
-      'title' => $row['ltitle'],
-      'duration' => $row['duration'],
-      'dur_sec' => (integer)$row['dur_sec'],
-      'languages' => $row['lingos'],
-      'disc' => $row['disc'],
-      'category' => (integer)$row['category'],
-      'filename' => $row['filename'],
-      'omu' => (boolean)$row['omu'],
-      'top250' => (boolean)$row['top250'],
-      'oid' => $row['omdb_id']);
-    }
-
-    return json_encode($jrows);
+    return json_encode($this->mySQLRowsArray());
   }
 
   public final function mySQLRowsXML() {
