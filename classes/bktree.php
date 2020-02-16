@@ -20,6 +20,10 @@
 
 require 'movies.php';
 
+function titleNormalizer($title) {
+  return trim(preg_replace('~[^\x00-\xFF]~u', "", $title));
+}
+
 final class _node implements JsonSerializable {
 
   private $item;
@@ -46,7 +50,7 @@ final class _node implements JsonSerializable {
   }
 
   function __toString() {
-	return $this->item['title'];
+	return titleNormalizer($this->item['title']);
   }
 }
 
@@ -72,9 +76,9 @@ final class BKTree {
 	}
 
 	$curNode = $this->_root;
-	$it = strtolower($item['title']);
+	$it = mb_strtolower(titleNormalizer($item['title']), 'UTF-8');;
 
-	$dist = $this->damerauLevenshteinDistance(strtolower($curNode), $it);
+	$dist = $this->damerauLevenshteinDistance(mb_strtolower($curNode, 'UTF-8'), $it);
 
 	while($curNode->containsKey($dist)) {
 
@@ -82,7 +86,7 @@ final class BKTree {
 
 	  $curNode = $curNode->get($dist);
 
-	  $dist = $this->damerauLevenshteinDistance(strtolower($curNode), $it);
+	  $dist = $this->damerauLevenshteinDistance(mb_strtolower($curNode, 'UTF-8'), $it);
 	}
 
 	$curNode->addChild($dist, $item);
@@ -122,7 +126,9 @@ final class BKTree {
   }
 
   function render() {
-	echo json_encode($this->_root);
+	echo json_encode($this->_root, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|
+	                               JSON_PARTIAL_OUTPUT_ON_ERROR|JSON_INVALID_UTF8_IGNORE|
+	                               JSON_INVALID_UTF8_SUBSTITUTE);
   }
 
 }
