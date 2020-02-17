@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -19,6 +19,7 @@
  */
 
 require 'classes/mysql_base.php';
+require 'classes/bktree.php';
 
 require_once 'TwitterAPIExchange.php';
 
@@ -34,17 +35,20 @@ if(MySQLBase::instance()->update_allowed()) {
     foreach($lines as $line) {
 
       if(substr($line, 0, 2) == '--' || $line == '')
-	continue;
+		continue;
 
-      $templine .= $line;
+		$templine .= $line;
 
-      if(substr(trim($line), -1, 1) == ';') {
-
-	MySQLBase::instance()->con()->query($templine) or print('Error performing query \'<strong>'.
-	$templine.'\': '.MySQLBase::instance()->con()->error.'</strong>');
-	$templine = '';
+		if(substr(trim($line), -1, 1) == ';') {
+		  MySQLBase::instance()->con()->query($templine) or print('Error performing query \'<strong>'.
+		  $templine.'\': '.MySQLBase::instance()->con()->error.'</strong>');
+		  $templine = '';
       }
     }
+
+    if(file_exists(dirname(__FILE__).BKTree::CACHE_FILE)) {
+	  unlink(dirname(__FILE__).BKTree::CACHE_FILE));
+	}
 
     // Twitter
     $settings = array(

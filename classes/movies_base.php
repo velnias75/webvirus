@@ -359,8 +359,12 @@ EOD;
 
 	if(!is_null($result)) {
 
+	  $pos = 0;
+
 	  while($row = $result->fetch_assoc()) {
-		$jrows[] = array('id' => (integer)$row['ID'],
+		$jrows[] = array(
+		'pos' => (integer)$pos,
+		'id' => (integer)$row['ID'],
 		'title' => $row['ltitle'],
 		'duration' => $row['duration'],
 		'dur_sec' => (integer)$row['dur_sec'],
@@ -371,6 +375,8 @@ EOD;
 		'omu' => (boolean)$row['omu'],
 		'top250' => (boolean)$row['top250'],
 		'oid' => $row['omdb_id']);
+
+		$pos++;
 	  }
 	}
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -51,7 +51,7 @@ if(isset($_GET['cover-oid'])) {
 
   $doc = fetchOMDBPage($_GET['cover-oid']);
 
-  if(!isset($_GET['abstract']) && !empty($doc->getElementById("left_image"))) {
+  if(!is_null($doc) && !isset($_GET['abstract']) && !empty($doc->getElementById("left_image"))) {
     $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
     curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -67,33 +67,37 @@ if(isset($_GET['cover-oid'])) {
     }
 
     curl_setopt($ch, CURLOPT_HEADERFUNCTION,
-    function($curl, $header) use (&$headers) {
+	  function($curl, $header) use (&$headers) {
 
-      $len = strlen($header);
-      $header = explode(':', $header, 2);
+		$len = strlen($header);
+		$header = explode(':', $header, 2);
 
-      if(count($header) < 2) return $len;
+		if(count($header) < 2) return $len;
 
-      $name = strtolower(trim($header[0]));
+		$name = strtolower(trim($header[0]));
 
-      if(!array_key_exists($name, $headers)) {
-        $headers[$name] = [trim($header[1])];
-      } else {
-        $headers[$name][] = trim($header[1]);
-      }
+		if(!array_key_exists($name, $headers)) {
+		  $headers[$name] = [trim($header[1])];
+		} else {
+		  $headers[$name][] = trim($header[1]);
+		}
 
-      return $len;
-    }
+		return $len;
+	  }
     );
 
     $pic = curl_exec($ch);
+    $rsc = curl_getinfo($ch,  CURLINFO_RESPONSE_CODE);
 
-    if(curl_errno($ch)) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
+    if($rsc != 200) $pic == null;
+
+    if(curl_errno($ch) || $rsc != 200) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
 
     curl_close($ch);
+
   } else $pic = null;
 
-  if(isset($_GET['abstract']) && !empty($doc->getElementById("abstract"))) {
+  if(isset($_GET['abstract']) && !is_null($doc) && !empty($doc->getElementById("abstract"))) {
 
     $abs_enc = extractAbstract($doc);
 
@@ -105,7 +109,12 @@ if(isset($_GET['cover-oid'])) {
     }
 
     exit;
-  } 
+
+  } else if(isset($_GET['abstract'])) {
+	  header("Content-type: text/plain; charset=UTF-8");
+	  echo "Konnte Kurzbeschreibung nicht laden.\nWomöglich ist omdb zur Zeit nicht erreichbar.";
+	  exit;
+  }
 
   if(is_null($pic) || md5($pic) == "106f2c74718ffe31354f44a40cc2f4a8") {
     $pic = noCoverPic();
@@ -113,11 +122,14 @@ if(isset($_GET['cover-oid'])) {
   }
 
   $etagHeader = (isset($_SERVER["HTTP_IF_NONE_MATCH"]) ? trim($_SERVER["HTTP_IF_NONE_MATCH"]) : false);
-  $etag       = sprintf('"%s"', substr($headers['etag'][0], 1 , -1));
+  $etag       = null;
 
-  header("ETag: ".$etag);
+  if(isset($headers['etag'])) {
+	$etag = sprintf('"%s"', substr($headers['etag'][0], 1 , -1));
+	header("ETag: ".$etag);
+  }
 
-  if($etag === $etagHeader) {
+  if(!is_null($etag) && $etag === $etagHeader) {
     header("HTTP/1.1 304 Not Modified");
   } else {
 

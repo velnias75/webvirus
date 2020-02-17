@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2019-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -21,6 +21,7 @@
 function fetchOMDBPage($omdb_id) {
 
   $ch = curl_init("https://www.omdb.org/movie/".$omdb_id);
+
   curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
@@ -35,19 +36,20 @@ function fetchOMDBPage($omdb_id) {
 
   $libxml_previous_state = libxml_use_internal_errors(true);
   $doc = DOMDocument::loadHTML(curl_exec($ch));
+  $rsc = curl_getinfo($ch,  CURLINFO_RESPONSE_CODE);
 
-  if(curl_errno($ch)) error_log("Curl error (loading omdb movie page): ".curl_error($ch));
+  if(curl_errno($ch) || $rsc != 200) error_log("Curl error (loading omdb movie page): ".curl_error($ch));
 
   libxml_clear_errors();
   libxml_use_internal_errors($libxml_previous_state);
   curl_close($ch);
 
-  return $doc;
+  return $rsc != 200 ? null : $doc;
 }
 
 function extractAbstract($doc) {
 
-  if(!empty($doc->getElementById("abstract"))) {
+  if(!is_null($doc) && !empty($doc->getElementById("abstract"))) {
     $abstract = utf8_decode($doc->getElementById("abstract")->nodeValue);
     $encoding = strtolower(mb_detect_encoding($abstract,"UTF-8, ISO-8859-15, ISO-8859-1", true));
 

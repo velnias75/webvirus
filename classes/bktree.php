@@ -24,6 +24,21 @@ function titleNormalizer($title) {
   return trim(preg_replace('~[^\x00-\xFF]~u', "", $title));
 }
 
+final class Nodes implements JsonSerializable {
+
+  private $size;
+  private $root;
+
+  function __construct($size, $root) {
+	$this->size = $size;
+	$this->root = $root;
+  }
+
+  public function jsonSerialize() {
+	return (object)[ 'size' => $this->size, 'root' => $this->root ];
+  }
+}
+
 final class _node implements JsonSerializable {
 
   private $item;
@@ -56,29 +71,36 @@ final class _node implements JsonSerializable {
 
 final class BKTree {
 
+  const CACHE_FILE = "/cache/schrottfilme.json.gz";
+
   private $_root = null;
+  private $size = 0;
 
   function __construct() {
 
-	$movies = (new Movies())->mySQLRowsArray();
-	$mcount = count($movies);
+	if(!file_exists(dirname(dirname(__FILE__)).BKTree::CACHE_FILE)) {
 
-	for($i = 0; $i < $mcount; $i++) {
-	  $this->add($movies[$i]);
+	  $movies = (new Movies())->mySQLRowsArray();
+	  $mcount = count($movies);
+
+	  for($i = 0; $i < $mcount; $i++) {
+		$this->add($movies[$i]);
+	  }
 	}
   }
 
   private function add($item) {
 
-	if($this->_root == null) {
+	if(is_null($this->_root)) {
 	  $this->_root = new _node($item);
+	  $this->size++;
 	  return;
 	}
 
 	$curNode = $this->_root;
-	$it = mb_strtolower(titleNormalizer($item['title']), 'UTF-8');;
+	$it = $this->toUnicodeCharArray(mb_strtolower(titleNormalizer($item['title']), 'UTF-8'));
 
-	$dist = $this->damerauLevenshteinDistance(mb_strtolower($curNode, 'UTF-8'), $it);
+	$dist = $this->damerauLevenshteinDistance($this->toUnicodeCharArray(mb_strtolower($curNode, 'UTF-8')), $it);
 
 	while($curNode->containsKey($dist)) {
 
@@ -86,16 +108,18 @@ final class BKTree {
 
 	  $curNode = $curNode->get($dist);
 
-	  $dist = $this->damerauLevenshteinDistance(mb_strtolower($curNode, 'UTF-8'), $it);
+	  $dist = $this->damerauLevenshteinDistance($this->toUnicodeCharArray(mb_strtolower($curNode, 'UTF-8')), $it);
 	}
 
 	$curNode->addChild($dist, $item);
+
+	$this->size++;
   }
 
   private function damerauLevenshteinDistance($source, $target) {
 
-	$sourceLength = strlen($source);
-	$targetLength = strlen($target);
+	$sourceLength = count($source);
+	$targetLength = count($target);
 
 	if($sourceLength == 0) return $targetLength;
 	if($targetLength == 0) return $sourceLength;
@@ -107,7 +131,7 @@ final class BKTree {
 
 	for($i = 1; $i <= $sourceLength; $i++) {
 
-	  $sca = ((string)$source)[$i - 1];
+	  $sca = $source[$i - 1];
 
 	  for($j = 1; $j <= $targetLength; $j++) {
 
@@ -116,7 +140,7 @@ final class BKTree {
 
 		$dist[$i][$j] = min(min($dist[$i - 1][$j] + 1, $dist[$i][$j - 1] + 1), $dist[$i - 1][$j - 1] + $cost);
 
-		if($j > 1 && $i > 1 && $sca == $target[$j - 2] && ((string)$source)[$i - 2] == $tca) {
+		if($j > 1 && $i > 1 && $sca == $target[$j - 2] && $source[$i - 2] == $tca) {
 		  $dist[$i][$j] = min($dist[$i][$j], $dist[$i - 2][$j - 2] + $cost);
 		}
 	  }
@@ -125,12 +149,34 @@ final class BKTree {
 	return $dist[$sourceLength][$targetLength];
   }
 
-  function render() {
-	echo json_encode($this->_root, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|
-	                               JSON_PARTIAL_OUTPUT_ON_ERROR|JSON_INVALID_UTF8_IGNORE|
-	                               JSON_INVALID_UTF8_SUBSTITUTE);
+  private function toUnicodeCharArray($str) {
+	return preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
   }
 
+  function render() {
+
+	if(!file_exists(dirname(dirname(__FILE__)).BKTree::CACHE_FILE)) {
+
+	  $json = json_encode(new Nodes($this->size, $this->_root), JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|
+																JSON_PARTIAL_OUTPUT_ON_ERROR|JSON_INVALID_UTF8_IGNORE|
+																JSON_INVALID_UTF8_SUBSTITUTE);
+
+	  if($f = gzopen(dirname(dirname(__FILE__)).BKTree::CACHE_FILE, "wb9")) {
+		gzwrite($f, $json);
+		gzclose($f);
+	  }
+
+	  echo $json;
+
+	} else if($f = gzopen(dirname(dirname(__FILE__)).BKTree::CACHE_FILE, "r")) {
+
+		while(!gzeof($f)) {
+		  echo gzread($f, 1024);
+		}
+
+		gzclose($f);
+	}
+  }
 }
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
