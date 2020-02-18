@@ -47,8 +47,8 @@ setcookie("dblastvisit", time(), time()+60*60*24*365);
 
 try {
   $movies = new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
-  isset($_GET['from']) ? $_GET['from'] : 0,
-  isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
+	isset($_GET['from']) ? $_GET['from'] : 0,
+	isset($_GET['to']) ? $_GET['to'] : Movies::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1);
 } catch(Exception $e) {
   echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
 }
@@ -89,7 +89,7 @@ if(isset($_GET['filter_disc'])) {
 <meta name="twitter:site" content="@Velnias75">
 <meta name="og:title" content="Heikos Schrott- &amp; Rentnerfilme">
 <meta property="og:description" content="Hirnlose Ansammlung an Schrott- &amp; Rentnerfilmen bar jeglichen Niveaus">
-<?php 
+<?php
   if(!empty($og_image)) {
     echo "<meta property=\"og:image\" content=\"https://rangun.de/db/omdb.php?cover-oid=".$og_image."\">";
     echo "<meta property=\"twitter:image:alt\" content=\"RTL2 bietet hochwertigere Inhalte!\">";

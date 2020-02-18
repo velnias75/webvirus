@@ -71,16 +71,18 @@ final class _node implements JsonSerializable {
 
 final class BKTree {
 
-  const CACHE_FILE = "/cache/schrottfilme.json.gz";
+  const CACHE_FILE_PRE = "/cache/schrottfilme";
+  const CACHE_FILE_SUF = ".json.bz";
 
   private $_root = null;
   private $size = 0;
 
   function __construct() {
 
-	if(!file_exists(dirname(dirname(__FILE__)).BKTree::CACHE_FILE)) {
+	if(!file_exists(dirname(dirname(__FILE__)).BKTree::CACHE_FILE_PRE.$this->queryString().BKTree::CACHE_FILE_SUF)) {
 
-	  $movies = (new Movies())->mySQLRowsArray();
+	  $movies = (new Movies(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle", 0, -1,
+		isset($_GET['cat']) ? $_GET['cat'] : -1))->mySQLRowsArray();
 	  $mcount = count($movies);
 
 	  for($i = 0; $i < $mcount; $i++) {
@@ -153,28 +155,34 @@ final class BKTree {
 	return preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
   }
 
+  public static function queryString() {
+	return array_key_exists('QUERY_STRING', $_SERVER) ?
+	  "-".strtolower(str_replace('/', '_', $_SERVER['QUERY_STRING'])) : "";
+  }
+
   function render() {
 
-	if(!file_exists(dirname(dirname(__FILE__)).BKTree::CACHE_FILE)) {
+	$cf = dirname(dirname(__FILE__)).BKTree::CACHE_FILE_PRE.$this->queryString().BKTree::CACHE_FILE_SUF;
+
+	if(!file_exists($cf)) {
 
 	  $json = json_encode(new Nodes($this->size, $this->_root), JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|
 																JSON_PARTIAL_OUTPUT_ON_ERROR|JSON_INVALID_UTF8_IGNORE|
 																JSON_INVALID_UTF8_SUBSTITUTE);
-
-	  if($f = gzopen(dirname(dirname(__FILE__)).BKTree::CACHE_FILE, "wb9")) {
-		gzwrite($f, $json);
-		gzclose($f);
+	  if($f = bzopen($cf, "w")) {
+		bzwrite($f, $json);
+		bzclose($f);
 	  }
 
 	  echo $json;
 
-	} else if($f = gzopen(dirname(dirname(__FILE__)).BKTree::CACHE_FILE, "r")) {
+	} else if($f = bzopen($cf, "r")) {
 
-		while(!gzeof($f)) {
-		  echo gzread($f, 1024);
+		while(!feof($f)) {
+		  echo bzread($f, 8192);
 		}
 
-		gzclose($f);
+		bzclose($f);
 	}
   }
 }

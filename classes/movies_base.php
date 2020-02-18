@@ -352,9 +352,9 @@ EOD;
     return $r && $r->num_rows ? $r : null;
   }
 
-  public final function mySQLRowsArray() {
+  public final function mySQLRowsArray($q = "", $filtered_ids = false) {
 
-	$result = $this->mySQLRowsQuery();
+	$result = $this->mySQLRowsQuery($q, $filtered_ids);
 	$jrows = array();
 
 	if(!is_null($result)) {

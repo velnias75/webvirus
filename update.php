@@ -46,9 +46,11 @@ if(MySQLBase::instance()->update_allowed()) {
       }
     }
 
-    if(file_exists(dirname(__FILE__).BKTree::CACHE_FILE)) {
-	  unlink(dirname(__FILE__).BKTree::CACHE_FILE));
+	foreach(glob(dirname(__FILE__).BKTree::CACHE_FILE_PRE."*".BKTree::CACHE_FILE_SUF, GLOB_NOSORT) as $uf) {
+	  unlink($uf);
 	}
+
+	(new BKTree())->render();
 
     // Twitter
     $settings = array(
