@@ -107,7 +107,8 @@ if(isset($_GET['cover-oid'])) {
     $pic = loadCover($doc->getElementById("left_image")->getAttribute("src"));
   } else {
 	try {
-	  $pic = loadCover((new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback'])))->cover_url());
+	  $pic = loadCover((new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback']),
+	  isset($_GET['tmdb_type']) ? $_GET['tmdb_type'] : "movie", isset($_GET['tmdb_id']) && !empty($_GET['tmdb_id']) ? $_GET['tmdb_id'] : null))->cover_url());
 	} catch(RuntimeException $exc) {
 	  $pic = null;
 	}
@@ -129,9 +130,11 @@ if(isset($_GET['cover-oid'])) {
   } else if(isset($_GET['abstract'])) {
 	  header("Content-type: text/plain; charset=UTF-8");
 	  try {
-		echo (new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback'])))->abstract();
+		echo (new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback']),
+		isset($_GET['tmdb_type']) ? $_GET['tmdb_type'] : "movie", isset($_GET['tmdb_id']) && !empty($_GET['tmdb_id']) ? $_GET['tmdb_id'] : null))->abstract();
 	  } catch(RuntimeException $exc) {
-		echo "Konnte Kurzbeschreibung nicht laden.\nWomöglich ist omdb zur Zeit nicht erreichbar.";
+		echo "Konnte Kurzbeschreibung nicht laden.\n".(!empty($_GET['cover-oid']) ? "Womöglich ist omdb zur Zeit nicht erreichbar." :
+		     "Aufgrund fehlender Intelligenz kann weder Webvirus noch TMDb eine Kurzbeschreibung für Dich erfinden.");
 	  }
 	  exit;
   }

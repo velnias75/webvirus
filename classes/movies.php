@@ -121,7 +121,7 @@ public function action() {
 }
 
 private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $dursec = 0, $lingos = "", $disc = "", $fname = "", $cat = 1,
-$isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null, $spooky = null) {
+$isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null, $tmdb_type = null, $tmdb_id = null, $spooky = null) {
 
   if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
     $isSummary = true;
@@ -158,7 +158,7 @@ $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null,
       (!$isSummary ? $this->ample($rating, $id) : "").
       ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn && !$isSummary ? "</a>" : "").
       ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".("<center><img itemprop=\"image\" src=\""
-	  .self::$spinner."\" "."data-src=\"omdb.php?cover-oid=".$omdb_id.(!$isTop250 ? "" : "&amp;top250=true")."&fallback=".
+	  .self::$spinner."\" "."data-src=\"omdb.php?cover-oid="./*$omdb_id.*/(!$isTop250 ? "" : "&amp;top250=true")."&tmdb_type=".$tmdb_type."&tmdb_id=".$tmdb_id."&fallback=".
 	  urlencode($ltitle)."\"></center><br>").(!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
       htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."<br /><center><p style=\"display:none;\">abstract</p><center></span>"))),
       new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
@@ -245,19 +245,19 @@ public final function render() {
 
       while($row = $result->fetch_assoc()) {
 
-	$fids  .= $row['ID'].",";
-	$tits[] = preg_replace("/\\\"/", "&quot;", htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8"));
+		$fids  .= $row['ID'].",";
+		$tits[] = preg_replace("/\\\"/", "&quot;", htmlentities($row['ltitle'], ENT_SUBSTITUTE, "utf-8"));
 
-	if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
-	  $this->renderRow($row['ID'], $row['ltitle'],
-	  $row['st'], $row['duration'], $row['dur_sec'],
-	  $row['lingos'], $row['disc'], $row['filename'],
-	  $row['category'], false, $row['top250'],
-	  isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']),
-	  $row['avg_rating'], $row['omdb_id'], $row['spooky']);
-	}
+		if($i >= $this->limit_from && ($this->limit_to == -1 || $i <= $this->limit_to)) {
+		  $this->renderRow($row['ID'], $row['ltitle'],
+		  $row['st'], $row['duration'], $row['dur_sec'],
+		  $row['lingos'], $row['disc'], $row['filename'],
+		  $row['category'], false, $row['top250'],
+		  isset($_SESSION['ui']) ? (is_null($row['user_rating']) ? -1 : $row['user_rating']) : (is_null($row['avg_rating']) ? -1 : $row['avg_rating']),
+		  $row['avg_rating'], $row['omdb_id'], $row['tmdb_type'], $row['tmdb_id'], $row['spooky']);
+		}
 
-	$i++;
+		$i++;
       }
 
       if(isset($_SESSION['ui'])) {

@@ -124,7 +124,7 @@ class TMDb {
 
   private $pbase;
 
-  function __construct($q) {
+  function __construct($q, $type, $tid) {
 
 	require dirname(dirname(__FILE__)).'/db_cred.php';
 
@@ -135,10 +135,32 @@ class TMDb {
 	  $this->api_key = $tmdb_k;
 	  $this->conf    = $this->req("https://api.themoviedb.org/3/configuration");
 
-	  if(!is_numeric($q)) {
-		$id = $this->search($q, $v);
+	  if(is_null($tid)) {
+
+		if(!is_numeric($q)) {
+
+		  $id = $this->search($q, $v);
+
+		  if(is_null($id)) {
+
+			if(mb_strrchr($q, ")", true, 'UTF-8') !== false) {
+			  $pos = mb_strrchr($q, "(", true, 'UTF-8');
+			  if($pos !== false) $id = $this->search($pos, $v);
+			}
+
+			if(is_null($id)) {
+			  $pos = mb_strrchr($q, ":", true, 'UTF-8');
+			  if($pos !== false) $id = $this->search($pos, $v);
+			}
+		  }
+
+		} else {
+		  $id = $q;
+		}
+
 	  } else {
-		$id = $q;
+		$v = $type;
+		$id = $tid;
 	  }
 
 	  if(!is_null($id)) {
@@ -156,29 +178,53 @@ class TMDb {
 
   private function inspect($rsp, $q, &$v) {
 
-	foreach($rsp->search_results() as $r) {
+	$arr = $rsp->search_results();
+
+	usort($arr, function($a, $b) {
+	  return strcmp($a->{'media_type'}, $b->{'media_type'});
+	});
+
+	foreach($arr as $r) {
 
 	  $v  = $r->{'media_type'} == "tv" ? "name" : "title";
 	  $t  = mb_strtolower($r->{$v}, 'UTF-8');
-	  $ot = mb_strtolower($r->{'original_'.$v}, 'UTF-8');
 
-	  if(($t == $q || $ot == $q) && !empty($r->{'overview'})) {
+	  if($t == $q && !empty($r->{'overview'})) {
 		return $r->{'id'};
 	  }
 	}
 
-	foreach($rsp->search_results() as $r) {
+	foreach($arr as $r) {
 
 	  $v  = $r->{'media_type'} == "tv" ? "name" : "title";
-	  $t  = mb_strtolower($r->{$v}, 'UTF-8');
 	  $ot = mb_strtolower($r->{'original_'.$v}, 'UTF-8');
 
-	  if(($t == $q || $ot == $q)) {
+	  if($ot == $q && !empty($r->{'overview'})) {
 		return $r->{'id'};
 	  }
 	}
 
-	foreach($rsp->search_results() as $r) {
+	foreach($arr as $r) {
+
+	  $v  = $r->{'media_type'} == "tv" ? "name" : "title";
+	  $t  = mb_strtolower($r->{$v}, 'UTF-8');
+
+	  if($t == $q) {
+		return $r->{'id'};
+	  }
+	}
+
+	foreach($arr as $r) {
+
+	  $v  = $r->{'media_type'} == "tv" ? "name" : "title";
+	  $ot = mb_strtolower($r->{'original_'.$v}, 'UTF-8');
+
+	  if($ot == $q) {
+		return $r->{'id'};
+	  }
+	}
+
+	foreach($arr as $r) {
 
 	  $v  = $r->{'media_type'} == "tv" ? "name" : "title";
 	  $t  = mb_strtolower($r->{$v}, 'UTF-8');
@@ -192,7 +238,7 @@ class TMDb {
 		}
 	}
 
-	foreach($rsp->search_results() as $r) {
+	foreach($arr as $r) {
 
 	  $v  = $r->{'media_type'} == "tv" ? "name" : "title";
 	  $alt = $this->req("https://api.themoviedb.org/3/".($r->{'media_type'} == "tv" ?
@@ -257,7 +303,8 @@ class TMDb {
 
   function abstract() {
 	return trim($this->mresp->abstract()."\n\n• ".$this->mresp->genres()." (".$this->mresp->countries().")\n".
-				$this->cresp->cast()."\n🎥 Originaltitel: ".$this->mresp->origtitle()."\n🎥 Regie: ".$this->cresp->director())."\n";
+				$this->cresp->cast()."\n🎥 Originaltitel: ".$this->mresp->origtitle()."\n".
+				(!empty($this->cresp->director()) ? "🎥 Regie: ".$this->cresp->director()."\n" : ""));
   }
 }
 
