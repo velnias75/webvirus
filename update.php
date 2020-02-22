@@ -50,8 +50,6 @@ if(MySQLBase::instance()->update_allowed()) {
 	  unlink($uf);
 	}
 
-	(new BKTree())->render();
-
     // Twitter
     $settings = array(
       'oauth_access_token' => $_SESSION['ui']['oauth_access_token'],

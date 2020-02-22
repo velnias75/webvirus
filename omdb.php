@@ -21,6 +21,7 @@
 require 'classes/mysql_base.php';
 require 'classes/omdb_base.php';
 require 'classes/tracker.php';
+require 'classes/tmdb.php';
 
 function noCoverPic() {
     $filename = "img/nocover.png";
@@ -29,6 +30,57 @@ function noCoverPic() {
     fclose($handle);
 
     return $p;
+}
+
+function loadCover($url) {
+
+  $ch = curl_init($url);
+
+  curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+  //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
+  curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language", "de,en-US;q=0.7,en;q=0.3"));
+
+  if(isset($proxy)) {
+	curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+	curl_setopt($ch, CURLOPT_PROXY, $proxy);
+  }
+
+  curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+  function($curl, $header) use (&$headers) {
+
+	$len = strlen($header);
+	$header = explode(':', $header, 2);
+
+	if(count($header) < 2) return $len;
+
+	$name = strtolower(trim($header[0]));
+
+	if(!is_null($headers)) {
+	  if(!array_key_exists($name, $headers)) {
+		$headers[$name] = [trim($header[1])];
+	  } else {
+		$headers[$name][] = trim($header[1]);
+	  }
+	}
+
+	return $len;
+  }
+  );
+
+  $pic = curl_exec($ch);
+  $rsc = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+
+  if($rsc != 200) $pic == null;
+
+  if(curl_errno($ch) || $rsc != 200) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
+
+  curl_close($ch);
+
+  return $pic;
 }
 
 if(!isset($_GET['cover-oid'])) {
@@ -49,53 +101,17 @@ if(isset($_GET['cover-oid'])) {
 
   if($ref_url['host'] != $req_url['host']) (new Tracker())->track("OMDB cover request for ".$_GET['cover-oid']." {".$_SERVER['HTTP_USER_AGENT']."}");
 
-  $doc = fetchOMDBPage($_GET['cover-oid']);
+  $doc = !empty($_GET['cover-oid']) ? fetchOMDBPage($_GET['cover-oid']) : null;
 
   if(!is_null($doc) && !isset($_GET['abstract']) && !empty($doc->getElementById("left_image"))) {
-    $ch = curl_init($doc->getElementById("left_image")->getAttribute("src"));
-    curl_setopt($ch, CURLOPT_USERAGENT, "db-webvirus/1.0");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    //curl_setopt($ch, CURLOPT_HTTPHEADER,     array("If-None-Match: ".trim($_SERVER["HTTP_IF_NONE_MATCH"]));
-    curl_setopt($ch, CURLOPT_HTTPHEADER,     array("Accept-Language", "de,en-US;q=0.7,en;q=0.3"));
-
-    if(!is_null($proxy)) {
-      curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-      curl_setopt($ch, CURLOPT_PROXY, $proxy);
-    }
-
-    curl_setopt($ch, CURLOPT_HEADERFUNCTION,
-	  function($curl, $header) use (&$headers) {
-
-		$len = strlen($header);
-		$header = explode(':', $header, 2);
-
-		if(count($header) < 2) return $len;
-
-		$name = strtolower(trim($header[0]));
-
-		if(!array_key_exists($name, $headers)) {
-		  $headers[$name] = [trim($header[1])];
-		} else {
-		  $headers[$name][] = trim($header[1]);
-		}
-
-		return $len;
-	  }
-    );
-
-    $pic = curl_exec($ch);
-    $rsc = curl_getinfo($ch,  CURLINFO_RESPONSE_CODE);
-
-    if($rsc != 200) $pic == null;
-
-    if(curl_errno($ch) || $rsc != 200) error_log("Curl error (loading omdb movie picture): ".curl_error($ch));
-
-    curl_close($ch);
-
-  } else $pic = null;
+    $pic = loadCover($doc->getElementById("left_image")->getAttribute("src"));
+  } else {
+	try {
+	  $pic = loadCover((new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback'])))->cover_url());
+	} catch(RuntimeException $exc) {
+	  $pic = null;
+	}
+  }
 
   if(isset($_GET['abstract']) && !is_null($doc) && !empty($doc->getElementById("abstract"))) {
 
@@ -112,7 +128,11 @@ if(isset($_GET['cover-oid'])) {
 
   } else if(isset($_GET['abstract'])) {
 	  header("Content-type: text/plain; charset=UTF-8");
-	  echo "Konnte Kurzbeschreibung nicht laden.\nWomöglich ist omdb zur Zeit nicht erreichbar.";
+	  try {
+		echo (new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback'])))->abstract();
+	  } catch(RuntimeException $exc) {
+		echo "Konnte Kurzbeschreibung nicht laden.\nWomöglich ist omdb zur Zeit nicht erreichbar.";
+	  }
 	  exit;
   }
 
@@ -135,7 +155,7 @@ if(isset($_GET['cover-oid'])) {
 
     $im = imagecreatefromstring($pic);
 
-    if ($im === false) $im = imagecreatefromstring(noCoverPic());
+    if($im === false) $im = imagecreatefromstring(noCoverPic());
 
     $stamp = imagecreatetruecolor(110, 30);
     imagefilledrectangle($stamp, 0, 0, 109, 29, 0xFF0000);

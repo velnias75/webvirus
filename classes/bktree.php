@@ -19,10 +19,7 @@
  */
 
 require 'movies.php';
-
-function titleNormalizer($title) {
-  return trim(preg_replace('~[^\x00-\xFF]~u', "", $title));
-}
+require_once 'levenshteintraits.php';
 
 final class Nodes implements JsonSerializable {
 
@@ -41,11 +38,17 @@ final class Nodes implements JsonSerializable {
 
 final class _node implements JsonSerializable {
 
+  use LevenshteinTraits;
+
   private $item;
   private $children = null;
 
   function __construct($item) {
 	$this->item = $item;
+
+	/*if(is_null($this->item['oid'])) {
+	  $this->item['oid'] = 0;
+	}*/
   }
 
   function get($key) {
@@ -65,11 +68,13 @@ final class _node implements JsonSerializable {
   }
 
   function __toString() {
-	return titleNormalizer($this->item['title']);
+	return $this->titleNormalizer($this->item['title']);
   }
 }
 
 final class BKTree {
+
+  use LevenshteinTraits;
 
   const CACHE_FILE_PRE = "/cache/schrottfilme";
   const CACHE_FILE_SUF = ".json.bz";
@@ -100,7 +105,7 @@ final class BKTree {
 	}
 
 	$curNode = $this->_root;
-	$it = $this->toUnicodeCharArray(mb_strtolower(titleNormalizer($item['title']), 'UTF-8'));
+	$it = $this->toUnicodeCharArray(mb_strtolower($this->titleNormalizer($item['title']), 'UTF-8'));
 
 	$dist = $this->damerauLevenshteinDistance($this->toUnicodeCharArray(mb_strtolower($curNode, 'UTF-8')), $it);
 
@@ -116,43 +121,6 @@ final class BKTree {
 	$curNode->addChild($dist, $item);
 
 	$this->size++;
-  }
-
-  private function damerauLevenshteinDistance($source, $target) {
-
-	$sourceLength = count($source);
-	$targetLength = count($target);
-
-	if($sourceLength == 0) return $targetLength;
-	if($targetLength == 0) return $sourceLength;
-
-	$dist = array(array());
-
-	for($i = 0; $i <= $sourceLength; $i++) $dist[$i][0] = $i;
-	for($j = 0; $j <= $targetLength; $j++) $dist[0][$j] = $j;
-
-	for($i = 1; $i <= $sourceLength; $i++) {
-
-	  $sca = $source[$i - 1];
-
-	  for($j = 1; $j <= $targetLength; $j++) {
-
-		$tca = $target[$j - 1];
-		$cost = $sca == $tca ? 0 : 1;
-
-		$dist[$i][$j] = min(min($dist[$i - 1][$j] + 1, $dist[$i][$j - 1] + 1), $dist[$i - 1][$j - 1] + $cost);
-
-		if($j > 1 && $i > 1 && $sca == $target[$j - 2] && $source[$i - 2] == $tca) {
-		  $dist[$i][$j] = min($dist[$i][$j], $dist[$i - 2][$j - 2] + $cost);
-		}
-	  }
-	}
-
-	return $dist[$sourceLength][$targetLength];
-  }
-
-  private function toUnicodeCharArray($str) {
-	return preg_split('//u', $str, -1, PREG_SPLIT_NO_EMPTY);
   }
 
   public static function queryString() {

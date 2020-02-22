@@ -66,7 +66,7 @@ final class Movies extends MoviesBase implements IFormable {
     }
 
     var __align = function(e) {
-      
+
       var tooltip = base.children("span");
       var tooltipTop = tooltip.offset().top;
       var tooltipLeft = (base.offset().left + base.width()) - tooltip.width() - 20;
@@ -88,8 +88,8 @@ final class Movies extends MoviesBase implements IFormable {
 
       if(image.attr("src") != image.attr("data-src")) {
         image.attr("src", image.attr("data-src")).on('load', __align);
-      } else { 
-        __align(e); 
+      } else {
+        __align(e);
       }
     }
   });
@@ -150,16 +150,16 @@ $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null,
       ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\" onclick=\"enableUserActions(".$id.", true)\">").
       htmlentities($nid, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
       "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\" onclick=\"enableUserActions(".$id.", false)\">X</a><div class=\"ua cat_".$cat."\">".
-      $id."&nbsp;&ndash;&nbsp;".      htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg, $omdb_id))->render().
+      $id."&nbsp;&ndash;&nbsp;".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg, $omdb_id))->render().
       "</div>")).($isSummary || !$this->loggedIn ? "" : "</div>")),
       new Cell($tatt,($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"".
       (is_null($omdb_id) ? "omdb.php?search=".urlencode($st) : "omdb.php?id=".$omdb_id)."&amp;q=".
       urlencode($_SERVER['QUERY_STRING'])."\">" : ($isSummary ? "<a href=\"#openModal_stats\">" : "")).
       (!$isSummary ? $this->ample($rating, $id) : "").
       ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn && !$isSummary ? "</a>" : "").
-      ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".(is_null($omdb_id) ? "" : "<center><img itemprop=\"image\" src=\""
-      .self::$spinner."\" "."data-src=\"omdb.php?cover-oid=".$omdb_id.(!$isTop250 ? "" : "&amp;top250=true")."\"></center><br>").
-      (!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
+      ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".("<center><img itemprop=\"image\" src=\""
+	  .self::$spinner."\" "."data-src=\"omdb.php?cover-oid=".$omdb_id.(!$isTop250 ? "" : "&amp;top250=true")."&fallback=".
+	  urlencode($ltitle)."\"></center><br>").(!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
       htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."<br /><center><p style=\"display:none;\">abstract</p><center></span>"))),
       new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
       ($duration === "" ? "&nbsp;" : ($dursec != 0 ? "<span>&asymp;".htmlentities(round($dursec/60), ENT_SUBSTITUTE, "utf-8")." Minuten</span>" : "").

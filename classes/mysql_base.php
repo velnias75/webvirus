@@ -123,6 +123,21 @@ final class MySQLBase {
     }
   }
 
+  public function title_from_omdb_id($omdb) {
+
+	$res = $this->mysqli->query("SELECT DISTINCT MAKE_MOVIE_TITLE(IF(s.name IS NOT NULL, s.name, m.title), ".
+		                        "NULL, NULL, NULL, 0, 0) AS title FROM movies AS m ".
+								"LEFT JOIN episode_series AS es ON m.ID = es.movie_id LEFT JOIN series AS s ".
+								"ON s.id = es.series_id WHERE omdb_id = ".$omdb);
+
+	if($res->num_rows) {
+	  $row = $res->fetch_assoc();
+	  $res->free_result();
+	}
+
+	return $row['title'];
+  }
+
   public function chg_pass($id, $pass) {
     if(!$this->mysqli->query("UPDATE users SET pass=HEX(AES_ENCRYPT('".
       $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".
