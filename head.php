@@ -91,7 +91,7 @@ if(isset($_GET['filter_disc'])) {
 <meta property="og:description" content="Hirnlose Ansammlung an Schrott- &amp; Rentnerfilmen bar jeglichen Niveaus">
 <?php
   if(!empty($og_image)) {
-    echo "<meta property=\"og:image\" content=\"https://rangun.de/db/omdb.php?cover-oid=".$og_image."\">";
+	echo "<meta property=\"og:image\" content=\"https://rangun.de/db/omdb.php?cover-oid=&tmdb_type=".$og_image[1]."&tmdb_id=".$og_image[0]."\">";
     echo "<meta property=\"twitter:image:alt\" content=\"RTL2 bietet hochwertigere Inhalte!\">";
   }
 ?>
