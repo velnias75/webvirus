@@ -103,12 +103,19 @@ if(isset($_GET['cover-oid'])) {
 
   $doc = !empty($_GET['cover-oid']) ? fetchOMDBPage($_GET['cover-oid']) : null;
 
+  try {
+	$tmdb = new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback']),
+	  isset($_GET['tmdb_type']) ? $_GET['tmdb_type'] : "movie", isset($_GET['tmdb_id']) && !empty($_GET['tmdb_id']) ? $_GET['tmdb_id'] : null);
+  } catch(RuntimeException $exc) {
+	$tmdb = null;
+  }
+
   if(!is_null($doc) && !isset($_GET['abstract']) && !empty($doc->getElementById("left_image"))) {
     $pic = loadCover($doc->getElementById("left_image")->getAttribute("src"));
   } else {
 	try {
-	  $pic = loadCover((new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback']),
-	  isset($_GET['tmdb_type']) ? $_GET['tmdb_type'] : "movie", isset($_GET['tmdb_id']) && !empty($_GET['tmdb_id']) ? $_GET['tmdb_id'] : null))->cover_url());
+	  if(is_null($tmdb)) throw new RuntimeException();
+	  $pic = loadCover($tmdb->cover_url());
 	} catch(RuntimeException $exc) {
 	  $pic = null;
 	}
@@ -130,11 +137,13 @@ if(isset($_GET['cover-oid'])) {
   } else if(isset($_GET['abstract'])) {
 	  header("Content-type: text/plain; charset=UTF-8");
 	  try {
-		echo (new TMDb(!empty($_GET['cover-oid']) ? MySQLBase::instance()->title_from_omdb_id($_GET['cover-oid']) : urldecode($_GET['fallback']),
-		isset($_GET['tmdb_type']) ? $_GET['tmdb_type'] : "movie", isset($_GET['tmdb_id']) && !empty($_GET['tmdb_id']) ? $_GET['tmdb_id'] : null))->abstract();
+		if(is_null($tmdb)) throw new RuntimeException("DB");
+		echo $tmdb->abstract();
 	  } catch(RuntimeException $exc) {
-		echo "Konnte Kurzbeschreibung nicht laden.\n".(!empty($_GET['cover-oid']) ? "Womöglich ist omdb zur Zeit nicht erreichbar." :
-		     "Aufgrund fehlender Intelligenz kann weder Webvirus noch TMDb eine Kurzbeschreibung für Dich erfinden.");
+		if("DB" != $exc->getMessage()) {
+		  echo "Konnte Kurzbeschreibung nicht laden.\n".(!empty($_GET['cover-oid']) ? "Womöglich ist omdb zur Zeit nicht erreichbar." :
+			  "Aufgrund fehlender Intelligenz kann weder Webvirus noch TMDb eine Kurzbeschreibung für Dich erfinden.");
+		}
 	  }
 	  exit;
   }
@@ -191,9 +200,12 @@ if(isset($_GET['cover-oid'])) {
   if($_SESSION['ui']['admin']) MySQLBase::instance()->update_omdb_id($_GET['mid'], $_GET['oid']);
   if(isset($_GET['url'])) header("Location: ".urldecode($_GET['url']));
 } else if(isset($_GET['search']) && isset($_SESSION['ui'])) {
-  header("Location: http://www.omdb.org/search/movies/?search[text]=".$_GET['search']);
+  $tmdb = new TMDb($_GET['search'], 'movie', null);
+  header("Location: https://www.themoviedb.org/".$tmdb->media_type()."/".$tmdb->id());
 } else if(isset($_GET['id']) && isset($_SESSION['ui'])) {
   header("Location: https://www.omdb.org/movie/".$_GET['id']);
+} else if(isset($_GET['wvid']) && isset($_SESSION['ui'])) {
+  header("Location: ".MySQLBase::instance()->tmdb_url_from_id($_GET['wvid']));
 } else if(isset($_GET['q'])) {
   header("Location: ".MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].MySQLBase::getRequestURI()."/?".urldecode($_GET['q']));
 } else {

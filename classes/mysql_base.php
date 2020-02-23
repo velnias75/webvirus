@@ -138,6 +138,18 @@ final class MySQLBase {
 	return $row['title'];
   }
 
+  public function tmdb_url_from_id($id) {
+
+	$res = $this->mysqli->query("SELECT tmdb_type, tmdb_id FROM `movies`WHERE id = ".$id);
+
+	if($res->num_rows) {
+	  $row = $res->fetch_assoc();
+	  $res->free_result();
+	}
+
+	return "https://www.themoviedb.org/".$row['tmdb_type']."/".$row['tmdb_id'];
+  }
+
   public function chg_pass($id, $pass) {
     if(!$this->mysqli->query("UPDATE users SET pass=HEX(AES_ENCRYPT('".
       $this->mysqli->real_escape_string($pass)."', UNHEX(SHA2('".

@@ -121,8 +121,9 @@ class TMDb {
   private $mresp;
   private $cresp;
   private $conf;
-
   private $pbase;
+  private $mtype;
+  private $mid;
 
   function __construct($q, $type, $tid) {
 
@@ -162,6 +163,9 @@ class TMDb {
 		$v = $type;
 		$id = $tid;
 	  }
+
+	  $this->mtype = $v;
+	  $this->mid  = $id;
 
 	  if(!is_null($id)) {
 		$this->mresp = $this->req("https://api.themoviedb.org/3/".($v == "name" ? "tv" : "movie")."/".$id);
@@ -295,6 +299,14 @@ class TMDb {
 	} else {
 	  throw new RuntimeException("error in curl_init()");
 	}
+  }
+
+  function id() {
+	return $this->mid;
+  }
+
+  function media_type() {
+	return $this->mtype == "title" ? "movie" : "tv";
   }
 
   function cover_url() {
