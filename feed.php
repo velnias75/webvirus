@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -21,6 +21,7 @@
 require 'classes/mysql_base.php';
 require 'classes/omdb_base.php';
 require 'classes/tracker.php';
+require 'classes/tmdb.php';
 
 function getLink() {
   return MySQLBase::instance()->protocol()."://".$_SERVER['SERVER_NAME'].MySQLBase::getRequestURI();
@@ -92,8 +93,8 @@ $head = $xml->createElement('lastBuildDate', gmdate("D, j M Y H:i:s ", time()).'
 $channel->appendChild($head);
 
 $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`name` AS `name`, UNIX_TIMESTAMP(`d`.`created`) AS `created`, `m`.`ID` AS `ID`, ".
-"MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`, `m`.`omu`) AS `title`, `c`.`name` as `cat`, `m`.`omdb_id`AS `oid`, ".
-"SEC_TO_TIME(m.duration) AS `duration`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ".
+"MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`, `s`.`name`, `es`.`episode`, `s`.`prepend`, `m`.`omu`) AS `title`, `c`.`name` as `cat`, `m`.`tmdb_id`AS `oid`, ".
+"`m`.`tmdb_type` AS `ttp`, SEC_TO_TIME(m.duration) AS `duration`, IF(`languages`.`name` IS NOT NULL, TRIM(GROUP_CONCAT(`languages`.`name` ".
 "ORDER BY `movie_languages`.`lang_id` DESC SEPARATOR ', ')), 'n. V.') as `lingos` FROM `movies` AS `m` ".
 "LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
 "LEFT JOIN `disc` AS `d` ON `m`.`disc` = `d`.`id` LEFT JOIN `categories` AS `c` ON `c`.`id` = `m`.`category` ".
@@ -104,6 +105,12 @@ $result = MySQLBase::instance()->con()->query("SELECT `d`.`id` AS `did`, `d`.`na
 $lm = false;
 
 while($rssdata = $result->fetch_assoc()) {
+
+  try {
+	$tmdb = new TMDb($rssdata['title'], $rssdata['ttp'], $rssdata['oid']);
+  } catch(RuntimeException $exc) {
+	$tmdb = null;
+  }
 
   if(!$lm) {
     $lm = true;
@@ -116,21 +123,21 @@ while($rssdata = $result->fetch_assoc()) {
   $data = $xml->createElement('title', str_replace("&", "&amp;", $rssdata['title']));
   $item->appendChild($data);
 
-  $abse = extractAbstract(fetchOMDBPage($rssdata['oid']));
+  $abse = array( 'abstract' => !is_null($tmdb) ? $tmdb->abstract() : "", 'encoding' => 'UTF-8' );
 
   $cdata = $xml->createCDATASection("<table border=\"0\"><tr>".
-  (!empty($rssdata['oid']) ? "<td width=\"*\">".
-  "<img src=\"".getLink()."/omdb.php?cover-oid=".$rssdata['oid']."\" alt=\"Cover f&uuml;r &quot;".$rssdata['title']."&quot;\">".
-  "</td>" : "").
-  "<td valign=\"top\"".(!empty($rssdata['oid']) ? "" : " colspan=\"2\"")."><dl>".
-  "<dt><b>Nr</b></dt><dd>".$rssdata['ID']."</dd>".
-  "<dt><b>Titel</b></dt><dd>".str_replace("&", "&amp;", $rssdata['title'])."</dd>".
-  "<dt><b>L&auml;nge</b></dt><dd>".$rssdata['duration']."</dd>".
-  "<dt><b>Sprachen(n)</b></dt><dd>".$rssdata['lingos']."</dd>".
-  "<dt><b>DVD</b></dt><dd>".$rssdata['name']."</dd>".
-  (!is_null($abse) ? "<dt><b>Kurzbeschreibung</b></dt><dd>".
-    htmlentities(mb_convert_encoding($abse['abstract'], "UTF-8", $abse['encoding']), ENT_SUBSTITUTE, "utf-8")."</dd>" : "").
-  "</dl></td></tr>");
+  (!is_null($tmdb) ? "<td width=\"*\" valign=\"top\">".
+	"<img src=\"".getLink()."/omdb.php?cover-oid=&".(is_null($rssdata['oid']) ? "fallback=".urlencode($rssdata['title']) :
+	"tmdb_type=".$rssdata['ttp']."&tmdb_id=".$rssdata['oid'])."\" alt=\"Cover f&uuml;r &quot;".$rssdata['title']."&quot;\">"."</td>" : "").
+	"<td valign=\"top\"".(is_null($tmdb) ? "" : " colspan=\"2\"")."><dl>".
+	"<dt><b>Nr</b></dt><dd>".$rssdata['ID']."</dd>".
+	"<dt><b>Titel</b></dt><dd>".str_replace("&", "&amp;", $rssdata['title'])."</dd>".
+	"<dt><b>L&auml;nge</b></dt><dd>".$rssdata['duration']."</dd>".
+	"<dt><b>Sprachen(n)</b></dt><dd>".$rssdata['lingos']."</dd>".
+	"<dt><b>DVD</b></dt><dd>".$rssdata['name']."</dd>".
+	(!empty($abse['abstract']) ? "<dt><b>Kurzbeschreibung</b></dt><dd>".
+	  nl2br(htmlentities(mb_convert_encoding($abse['abstract'], "UTF-8", $abse['encoding']), ENT_SUBSTITUTE, "utf-8"))."</dd>" : "").
+	"</dl></td></tr>");
   $data = $xml->createElement('description');
   $data->appendChild($cdata);
   $item->appendChild($data);

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2019-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -20,6 +20,7 @@
 
 session_start();
 
+require 'classes/tmdb.php';
 require 'classes/omdb_base.php';
 require 'classes/mysql_base.php';
 require 'classes/ampletraits.php';
@@ -88,22 +89,29 @@ $r  = new Rating();
 
 $sql = "SELECT m.ID AS `mid`, d.id AS dnr, m.top250 AS top250, c.name AS cat, MAKE_MOVIE_TITLE(`m`.`title`, `m`.`comment`,`s`.`name`, `es`.`episode`, ".
   "`s`.`prepend`, `m`.`omu`) AS `title`, duration_string(m.duration) AS dur, IF(`l`.`name` IS NOT NULL, TRIM(GROUP_CONCAT( `l`.`name` ORDER BY `ml`.`lang_id` ".
-  "DESC SEPARATOR ', ')), 'n. V.') AS `lingos`, d.name AS disc, AVG(ur.rating) AS avg_rating,  m.omdb_id AS oid FROM movies AS m LEFT JOIN disc AS d ".
-  "ON m.disc = d.id LEFT JOIN user_ratings AS ur ON ur.movie_id = m.id LEFT JOIN movie_languages AS ml ON  ml.movie_id = m.ID LEFT JOIN languages AS l ".
-  "ON l.id = ml.lang_id LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ON `s`.`id` = `es`.`series_id` ".
-  "LEFT JOIN categories AS c ON c.ID = m.category WHERE m.ID = ".$_POST['mid'];
+  "DESC SEPARATOR ', ')), 'n. V.') AS `lingos`, d.name AS disc, AVG(ur.rating) AS avg_rating, m.tmdb_type AS ttp, m.tmdb_id AS oid FROM movies AS m ".
+  "LEFT JOIN disc AS d ON m.disc = d.id LEFT JOIN user_ratings AS ur ON ur.movie_id = m.id LEFT JOIN movie_languages AS ml ON  ml.movie_id = m.ID ".
+  "LEFT JOIN languages AS l ON l.id = ml.lang_id LEFT JOIN `episode_series` AS `es` ON `m`.`ID` = `es`.`movie_id` LEFT JOIN `series` AS `s` ".
+  "ON `s`.`id` = `es`.`series_id` LEFT JOIN categories AS c ON c.ID = m.category WHERE m.ID = ".$_POST['mid'];
 
 $result = MySQLBase::instance()->con()->query($sql);
 $rows   = $result->fetch_assoc();
 
-$abse   = extractAbstract(fetchOMDBPage($rows['oid']));
+try {
+  $tmdb = new TMDb($rows['title'], $rows['ttp'], $rows['oid']);
+  $abse = array( 'abstract' => !is_null($tmdb) ? $tmdb->abstract() : "", 'encoding' => 'UTF-8' );
+} catch(RuntimeException $exc) {
+  $abse = null;
+}
 
 $mail   = preg_replace('/%RATING%/', !is_null($rows['avg_rating']) ? $r->getRating($rows['avg_rating']) : "unbewertet", $mail);
 $msg    = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $msg);
 $mail   = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $mail);
 $mail   = preg_replace('/%URL%/', $r->getLink(), $mail);
 $msg    = preg_replace('/%URL%/', $r->getLink(), $msg);
-$mail   = preg_replace('/%IMAGE%/', $r->getLink()."/omdb.php?cover-oid=".$rows['oid'].($rows['top250'] ? "&top250=true" : ""), $mail);
+$mail   = preg_replace('/%IMAGE%/', $r->getLink()."/omdb.php?cover-oid=&".(is_null($rows['oid']) ? "fallback=".urlencode($rows['title']) :
+												  "tmdb_type=".$rows['ttp']."&tmdb_id=".$rows['oid']), $mail);
+//"/omdb.php?cover-oid=".$rows['oid'].($rows['top250'] ? "&top250=true" : ""), $mail);
 $mail   = preg_replace('/%MID%/', $rows['mid'], $mail);
 $mail   = preg_replace('/%TITLE%/', htmlentities($rows['title']), $mail);
 $mail   = preg_replace('/%DUR%/', $rows['dur'], $mail);
@@ -115,8 +123,8 @@ $mail   = preg_replace('/%CAT%/', htmlentities($rows['cat']), $mail);
 //$mail   = preg_replace('/%MESSAGE%/', empty($_POST['msg']) ? $msg : nl2br(preg_replace($urx, "<a href=\"$0\">$0</a>", $_POST['msg']))."<hr />", $mail);
 $mail   = preg_replace('/%MESSAGE%/', empty($_POST['msg']) ? $msg : nl2br($_POST['msg'])."<hr />", $mail);
 $mail   = preg_replace('/%ABSTRACT%/',
-            htmlentities(mb_convert_encoding(is_null($abse) ? "ist nicht verfügbar" : $abse['abstract'], "UTF-8",
-            is_null($abse) ? "UTF-8" : $abse['encoding']), ENT_SUBSTITUTE, "UTF-8"),
+            nl2br(htmlentities(mb_convert_encoding(is_null($abse) ? "ist nicht verfügbar" : $abse['abstract'], "UTF-8",
+            is_null($abse) ? "UTF-8" : $abse['encoding']), ENT_SUBSTITUTE, "UTF-8")),
             $mail);
 
 $header = "From: =?utf-8?B?".base64_encode("\xF0\x9F\x98\xA8 Heikos Schrott- & Rentnerfilme")."?= <no-reply@rangun.de>\n".(empty($_SESSION['ui']['email']) ?
