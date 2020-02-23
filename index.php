@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -49,8 +49,8 @@ $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
 <table id="layout" border="0" width="100%">
   <tr><td id="layout_top" valign="middle" align="center" colspan="3">
     <?php
-      if(!(empty($og_image) || MoviesBase::isMobile())) {
-        echo "<div class=\"cover_top_div\"><img class=\"cover_top\" src=\"omdb.php?cover-oid=".$og_image."\"></div>";
+      if(!(empty($og_image[0]) || MoviesBase::isMobile())) {
+        echo "<div class=\"cover_top_div\"><img class=\"cover_top\" src=\"omdb.php?cover-oid=&tmdb_type=".$og_image[1]."&tmdb_id=".$og_image[0]."\"></div>";
       }
     ?>
     <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>" style="white-space: nowrap;">

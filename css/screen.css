@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -293,6 +293,12 @@ td.list a, td.list.hack a {
   z-index: 99999;
   display: none;
   pointer-events: none;
+}
+
+.modalDialog > div fieldset {
+  padding: 0;
+  border: none;
+  margin: 0;
 }
 
 .modalDialog:target {

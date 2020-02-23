@@ -152,7 +152,8 @@ $isSummary = false, $isTop250 = false, $rating = -1, $avg = -1, $omdb_id = null,
       ($id === "" ? "&nbsp;" : ($isSummary || !$this->loggedIn ? "" : "<a href=\"#openModal_".$id."\" onclick=\"enableUserActions(".$id.", true)\">").
       htmlentities($nid, ENT_SUBSTITUTE, "utf-8").($isSummary || !$this->loggedIn ? "" : "</a><div id=\"openModal_".$id."\" class=\"modalDialog\">".
       "<div><a href=\"#close\" title=\"Schlie&szlig;en\" class=\"close\" onclick=\"enableUserActions(".$id.", false)\">X</a><div class=\"ua cat_".$cat."\">".
-      $id."&nbsp;&ndash;&nbsp;".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg, $omdb_id))->render()."</div>")).($isSummary || !$this->loggedIn ? "" : "</div>")),
+      $id."&nbsp;&ndash;&nbsp;".htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."</div>".(new UserActions($_SESSION['ui'], $id, $rating, $avg,
+      $omdb_id, $tmdb_type, $tmdb_id, $ltitle))->render()."</div>")).($isSummary || !$this->loggedIn ? "" : "</div>")),
       new Cell($tatt,($this->loggedIn && !$isSummary ? "<a target=\"omdb\" href=\"".
       ((is_null($omdb_id) && is_null($tmdb_id)) ? "omdb.php?search=".urlencode($st) : "omdb.php?".(!is_null($tmdb_id) ? "wvid=".$id :
       "id=".$omdb_id))."&amp;q=".urlencode($_SERVER['QUERY_STRING'])."\">" : ($isSummary ? "<a href=\"#openModal_stats\">" : "")).

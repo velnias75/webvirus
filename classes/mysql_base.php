@@ -111,8 +111,8 @@ final class MySQLBase {
     return $this->upload;
   }
 
-  public function update_omdb_id($mid, $oid) {
-    $this->mysqli->query("UPDATE movies SET omdb_id=".$oid." WHERE ID=".$mid);
+  public function update_omdb_id($mid, $tid, $ttp) { error_log("updating db");
+    $this->mysqli->query("UPDATE movies SET tmdb_type='".$ttp."', tmdb_id=".$tid." WHERE ID=".$mid);
   }
 
   public function update_rating($uid, $mid, $rating) {
@@ -135,7 +135,7 @@ final class MySQLBase {
 	  $res->free_result();
 	}
 
-	return $row['title'];
+	return isset($row) ? $row['title'] : null;
   }
 
   public function tmdb_url_from_id($id) {
@@ -256,7 +256,7 @@ final class MySQLBase {
 
   public function getOMDBId($disc = null) {
 
-    $result = $this->mysqli->query("SELECT omdb_id FROM disc LEFT JOIN movies ON movies.disc = disc.ID AND omdb_id IS NOT NULL ".
+    $result = $this->mysqli->query("SELECT tmdb_type, tmdb_id FROM disc LEFT JOIN movies ON movies.disc = disc.ID AND tmdb_id IS NOT NULL ".
       "LEFT JOIN user_ratings ON movies.ID = user_ratings.movie_id".
       (is_null($disc) ? "" : " WHERE disc.ID = ".$disc).
       " GROUP BY movies.ID ORDER BY movies.disc DESC , AVG(user_ratings.rating) DESC , movies.ID DESC LIMIT 1");
@@ -264,14 +264,14 @@ final class MySQLBase {
     if($result || $result->num_rows) {
       $row = $result->fetch_assoc();
 
-      if(empty($row['omdb_id'])) {
+      if(empty($row['tmdb_id'])) {
         $result->free_result();
         throw new UnexpectedValueException();
       }
 
       $result->free_result();
 
-      return $row['omdb_id'];
+      return [ $row['tmdb_id'], $row['tmdb_type'] ];
 
     } else error_log($this->mysqli->error);
 

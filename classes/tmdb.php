@@ -160,7 +160,7 @@ class TMDb {
 		}
 
 	  } else {
-		$v = $type;
+		$v = $type == "movie" ? "title" : "name";
 		$id = $tid;
 	  }
 

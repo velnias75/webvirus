@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -18,24 +18,31 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'tmdb.php';
 require_once 'ampletraits.php';
 
 final class UserActions {
 
   use AmpleTraits;
 
-  private $rating = -1;
-  private $omdb   = null;
-  private $avg    = -1;
-  private $ui     = null;
-  private $id     = -1;
+  private $tmdb_type = 'movie';
+  private $tmdb_id   = null;
+  private $rating    = -1;
+  private $title     = "";
+  private $omdb      = null;
+  private $avg       = -1;
+  private $ui        = null;
+  private $id        = -1;
 
-  function __construct($ui, $id, $rating, $avg, $omdb) {
-    $this->ui     = $ui;
-    $this->id     = $id;
-    $this->avg    = is_null($avg) ? -1 : $avg;
-    $this->omdb   = $omdb;
-    $this->rating = $rating;
+  function __construct($ui, $id, $rating, $avg, $omdb, $tmdb_type, $tmdb_id, $title) {
+    $this->ui        = $ui;
+    $this->id        = $id;
+    $this->avg       = is_null($avg) ? -1 : $avg;
+    $this->omdb      = $omdb;
+	$this->title     = $title;
+    $this->rating    = $rating;
+	$this->tmdb_id   = $tmdb_id;
+	$this->tmdb_type = $tmdb_type;
   }
 
   public static function enableUserActions() {
@@ -44,6 +51,8 @@ final class UserActions {
              "else {document.getElementById('id_ua_cover_'+id).src='img/nocover.png'; }".
              "$('input[name=ample_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_omdb_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+			 "$('input[name=ua_tmdb_type_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
+			 "$('input[name=ua_tmdb_id_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mail_msg_show_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('textarea[name=ua_mail_msg_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
              "$('input[name=ua_mail_bcc_' + id + ']').each(function(i) { $(this).prop('disabled', !enabled); });".
@@ -86,9 +95,9 @@ final class UserActions {
   }
 
   private function saveLastEMail($id) {
-    return "if(typeof(Storage) !== 'undefined') {". 
+    return "if(typeof(Storage) !== 'undefined') {".
       "var eMails = new Set(JSON.parse(localStorage.getItem('usedEMails')));".
-      "var lMail = document.getElementById('ua_mailto_".$id."').value;". 
+      "var lMail = document.getElementById('ua_mailto_".$id."').value;".
       "eMails.add(lMail);".
       "localStorage.setItem('usedEMails', JSON.stringify(Array.from(eMails)));".
       "localStorage.setItem('lastUsedEMail', lMail);".
@@ -98,9 +107,9 @@ final class UserActions {
   public function render() {
 
     $rcheck = array($this->rating == -1 ? "checked" : "",
-    $this->rating ==  2 ? "checked" : "",
-    $this->rating ==  1 ? "checked" : "",
-    $this->rating ==  0 ? "checked" : "");
+	  $this->rating ==  2 ? "checked" : "",
+	  $this->rating ==  1 ? "checked" : "",
+	  $this->rating ==  0 ? "checked" : "");
 
     return "<center><br /><b>Hirnlose Bewertung:</b><table>".
       ($this->avg != -1 ? "<tr><td align=\"center\"><small>(".$this->ample($this->avg, $this->id, "ua_ample_mid")."durchschn. Bewertung)</small></td></tr>" : "").
@@ -138,19 +147,28 @@ final class UserActions {
               "'&bcc='+document.getElementById('ua_mail_bcc_".$this->id."').checked+'');".
         "\">Absenden</a></span></td></tr>").
       ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".
-        "<tr><td>OMDB-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
-        "oninput=\"document.getElementById('id_ua_cover_".$this->id."').setAttribute('src', 'omdb.php?cover-oid='+event.target.value); ".
+        "<tr><td>TMDb-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
+        "oninput=\"document.getElementById('id_ua_cover_".$this->id."').setAttribute('src', ".
+		"'omdb.php?".("cover-oid=&tmdb_id='+event.target.value+'&tmdb_type='+(document.getElementById('ua_id_movie_".$this->id."').checked ? 'movie' : 'tv')); ").
         "var oReq_omdb_".$this->id." = new XMLHttpRequest(); ".
         "oReq_omdb_".$this->id.".addEventListener('loadend', function(e) { ".
           "if(oReq_omdb_".$this->id.".status != 200) {".
             "alert('Aktualisierung der OMDB-Id fehlgeschlagen.\\nGrund: ' + oReq_omdb_".$this->id.".status + ' ' + oReq_omdb_".$this->id.".statusText);".
           "}".
         "event.target.disabled=false; }); event.target.disabled=true;".
-	"oReq_omdb_".$this->id.".open('GET', 'omdb.php?mid=".$this->id."&oid='+event.target.value+'');".
+	"oReq_omdb_".$this->id.".open('GET', 'omdb.php?mid=".$this->id.
+	"&tmdb_id='+event.target.value+'&tmdb_type='+(document.getElementById('ua_id_movie_".$this->id."').checked ? 'movie' : 'tv'));".
 	"oReq_omdb_".$this->id.".send();".
-        "\"".(!empty($this->omdb) ? " value=\"".$this->omdb."\"" : "")."></td></tr>".
+        "\"".(!empty($this->tmdb_id) ? " value=\"".$this->tmdb_id."\"" : "")."></td></tr>".
+		"<tr><td><fieldset>TMDb-Typ:&nbsp;".
+		"<input disabled type=\"radio\" id=\"ua_id_movie_".$this->id."\" name=\"ua_tmdb_type_".$this->id."\" value=\"movie\" ".
+		($this->tmdb_type == "movie" ? "checked" : "").">".
+		"<label for=\"ua_id_movie_".$this->id."\">&nbsp;Rentnerfilm</label>".
+		"<input disabled type=\"radio\" id=\"ua_id_tv_".$this->id."\" name=\"ua_tmdb_type_".$this->id."\" value=\"tv\" ".
+		($this->tmdb_type == "movie" ? "" : "checked").">".
+		"<label for=\"ua_id_tv_".$this->id."\">&nbsp;L&uuml;gen-TV</label></fieldset></td></tr>".
         "<tr><td>&nbsp;</td></tr><tr><td><center><img id=\"id_ua_cover_".$this->id."\" class=\"ua_cover\" src=\"img/nocover.png\" data-src=\"".
-        (empty($this->omdb) ? "img/nocover.png" : "omdb.php?cover-oid=".$this->omdb)."\"></center></td></tr>" : "").
+        (empty($this->tmdb_id) ? "img/nocover.png" : "omdb.php?cover-oid=&tmdb_type=".$this->tmdb_type."&tmdb_id=".$this->tmdb_id)."\"></center></td></tr>" : "").
       "<tr><td>&nbsp;</td></tr>".
       "<tr><td align=\"center\"><a class=\"button\" href=\"#close\" onclick=\"enableUserActions(".$this->id.", false)\">Fertig</a></td></tr>".
       "</table></center><script>".$this->script()."</script>";

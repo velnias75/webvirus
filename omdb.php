@@ -196,8 +196,8 @@ if(isset($_GET['cover-oid'])) {
     imagedestroy($im);
   }
 
-} else if(isset($_GET['mid']) && isset($_GET['oid']) && isset($_SESSION['ui'])) {
-  if($_SESSION['ui']['admin']) MySQLBase::instance()->update_omdb_id($_GET['mid'], $_GET['oid']);
+} else if(isset($_GET['mid']) && isset($_GET['tmdb_id']) && isset($_GET['tmdb_type']) && isset($_SESSION['ui'])) {
+  if($_SESSION['ui']['admin']) MySQLBase::instance()->update_omdb_id($_GET['mid'], $_GET['tmdb_id'], $_GET['tmdb_type']);
   if(isset($_GET['url'])) header("Location: ".urldecode($_GET['url']));
 } else if(isset($_GET['search']) && isset($_SESSION['ui'])) {
   $tmdb = new TMDb($_GET['search'], 'movie', null);

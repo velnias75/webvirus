@@ -1,7 +1,7 @@
 <?php
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
 /*
- * Copyright 2017-2019 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -61,7 +61,7 @@ if(isset($_GET['filter_disc'])) {
     try {
       $og_image = MySQLBase::instance()->getOMDBId();
     } catch(UnexpectedValueException $e) {
-      $og_image = null;
+      $og_image = [ null, null ];
     }
   }
 
@@ -69,7 +69,7 @@ if(isset($_GET['filter_disc'])) {
   try {
     $og_image = MySQLBase::instance()->getOMDBId();
   } catch(UnexpectedValueException $e) {
-    $og_image = null;
+    $og_image = [ null, null ];
   }
 }
 
