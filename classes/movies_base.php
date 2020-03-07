@@ -445,10 +445,13 @@ EOD;
   }
 
   static public final function isMobile() {
+
+	if(!isset($_SERVER['HTTP_USER_AGENT'])) return false;
+
     return preg_match("/Android.*Mobile/", $_SERVER['HTTP_USER_AGENT']) ||
-    preg_match("/iPhone/", $_SERVER['HTTP_USER_AGENT']) ||
-    preg_match("/BlackBerry/", $_SERVER['HTTP_USER_AGENT']) ||
-    preg_match("/Windows Phone/", $_SERVER['HTTP_USER_AGENT']);
+	  preg_match("/iPhone/", $_SERVER['HTTP_USER_AGENT']) ||
+	  preg_match("/BlackBerry/", $_SERVER['HTTP_USER_AGENT']) ||
+	  preg_match("/Windows Phone/", $_SERVER['HTTP_USER_AGENT']);
   }
 
   static public final function pageSize() {

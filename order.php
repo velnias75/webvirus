@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2017-2020 by Heiko Schäfer <heiko@rangun.de>
+ * Copyright 2020 by Heiko Schäfer <heiko@rangun.de>
  *
  * This file is part of webvirus.
  *
@@ -18,19 +18,13 @@
  * along with webvirus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require 'classes/pdf.php';
-require 'classes/tracker.php';
+require 'classes/order.php';
 
-if(isset($_SERVER['HTTP_USER_AGENT'])) {
-  (new Tracker())->track("PDF generation request by {".$_SERVER['HTTP_USER_AGENT']."}");
-}
-
-try {
-  (new PDF(isset($_GET['order_by']) ? $_GET['order_by'] : "ltitle",
-  isset($_GET['from']) ? $_GET['from'] : 0,
-  isset($_GET['to']) ? $_GET['to'] : PDF::pageSize(), isset($_GET['cat']) ? $_GET['cat'] : -1))->render();
-} catch(Exception $e) {
-  echo "<strong>Fehler:</strong> ".htmlentities($e->getMessage(), ENT_SUBSTITUTE, "utf-8");
+if(isset($_POST['fids']) && isset($_POST['from'])) {
+  $order = new Order($_POST['fids']);
+  $order->mail($_POST['from']);
+} else {
+  http_response_code(403);
 }
 
 // indent-mode: cstyle; indent-width: 4; keep-extra-spaces: false; replace-tabs-save: false; replace-tabs: false; word-wrap: false; remove-trailing-space: true;
