@@ -66,15 +66,16 @@ trait OrderMailTraits {
 	$content .= "This is a multi-part message in MIME format.\r\n\r\n";
 	$content .= "--".$mime_boundary2."\r\n";
 
-	$content .= "Content-Type: text/html; charset=\"$encoding\"\r\n";
-	$content .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-	$content .= $message."\r\n";
-	$content .= "--".$mime_boundary2."\r\n";
-
 	$content .= "Content-Type: text/plain; charset=\"UTF-8\"\r\n";
 	$content .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
 	$content .= html_entity_decode(strip_tags($message), ENT_COMPAT|ENT_HTML401, 'UTF-8')."\r\n";
 	$content .= "--".$mime_boundary2."\r\n";
+
+	$content .= "Content-Type: text/html; charset=\"$encoding\"\r\n";
+	$content .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+	$content .= $message."\r\n";
+	$content .= "--".$mime_boundary2."--\r\n";
+
 
 	foreach($attachments AS $dat) {
 
