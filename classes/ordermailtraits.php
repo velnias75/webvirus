@@ -44,22 +44,37 @@ trait OrderMailTraits {
 	  $attachments[] = array("name" => $name, "size" => $size, "type" => $type, "data" => $data);
 	}
 
-	$mime_boundary = "-----=" . md5(uniqid(microtime(), true));
+	$mime_boundary  = "-----=" . md5(uniqid(microtime(), true));
+	$mime_boundary2 = "-----=" . md5(uniqid(microtime(), true));
+
 	$encoding = mb_detect_encoding($message, "utf-8, iso-8859-1, cp-1252");
 
 	$header  = 'From: "'.addslashes(mb_encode_mimeheader($sender, 'UTF-8', 'B')).'" <'.$sender_email.">\r\n";
 	$header .= "CC: ".$cc."\r\n";
 	$header .= "Reply-To: ".$reply_email."\r\n";
+	$header .= "Priority: urgent\r\n";
+	$header .= "Sensitivity: private\r\n";
+	$header .= "Disposition-Notification-To: ".$cc."\r\n";
 
 	$header .= "MIME-Version: 1.0\r\n";
-	$header .= "Content-Type: multipart/mixed; charset=\"$encoding\"\r\n";
-	$header .= " boundary=\"".$mime_boundary."\"\r\n";
+	$header .= "Content-Type: multipart/mixed; boundary=\"".$mime_boundary."\"\r\n";
+	$header .= "This is a multi-part message in MIME format.\r\n\r\n";
 
-	$content  = "This is a multi-part message in MIME format.\r\n\r\n";
-	$content .= "--".$mime_boundary."\r\n";
+	$content  = "--".$mime_boundary."\r\n";
+	$content .= "Content-Type: multipart/alternative; boundary=\"".$mime_boundary2."\"\r\n";
+
+	$content .= "This is a multi-part message in MIME format.\r\n\r\n";
+	$content .= "--".$mime_boundary2."\r\n";
+
 	$content .= "Content-Type: text/html; charset=\"$encoding\"\r\n";
 	$content .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
 	$content .= $message."\r\n";
+	$content .= "--".$mime_boundary2."\r\n";
+
+	$content .= "Content-Type: text/plain; charset=\"UTF-8\"\r\n";
+	$content .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+	$content .= html_entity_decode(strip_tags($message), ENT_COMPAT|ENT_HTML401, 'UTF-8')."\r\n";
+	$content .= "--".$mime_boundary2."\r\n";
 
 	foreach($attachments AS $dat) {
 
