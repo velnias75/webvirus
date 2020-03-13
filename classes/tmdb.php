@@ -34,9 +34,12 @@ class TMDbResponse {
 	return $this->mobj->{'overview'};
   }
 
-  function poster_base() {
+  function poster_base($orig = true) {
+
 	$size = $this->mobj->{'images'}->{'poster_sizes'};
-	return $this->mobj->{'images'}->{'secure_base_url'}.$size[count($size)-5];
+	$x = $orig ? array_slice($size, -1)[0] : $size[count($size)-5];
+
+	return $this->mobj->{'images'}->{'secure_base_url'}.$x;
   }
 
   function poster_url($base) {
@@ -125,7 +128,7 @@ class TMDb {
   private $mtype;
   private $mid;
 
-  function __construct($q, $type, $tid) {
+  function __construct($q, $type, $tid, $orig = true) {
 
 	require dirname(dirname(__FILE__)).'/db_cred.php';
 
@@ -170,7 +173,7 @@ class TMDb {
 	  if(!is_null($id)) {
 		$this->mresp = $this->req("https://api.themoviedb.org/3/".($v == "name" ? "tv" : "movie")."/".$id);
 		$this->cresp = $this->req("https://api.themoviedb.org/3/".($v == "name" ? "tv" : "movie")."/".$id."/credits");
-		$this->pbase = $this->conf->poster_base();
+		$this->pbase = $this->conf->poster_base($orig);
 	  } else {
 		throw new RuntimeException("no movie found for \"".$q."\"");
 	  }
@@ -309,8 +312,8 @@ class TMDb {
 	return $this->mtype == "title" ? "movie" : "tv";
   }
 
-  function cover_url() {
-	return $this->mresp->poster_url($this->conf->poster_base());
+  function cover_url($orig = true) {
+	return $this->mresp->poster_url($this->conf->poster_base($orig));
   }
 
   function abstract() {

@@ -50,7 +50,7 @@ $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
   <tr><td id="layout_top" valign="middle" align="center" colspan="3">
     <?php
       if(!(empty($og_image[0]) || MoviesBase::isMobile())) {
-        echo "<div class=\"cover_top_div\"><img class=\"cover_top\" src=\"omdb.php?cover-oid=&tmdb_type=".$og_image[1]."&tmdb_id=".$og_image[0]."\"></div>";
+        echo "<div class=\"cover_top_div\"><img class=\"cover_top\" src=\"omdb.php?cover-oid=&scaled=&tmdb_type=".$og_image[1]."&tmdb_id=".$og_image[0]."\"></div>";
       }
     ?>
     <h1><a id="title_link" href="<?php echo $_SERVER['PHP_SELF']; ?>" style="white-space: nowrap;">

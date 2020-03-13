@@ -109,9 +109,8 @@ $msg    = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlen
 $mail   = preg_replace('/%RNAME%/', "Dr. inf. ".(isset($_SESSION['ui']) ? htmlentities($_SESSION['ui']['display_name']) : "O. Normalverbraucher"), $mail);
 $mail   = preg_replace('/%URL%/', $r->getLink(), $mail);
 $msg    = preg_replace('/%URL%/', $r->getLink(), $msg);
-$mail   = preg_replace('/%IMAGE%/', $r->getLink()."/omdb.php?cover-oid=&".(is_null($rows['oid']) ? "fallback=".urlencode($rows['title']) :
+$mail   = preg_replace('/%IMAGE%/', $r->getLink()."/omdb.php?cover-oid=&scaled=&".(is_null($rows['oid']) ? "fallback=".urlencode($rows['title']) :
 												  "tmdb_type=".$rows['ttp']."&tmdb_id=".$rows['oid']), $mail);
-//"/omdb.php?cover-oid=".$rows['oid'].($rows['top250'] ? "&top250=true" : ""), $mail);
 $mail   = preg_replace('/%MID%/', $rows['mid'], $mail);
 $mail   = preg_replace('/%TITLE%/', htmlentities($rows['title']), $mail);
 $mail   = preg_replace('/%DUR%/', $rows['dur'], $mail);

@@ -149,7 +149,7 @@ final class UserActions {
       ($this->ui['admin'] ? "<tr><td>&nbsp;</td></tr>".
         "<tr><td>TMDb-Id:&nbsp;<input disabled name=\"ua_omdb_".$this->id."\" type=\"number\" min=\"1\" ".
         "oninput=\"document.getElementById('id_ua_cover_".$this->id."').setAttribute('src', ".
-		"'omdb.php?".("cover-oid=&tmdb_id='+event.target.value+'&tmdb_type='+(document.getElementById('ua_id_movie_".$this->id."').checked ? 'movie' : 'tv')); ").
+		"'omdb.php?".("cover-oid=&scaled=&tmdb_id='+event.target.value+'&tmdb_type='+(document.getElementById('ua_id_movie_".$this->id."').checked ? 'movie' : 'tv')); ").
         "var oReq_omdb_".$this->id." = new XMLHttpRequest(); ".
         "oReq_omdb_".$this->id.".addEventListener('loadend', function(e) { ".
           "if(oReq_omdb_".$this->id.".status != 200) {".
@@ -168,7 +168,7 @@ final class UserActions {
 		($this->tmdb_type == "movie" ? "" : "checked").">".
 		"<label for=\"ua_id_tv_".$this->id."\">&nbsp;L&uuml;gen-TV</label></fieldset></td></tr>".
         "<tr><td>&nbsp;</td></tr><tr><td><center><img id=\"id_ua_cover_".$this->id."\" class=\"ua_cover\" src=\"img/nocover.png\" data-src=\"".
-        (empty($this->tmdb_id) ? "img/nocover.png" : "omdb.php?cover-oid=&tmdb_type=".$this->tmdb_type."&tmdb_id=".$this->tmdb_id)."\"></center></td></tr>" : "").
+        (empty($this->tmdb_id) ? "img/nocover.png" : "omdb.php?cover-oid=&scaled=&tmdb_type=".$this->tmdb_type."&tmdb_id=".$this->tmdb_id)."\"></center></td></tr>" : "").
       "<tr><td>&nbsp;</td></tr>".
       "<tr><td align=\"center\"><a class=\"button\" href=\"#close\" onclick=\"enableUserActions(".$this->id.", false)\">Fertig</a></td></tr>".
       "</table></center><script>".$this->script()."</script>";

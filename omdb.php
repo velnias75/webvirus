@@ -115,7 +115,7 @@ if(isset($_GET['cover-oid'])) {
   } else {
 	try {
 	  if(is_null($tmdb)) throw new RuntimeException();
-	  $pic = loadCover($tmdb->cover_url());
+	  $pic = loadCover($tmdb->cover_url(!isset($_GET['scaled'])));
 	} catch(RuntimeException $exc) {
 	  $pic = null;
 	}
@@ -168,6 +168,18 @@ if(isset($_GET['cover-oid'])) {
     $im = imagecreatefromstring($pic);
 
     if($im === false) $im = imagecreatefromstring(noCoverPic());
+
+    if(imagesy($im) >= 1000) {
+
+	  $tmp = imagescale($im, imagesx($im) * 0.5, -1, IMG_BICUBIC);
+
+	  if($tmp !== false) {
+
+		imagedestroy($im);
+		$im = $tmp;
+
+	  } else error_log("Failed to scale down image");
+	}
 
     $stamp = imagecreatetruecolor(110, 30);
     imagefilledrectangle($stamp, 0, 0, 109, 29, 0xFF0000);

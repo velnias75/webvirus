@@ -127,7 +127,7 @@ while($rssdata = $result->fetch_assoc()) {
 
   $cdata = $xml->createCDATASection("<table border=\"0\"><tr>".
   (!is_null($tmdb) ? "<td width=\"*\" valign=\"top\">".
-	"<img src=\"".getLink()."/omdb.php?cover-oid=&".(is_null($rssdata['oid']) ? "fallback=".urlencode($rssdata['title']) :
+	"<img src=\"".getLink()."/omdb.php?cover-oid=&scaled=&".(is_null($rssdata['oid']) ? "fallback=".urlencode($rssdata['title']) :
 	"tmdb_type=".$rssdata['ttp']."&tmdb_id=".$rssdata['oid'])."\" alt=\"Cover f&uuml;r &quot;".$rssdata['title']."&quot;\">"."</td>" : "").
 	"<td valign=\"top\"".(is_null($tmdb) ? "" : " colspan=\"2\"")."><dl>".
 	"<dt><b>Nr</b></dt><dd>".$rssdata['ID']."</dd>".

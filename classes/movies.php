@@ -160,7 +160,7 @@ private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $du
 	  (!$isSummary ? $this->ample($rating, $id) : "").
 	  ($ltitle === "" ? "&nbsp;" : htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8").($this->loggedIn && !$isSummary ? "</a>" : "").
 	  ($isSummary ? "" : "<span style=\"display: none;\" itemprop=\"name\">".("<center><img itemprop=\"image\" src=\""
-	  .self::$spinner."\" "."data-src=\"omdb.php?cover-oid="./*$omdb_id.*/(!$isTop250 ? "" : "&amp;top250=true")."&tmdb_type=".$tmdb_type."&tmdb_id=".$tmdb_id."&fallback=".
+	  .self::$spinner."\" "."data-src=\"omdb.php?cover-oid="./*$omdb_id.*/(!$isTop250 ? "" : "&amp;top250=true")."&scaled=&tmdb_type=".$tmdb_type."&tmdb_id=".$tmdb_id."&fallback=".
 	  urlencode($ltitle)."\"></center><br>").(!$this->loggedIn || is_null($avg) ? "" : $this->ample($avg, $id, "tt_ample_mid")).
 	  htmlentities($ltitle, ENT_SUBSTITUTE, "utf-8")."<br /><center><p style=\"display:none;\">abstract</p><center></span>"))),
 	  new Cell(array('nowrap' => null, 'align' => "right", 'class' => "list ".($dursec != 0 ? "hasTooltip" : "")." duration cat_".$cat),
