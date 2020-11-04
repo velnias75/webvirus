@@ -65,7 +65,7 @@ $overallAvgRating = (new OverallAvgRating())->getOverallAvgRating();
 
       echo "<div id=\"mobile_pagesize\"><form><input type=\"hidden\" name=\"from\" value=\"".$from."\" />".
 	(isset($_GET['order_by']) ? "<input type=\"hidden\" name=\"order_by\" value=\"".$_GET['order_by']."\" />" : "").
-	(isset($_GET['cat']) ? "<input type=\"hidden\" name=\"cat\" value=\"".$_GET['cat']."\" />" : "").
+	(isset($_GET['cat']) ? "<input type=\"hidden\" name=\"cat\" value=\"".Movies::checkCatSanity($_GET['cat'])."\" />" : "").
 	(isset($_GET['filter_ltitle']) ? "<input type=\"hidden\" name=\"filter_ltitle\" value=\"".$_GET['filter_ltitle']."\" />" : "").
 	(isset($_GET['filter_disc']) ? "<input type=\"hidden\" name=\"filter_disc\" value=\"".$_GET['filter_disc']."\" />" : "").
 	"<label>Filme pro Seite:&nbsp;<select name=\"to\" onchange=\"this.form.submit()\">".

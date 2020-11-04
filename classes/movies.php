@@ -112,7 +112,7 @@ function __construct($order_by = "ltitle", $from = 0, $to = -1, $cat = -1) {
 public function hidden() {
   return array(
 	'order_by' => $this->order(),
-	'cat' => $this->category(),
+	'cat' => $this->checkCatSanity($this->category()),
 	'from' => 0,
 	'to' => $this->pageSize()
 	);
@@ -128,6 +128,8 @@ private function renderRow($id = "", $ltitle = "", $st = "", $duration = "", $du
   if(empty($id) && empty($ltitle) && empty($st) && empty($duration) && empty($lingos) && empty($disc) && empty($fname)) {
 	$isSummary = true;
   }
+
+  $cat = $this->checkCatSanity($cat);
 
   if(!$isSummary) {
 	$nid = $this->makeLZID($id);

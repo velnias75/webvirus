@@ -103,7 +103,7 @@ EOD;
 
     $this->limit_from = $to == -1 ? $from : min($from, $to);
     $this->limit_to   = $to == -1 ? $to : max($from, $to);
-    $this->category   = $cat;
+    $this->category   = $this->checkCatSanity($cat);
 
     $this->filters['filter_ID'] = array(isset($_GET['filter_ID']) && !empty($_GET['filter_ID']),
     isset($_GET['filter_ID']) ? $_GET['filter_ID'] : 0,
@@ -223,7 +223,7 @@ EOD;
   }
 
   public final function catQueryString($cat) {
-    return $this->createQueryString(false, true, true, false)."&amp;from=0&amp;to=".urlencode($this->pageSize())."&amp;cat=".urlencode($cat);
+	return $this->createQueryString(false, true, true, false)."&amp;from=0&amp;to=".urlencode($this->pageSize())."&amp;cat=".$this->checkCatSanity(urlencode($cat));
   }
 
   public final function discQueryString($disc) {
@@ -231,10 +231,14 @@ EOD;
   }
 
   protected final function createQueryString($cat, $order, $filter, $limits, $qm = true, $ft = true) {
-    return ($qm ? "?" : "").(urlencode($cat) ? "&amp;cat=".urlencode($this->category) : "").
+	return ($qm ? "?" : "").(urlencode($cat) ? "&amp;cat=".$this->checkCatSanity(urlencode($this->category)) : "").
     ($order   ? "&amp;order_by=".urlencode($this->order()) : "").
     ($filter  ? $this->filters($ft) : "").
     ($limits  ? "&amp;from=".urlencode($this->limit_from)."&amp;to=".urlencode($this->limit_to) : "");
+  }
+
+  static public final function checkCatSanity($cat) {
+	return is_numeric($cat) ? $cat : "-1";
   }
 
   private function filterSQLArray($q = "") {
